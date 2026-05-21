@@ -111,6 +111,10 @@ STORAGES = {
     },
 }
 
+# Compatibility aliases for packages that still expect the legacy Django storage settings.
+DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
+STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
+
 if os.getenv("CLOUDINARY_CLOUD_NAME"):
     CLOUDINARY_STORAGE = {
         "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", ""),
