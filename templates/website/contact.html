@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | City College of Bayawan{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-xl-8">
+                <div class="hero-main h-100" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"{% endif %}>
+                    <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
+                    <p class="lead mb-0">{{ page_content.hero_text }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section-block">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow">Direct Inquiry</span>
+                <h2 class="section-title mt-3 mb-2">Reach The Campus Easily</h2>
+                <p class="muted-copy mb-0">A more structured contact page helps students, families, and visitors quickly find the right office, location, and contact channel.</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="content-card content-card-static h-100">
+                    <div class="contact-shell">
+                        <div>
+                            <span class="section-eyebrow">Contact Desk</span>
+                            <h2 class="section-title mt-3">Reach The Campus</h2>
+                            <p class="muted-copy mb-0">{{ page_content.body_text|default:"Send a question, request information, or direct students and parents to the proper office." }}</p>
+                        </div>
+                        <div class="contact-detail-grid">
+                            <div class="contact-tile">
+                                <strong>Email</strong>
+                                <span>{{ site_settings.primary_email|default:"info@ccb.edu.ph" }}</span>
+                            </div>
+                            <div class="contact-tile">
+                                <strong>Phone</strong>
+                                <span>{{ site_settings.phone|default:"+63 000 000 0000" }}</span>
+                            </div>
+                            <div class="contact-tile">
+                                <strong>Address</strong>
+                                <span>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</span>
+                            </div>
+                            <div class="contact-tile">
+                                <strong>Office Hours</strong>
+                                <span>{{ site_settings.office_hours|default:"Set office hours in Site Settings" }}</span>
+                            </div>
+                        </div>
+                        {% if site_settings.facebook_url %}
+                            <div class="contact-links-row">
+                                <a
+                                    class="btn btn-soft btn-portal contact-social-link"
+                                    href="{{ site_settings.normalized_facebook_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+                                    <span>Visit Our Facebook Page</span>
+                                </a>
+                            </div>
+                        {% endif %}
+                        <form method="post" class="vstack gap-3">
+                            {% csrf_token %}
+                            {{ form.website }}
+                            {{ form.name }}
+                            {{ form.name.errors }}
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                            {{ form.subject }}
+                            {{ form.subject.errors }}
+                            {{ form.message }}
+                            {{ form.message.errors }}
+                            <div class="contact-verification-note">
+                                <strong>Email verification required.</strong>
+                                After you submit, we will send a verification link to your email address first. Your inquiry will only be forwarded to <strong>citycollegeofbayawan@gmail.com</strong> after you click that verification link.
+                            </div>
+                            <button type="submit" class="btn btn-brand btn-portal"><i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7 d-flex">
+                <div class="content-card content-card-static contact-map-card h-100 w-100">
+                    <div class="contact-map-label">
+                        <span class="section-eyebrow">Campus Map</span>
+                        <strong>City College of Bayawan - Map</strong>
+                    </div>
+                    <iframe
+                        class="map-frame"
+                        src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25975.934785811703!2d122.79792745732632!3d9.385117817239498!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33ac93001a7a1fdd%3A0xbc6a4b9b655068bd!2sCity%20College%20of%20Bayawan!5e0!3m2!1sen!2sph!4v1779254209954!5m2!1sen!2sph{% endif %}"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

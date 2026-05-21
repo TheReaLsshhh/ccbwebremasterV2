@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Home | City College of Bayawan{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-main hero-main-wide" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"{% endif %}>
+                <div class="row g-4 align-items-start">
+                    <div class="col-xl-5">
+                        <span class="eyebrow">Official CCB Web Portal</span>
+                        <h1 class="mt-3 mb-3">{{ page_content.hero_title|default:"Welcome to the City College of Bayawan portal." }}</h1>
+                        <p class="lead mb-0">{{ page_content.hero_text|default:"Find official announcements, academic information, admission requirements, downloadable forms, and campus updates in one place." }}</p>
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+                            <a class="btn btn-brand btn-portal" href="{% url 'website:news' %}">View News & Events</a>
+                            <a class="btn btn-soft btn-portal" href="{% url 'website:admissions' %}">Check Admissions</a>
+                        </div>
+                        <div class="hero-stats hero-stats-wide">
+                            <div class="stat-block">
+                                <strong>Announcements</strong>
+                                <span>Official campus news and event updates</span>
+                            </div>
+                            <div class="stat-block">
+                                <strong>Downloads</strong>
+                                <span>Access forms, files, and campus notices</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-7">
+                        <div class="portal-panel portal-panel-overlay h-100">
+                            <div class="portal-panel-header">
+                                <div>
+                                    <span class="section-eyebrow">Today at CCB</span>
+                                    <h3 class="portal-title start-here-title mt-3 mb-1">Start Here <span class="start-here-pointer" aria-hidden="true"><i class="fa-solid fa-hand-pointer"></i></span></h3>
+                                </div>
+                            </div>
+                            <p class="muted-copy">Use these quick links to go directly to the most visited parts of the portal.</p>
+                            <div class="quick-link-grid mt-4">
+                                <a class="quick-link-item" href="{% url 'website:admissions' %}">
+                                    <div>
+                                        <strong>Admissions and Enrollment</strong>
+                                        <span>Read the admissions process, required documents, and enrollment guidance.</span>
+                                    </div>
+                                </a>
+                                <a class="quick-link-item" href="{% url 'website:downloads' %}">
+                                    <div>
+                                        <strong>Downloads and Forms</strong>
+                                        <span>Get forms, memoranda, policies, and other official downloadable files.</span>
+                                    </div>
+                                </a>
+                                <a class="quick-link-item" href="{% url 'website:news' %}">
+                                    <div>
+                                        <strong>News and Campus Events</strong>
+                                        <span>Follow school announcements, public notices, and upcoming activities.</span>
+                                    </div>
+                                </a>
+                                <a class="quick-link-item" href="{% url 'website:contact' %}">
+                                    <div>
+                                        <strong>Contact and Office Information</strong>
+                                        <span>Find office details, contact channels, and campus location information.</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-block">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow">Popular Sections</span>
+                <h2 class="section-title mt-3 mb-2">What Visitors Usually Look For First</h2>
+                <p class="muted-copy mb-0">These sections help students, parents, and visitors find the information they need without searching through multiple pages.</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="feature-card">
+                    <span class="signal-badge">Academics</span>
+                    <div class="accent-bar"></div>
+                    <h3>Programs and academic information</h3>
+                    <p class="muted-copy">Learn about academic offerings, program descriptions, and downloadable brochures.</p>
+                    <a href="{% url 'website:academics' %}" class="btn btn-soft btn-sm mt-3">Go to Academics</a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card">
+                    <span class="signal-badge">Admissions</span>
+                    <div class="accent-bar"></div>
+                    <h3>Application steps and requirements</h3>
+                    <p class="muted-copy">Review admission requirements, required forms, and important enrollment information.</p>
+                    <a href="{% url 'website:admissions' %}" class="btn btn-soft btn-sm mt-3">Open Admissions</a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card">
+                    <span class="signal-badge">Student Resources</span>
+                    <div class="accent-bar"></div>
+                    <h3>Student support and helpful resources</h3>
+                    <p class="muted-copy">Access student-facing resources, support information, and helpful campus links.</p>
+                    <a href="{% url 'website:students' %}" class="btn btn-soft btn-sm mt-3">Open Student Resources</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-block pt-0">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="portal-panel h-100">
+                    <div class="portal-panel-header">
+                        <div>
+                            <span class="section-eyebrow">Campus Updates</span>
+                            <h2 class="section-title mt-3 mb-1">Latest News and Events</h2>
+                        </div>
+                        <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
+                    </div>
+                    {% if featured_news %}
+                        <div id="campusNewsCarousel" class="carousel slide news-carousel" data-bs-ride="false">
+                            <div class="news-carousel-stage">
+                                <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
+                                    <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                                </button>
+                                <div class="news-carousel-viewport">
+                                    <div class="carousel-inner">
+                                        {% for item in featured_news %}
+                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                <div class="announcement-card news-carousel-card">
+                                                    {% if item.cover_image %}
+                                                        <div class="news-carousel-visual-shell mb-4">
+                                                            <div class="news-visual-wrap news-carousel-visual">
+                                                                <img
+                                                                    src="{{ item.cover_image.url }}"
+                                                                    alt="{{ item.title }}"
+                                                                    class="news-visual-image"
+                                                                    width="960"
+                                                                    height="540"
+                                                                    decoding="async"
+                                                                    {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                                                        <span class="signal-badge">{{ item.event_date }}</span>
+                                                        {% if item.location %}<span class="muted-copy">{{ item.location }}</span>{% endif %}
+                                                    </div>
+                                                    <h3 class="mt-3">{{ item.title }}</h3>
+                                                    <p class="muted-copy">{{ item.summary|truncatewords:28 }}</p>
+                                                    {% if item.content %}
+                                                        <p class="mb-0">{{ item.content|truncatewords:36 }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
+                                    <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                                </button>
+                            </div>
+                            <div class="news-carousel-controls">
+                                <div class="carousel-indicators news-carousel-indicators">
+                                    {% for item in featured_news %}
+                                        <button
+                                            type="button"
+                                            data-bs-target="#campusNewsCarousel"
+                                            data-bs-slide-to="{{ forloop.counter0 }}"
+                                            class="{% if forloop.first %}active{% endif %}"
+                                            {% if forloop.first %}aria-current="true"{% endif %}
+                                            aria-label="Go to news slide {{ forloop.counter }}">
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="notice-band">
+                            <strong class="d-block mb-2">No campus updates are published yet.</strong>
+                            Add news or event entries in the admin dashboard to display the latest announcements here.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-block pt-0">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow">Featured Programs</span>
+                <h2 class="section-title mt-3 mb-2">Featured Academic Programs</h2>
+                <p class="muted-copy mb-0">Explore selected academic offerings currently highlighted by the college.</p>
+            </div>
+            <a href="{% url 'website:academics' %}" class="btn btn-soft btn-sm">Browse Academics</a>
+        </div>
+        <div class="row g-4">
+            {% for program in featured_programs %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="catalog-card">
+                        <span class="signal-badge">Program</span>
+                        <h3 class="mt-3">{{ program.name }}</h3>
+                        {% if program.award %}<p class="text-dark fw-semibold mb-2">{{ program.award }}</p>{% endif %}
+                        <p class="muted-copy">{{ program.description|truncatewords:28 }}</p>
+                        {% if program.brochure_file %}
+                            <a href="{{ program.brochure_file.url }}" class="btn btn-soft btn-sm mt-3">Download Brochure</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="notice-band">Mark academic programs as featured in admin so they appear on the homepage.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}City College of Bayawan{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo.png' %}">
+    <script>
+        (function () {
+            try {
+                var storageKey = "ccb-theme";
+                var savedTheme = localStorage.getItem(storageKey);
+                var theme = savedTheme === "light" || savedTheme === "dark"
+                    ? savedTheme
+                    : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                document.documentElement.setAttribute("data-theme", theme);
+            } catch (error) {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    <div class="site-shell">
+        <div class="topbar-note py-2">
+            <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 small">
+                <span class="status-pill">
+                    <span class="status-icon" aria-hidden="true">
+                        <i class="fa-solid fa-bell"></i>
+                    </span>
+                    {{ site_settings.hero_notice|default:"Student services, announcements, and campus updates in one portal." }}
+                </span>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-xl site-navbar">
+            <div class="container py-3">
+                <a class="navbar-brand me-4" href="{% url 'website:home' %}">
+                    <span class="brand-lockup">
+                        <span class="brand-mark">
+                            <img src="{% static 'images/hero-images/ccb-logo.png' %}" alt="City College of Bayawan logo" class="brand-mark-image" width="46" height="46">
+                        </span>
+                        <span class="brand-copy">
+                            <small>Bayawan City</small>
+                            <strong>City College of Bayawan</strong>
+                        </span>
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto gap-xl-1 align-items-xl-center">
+                        {% for label, url_name in nav_items %}
+                            {% if url_name == "website:news" %}
+                                <li class="nav-item dropdown nav-item-services">
+                                    <a
+                                        class="nav-link dropdown-toggle"
+                                        href="#"
+                                        id="servicesDropdown"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Services
+                                    </a>
+                                    <ul class="dropdown-menu services-dropdown-menu" aria-labelledby="servicesDropdown">
+                                        {% for item in service_menu_items %}
+                                            <li>
+                                                {% if item.is_available %}
+                                                    <a class="dropdown-item services-dropdown-item" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
+                                                {% else %}
+                                                    <span class="dropdown-item services-dropdown-item is-disabled">{{ item.label }}</span>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_page == url_name %}active{% endif %}" href="{% url url_name %}">{{ label }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        <button
+            type="button"
+            class="floating-action floating-action-left"
+            id="themeToggleButton"
+            aria-label="Toggle dark mode">
+            <span class="theme-toggle-icon" id="themeToggleIcon" aria-hidden="true">
+                <i class="fa-solid fa-moon"></i>
+            </span>
+        </button>
+
+        <button
+            type="button"
+            class="floating-action floating-action-right"
+            id="scrollToTopButton"
+            aria-label="Scroll to top">
+            <span class="floating-action-label" aria-hidden="true">
+                <i class="fa-solid fa-arrow-up"></i>
+            </span>
+        </button>
+
+        <footer class="footer-shell pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <h5 class="mb-3">{{ site_settings.site_name|default:"City College of Bayawan" }}</h5>
+                        <p class="mb-3">{{ site_settings.tagline|default:"A connected campus experience for Bayawan learners, families, faculty, and staff." }}</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <h6 class="mb-3">Campus Information</h6>
+                        <p class="mb-2">{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>
+                        <p class="mb-2">{{ site_settings.primary_email|default:"info@ccb.edu.ph" }}</p>
+                        <p class="mb-0">{{ site_settings.phone|default:"+63 000 000 0000" }}</p>
+                    </div>
+                    <div class="col-lg-3">
+                        <h6 class="mb-3">Student Portal Areas</h6>
+                        <div class="footer-link-list">
+                            <a class="footer-link" href="{% url 'website:admissions' %}">Admissions</a>
+                            <a class="footer-link" href="{% url 'website:downloads' %}">Downloads</a>
+                            <a class="footer-link" href="{% url 'website:news' %}">News & Events</a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-light border-opacity-25 my-4">
+                <p class="mb-0 small">{{ site_settings.footer_text|default:"City College of Bayawan" }}</p>
+            </div>
+        </footer>
+    </div>
+
+    {% if messages or notification_modal %}
+        <div class="modal fade feedback-modal" id="siteFeedbackModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if message.tags == 'error' %}is-error{% elif message.tags == 'warning' %}is-warning{% elif message.tags == 'info' %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}">
+                    <div class="feedback-modal-topbar"></div>
+                    <div class="modal-body">
+                        <button type="button" class="btn-close feedback-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="feedback-modal-header">
+                            <div class="feedback-modal-heading">
+                                <div class="feedback-modal-icon" aria-live="polite">
+                                    <span class="feedback-modal-countdown" id="feedbackModalCountdown">
+                                        <span class="feedback-modal-countdown-ring" aria-hidden="true">
+                                            <svg class="feedback-modal-countdown-svg" viewBox="0 0 48 48" focusable="false" aria-hidden="true">
+                                                <circle class="feedback-modal-countdown-track" cx="24" cy="24" r="20"></circle>
+                                                <circle class="feedback-modal-countdown-progress" cx="24" cy="24" r="20"></circle>
+                                            </svg>
+                                        </span>
+                                        <span class="feedback-modal-countdown-value">5</span>
+                                    </span>
+                                    <h3 class="feedback-modal-title mb-0">
+                                        {% if notification_modal %}
+                                            {% if notification_modal.title %}
+                                                {{ notification_modal.title }}
+                                            {% elif notification_modal.type == 'error' %}
+                                                Failed
+                                            {% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}
+                                                Retry
+                                            {% elif notification_modal.type == 'info' %}
+                                                Notice
+                                            {% else %}
+                                                Success
+                                            {% endif %}
+                                        {% else %}
+                                            {% for message in messages %}
+                                                {% if forloop.first %}
+                                                    {% if message.tags == 'error' %}
+                                                        Failed
+                                                    {% elif message.tags == 'warning' %}
+                                                        Retry
+                                                    {% elif message.tags == 'info' %}
+                                                        Notice
+                                                    {% else %}
+                                                        Success
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feedback-modal-copy">
+                            {% if notification_modal %}
+                                <p class="mb-0">{{ notification_modal.message }}</p>
+                            {% else %}
+                                {% for message in messages %}
+                                    <p class="{% if not forloop.last %}mb-2{% else %}mb-0{% endif %}">{{ message }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const storageKey = "ccb-theme";
+            const root = document.documentElement;
+            const themeButton = document.getElementById("themeToggleButton");
+            const themeIcon = document.getElementById("themeToggleIcon");
+            const scrollButton = document.getElementById("scrollToTopButton");
+
+            function applyTheme(theme) {
+                const nextTheme = theme === "dark" ? "dark" : "light";
+                root.setAttribute("data-theme", nextTheme);
+                if (themeButton) {
+                    themeButton.setAttribute("aria-pressed", String(nextTheme === "dark"));
+                    themeButton.setAttribute("title", nextTheme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+                }
+                if (themeIcon) {
+                    themeIcon.innerHTML = nextTheme === "dark"
+                        ? '<i class="fa-solid fa-sun"></i>'
+                        : '<i class="fa-solid fa-moon"></i>';
+                }
+            }
+
+            function getPreferredTheme() {
+                const savedTheme = localStorage.getItem(storageKey);
+                if (savedTheme === "light" || savedTheme === "dark") {
+                    return savedTheme;
+                }
+                return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            }
+
+            applyTheme(getPreferredTheme());
+
+            if (themeButton) {
+                themeButton.addEventListener("click", function () {
+                    const currentTheme = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+                    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+                    localStorage.setItem(storageKey, nextTheme);
+                    applyTheme(nextTheme);
+                });
+            }
+
+            function updateScrollButton() {
+                if (!scrollButton) {
+                    return;
+                }
+                if (window.scrollY > 240) {
+                    scrollButton.classList.add("is-visible");
+                } else {
+                    scrollButton.classList.remove("is-visible");
+                }
+            }
+
+            if (scrollButton) {
+                scrollButton.addEventListener("click", function () {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            }
+
+            const feedbackModalElement = document.getElementById("siteFeedbackModal");
+            if (feedbackModalElement && window.bootstrap && window.bootstrap.Modal) {
+                const feedbackModal = new window.bootstrap.Modal(feedbackModalElement);
+                let feedbackAutoCloseTimer = null;
+                let feedbackCountdownTimer = null;
+                let feedbackProgressTimer = null;
+                const feedbackCountdownElement = document.getElementById("feedbackModalCountdown");
+                const feedbackCountdownValueElement = feedbackCountdownElement
+                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-value")
+                    : null;
+                const feedbackCountdownRingElement = feedbackCountdownElement
+                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-ring")
+                    : null;
+                const feedbackCountdownProgressElement = feedbackCountdownElement
+                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-progress")
+                    : null;
+
+                feedbackModalElement.addEventListener("shown.bs.modal", function () {
+                    if (feedbackCountdownValueElement) {
+                        let secondsRemaining = 5;
+                        feedbackCountdownValueElement.textContent = String(secondsRemaining);
+                        feedbackCountdownTimer = window.setInterval(function () {
+                            secondsRemaining -= 1;
+                            if (secondsRemaining >= 0) {
+                                feedbackCountdownValueElement.textContent = String(secondsRemaining);
+                            }
+                            if (secondsRemaining <= 0 && feedbackCountdownTimer) {
+                                window.clearInterval(feedbackCountdownTimer);
+                                feedbackCountdownTimer = null;
+                            }
+                        }, 1000);
+                    }
+
+                    if (feedbackCountdownRingElement && feedbackCountdownProgressElement) {
+                        const startedAt = Date.now();
+                        const duration = 5000;
+                        const radius = Number(feedbackCountdownProgressElement.getAttribute("r")) || 20;
+                        const circumference = 2 * Math.PI * radius;
+                        feedbackCountdownProgressElement.style.strokeDasharray = `${circumference}`;
+                        feedbackCountdownProgressElement.style.strokeDashoffset = "0";
+                        feedbackProgressTimer = window.setInterval(function () {
+                            const elapsed = Math.min(Date.now() - startedAt, duration);
+                            const progress = 1 - (elapsed / duration);
+                            feedbackCountdownProgressElement.style.strokeDashoffset = `${circumference * (1 - Math.max(progress, 0))}`;
+                            if (elapsed >= duration && feedbackProgressTimer) {
+                                window.clearInterval(feedbackProgressTimer);
+                                feedbackProgressTimer = null;
+                            }
+                        }, 50);
+                    }
+
+                    feedbackAutoCloseTimer = window.setTimeout(function () {
+                        feedbackModal.hide();
+                    }, 5000);
+                });
+
+                feedbackModalElement.addEventListener("hide.bs.modal", function () {
+                    if (feedbackAutoCloseTimer) {
+                        window.clearTimeout(feedbackAutoCloseTimer);
+                        feedbackAutoCloseTimer = null;
+                    }
+                    if (feedbackCountdownTimer) {
+                        window.clearInterval(feedbackCountdownTimer);
+                        feedbackCountdownTimer = null;
+                    }
+                    if (feedbackProgressTimer) {
+                        window.clearInterval(feedbackProgressTimer);
+                        feedbackProgressTimer = null;
+                    }
+                });
+
+                feedbackModal.show();
+            }
+
+            window.addEventListener("scroll", updateScrollButton, { passive: true });
+            updateScrollButton();
+        })();
+    </script>
+</body>
+</html>
