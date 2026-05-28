@@ -18,6 +18,7 @@
             } catch (error) {
                 document.documentElement.setAttribute("data-theme", "light");
             }
+            document.documentElement.classList.add("site-is-loading");
         })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +35,136 @@
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
+    <div class="site-skeleton" id="siteSkeleton" aria-hidden="true">
+        <div class="site-skeleton-topbar"></div>
+        <div class="site-skeleton-nav">
+            <div class="container">
+                <div class="site-skeleton-nav-inner">
+                    <div class="site-skeleton-brand">
+                        <span class="site-skeleton-logo"></span>
+                        <span class="site-skeleton-brand-copy">
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </div>
+                    <div class="site-skeleton-links">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <main class="site-skeleton-main {% if active_page == 'website:home' %}site-skeleton-main-home{% elif active_page == 'website:contact' %}site-skeleton-main-contact{% elif active_page == 'website:faculty' %}site-skeleton-main-faculty{% elif active_page == 'website:news' %}site-skeleton-main-news{% else %}site-skeleton-main-inner{% endif %}">
+            <div class="container">
+                {% if active_page == "website:home" %}
+                    <section class="site-skeleton-hero site-skeleton-hero-home">
+                        <div class="site-skeleton-copy">
+                            <span class="site-skeleton-pill"></span>
+                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-line site-skeleton-line-md"></span>
+                            <span class="site-skeleton-actions"></span>
+                        </div>
+                        <div class="site-skeleton-panel">
+                            <span class="site-skeleton-line site-skeleton-line-sm"></span>
+                            <span class="site-skeleton-tile"></span>
+                            <span class="site-skeleton-tile"></span>
+                            <span class="site-skeleton-tile"></span>
+                        </div>
+                    </section>
+                    <section class="site-skeleton-grid site-skeleton-grid-three">
+                        <span class="site-skeleton-card"></span>
+                        <span class="site-skeleton-card"></span>
+                        <span class="site-skeleton-card"></span>
+                    </section>
+                {% elif active_page == "website:contact" %}
+                    <section class="site-skeleton-hero site-skeleton-hero-inner">
+                        <div class="site-skeleton-copy">
+                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-line site-skeleton-line-md"></span>
+                        </div>
+                    </section>
+                    <section class="site-skeleton-section-title">
+                        <span class="site-skeleton-pill"></span>
+                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                        <span class="site-skeleton-line site-skeleton-line-md"></span>
+                    </section>
+                    <section class="site-skeleton-contact-layout">
+                        <div class="site-skeleton-card site-skeleton-contact-card">
+                            <span class="site-skeleton-line site-skeleton-line-sm"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-tile"></span>
+                            <span class="site-skeleton-tile"></span>
+                            <span class="site-skeleton-actions"></span>
+                        </div>
+                        <div class="site-skeleton-card site-skeleton-map-card"></div>
+                    </section>
+                {% elif active_page == "website:faculty" %}
+                    <section class="site-skeleton-hero site-skeleton-hero-inner">
+                        <div class="site-skeleton-copy">
+                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-line site-skeleton-line-md"></span>
+                        </div>
+                    </section>
+                    <section class="site-skeleton-section-title">
+                        <span class="site-skeleton-pill"></span>
+                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                    </section>
+                    <section class="site-skeleton-grid site-skeleton-grid-three">
+                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
+                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
+                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
+                    </section>
+                    <section class="site-skeleton-stack-list">
+                        <span class="site-skeleton-row"></span>
+                        <span class="site-skeleton-row"></span>
+                        <span class="site-skeleton-row"></span>
+                    </section>
+                {% elif active_page == "website:news" %}
+                    <section class="site-skeleton-hero site-skeleton-hero-inner">
+                        <div class="site-skeleton-copy">
+                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-line site-skeleton-line-md"></span>
+                        </div>
+                    </section>
+                    <section class="site-skeleton-section-title">
+                        <span class="site-skeleton-pill"></span>
+                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                        <span class="site-skeleton-line site-skeleton-line-md"></span>
+                    </section>
+                    <section class="site-skeleton-grid site-skeleton-grid-three">
+                        <span class="site-skeleton-card site-skeleton-news-card"></span>
+                        <span class="site-skeleton-card site-skeleton-news-card"></span>
+                        <span class="site-skeleton-card site-skeleton-news-card"></span>
+                    </section>
+                {% else %}
+                    <section class="site-skeleton-hero site-skeleton-hero-inner">
+                        <div class="site-skeleton-copy">
+                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
+                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                            <span class="site-skeleton-line site-skeleton-line-md"></span>
+                        </div>
+                    </section>
+                    <section class="site-skeleton-section-title">
+                        <span class="site-skeleton-pill"></span>
+                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
+                        <span class="site-skeleton-line site-skeleton-line-md"></span>
+                    </section>
+                    <section class="site-skeleton-grid {% if active_page == 'website:downloads' %}site-skeleton-grid-three{% else %}site-skeleton-grid-two{% endif %}">
+                        <span class="site-skeleton-card"></span>
+                        <span class="site-skeleton-card"></span>
+                        {% if active_page == "website:downloads" %}<span class="site-skeleton-card"></span>{% endif %}
+                    </section>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
     <div class="site-shell">
         <div class="topbar-note py-2">
             <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 small">
@@ -349,6 +480,23 @@
 
             window.addEventListener("scroll", updateScrollButton, { passive: true });
             updateScrollButton();
+
+            function finishPageLoad() {
+                root.classList.add("site-is-loaded");
+                root.classList.remove("site-is-loading");
+            }
+
+            if (document.readyState === "complete") {
+                finishPageLoad();
+            } else {
+                window.addEventListener("load", finishPageLoad, { once: true });
+            }
+
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    finishPageLoad();
+                }
+            });
         })();
     </script>
 </body>

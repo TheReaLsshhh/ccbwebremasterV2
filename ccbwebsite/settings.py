@@ -21,7 +21,7 @@ DEBUG = env_bool("DEBUG", False)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()]
 
 if DEBUG and os.getenv("ALLOWED_HOSTS") is None:
-    ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
 
 if not DEBUG and SECRET_KEY == "django-insecure-change-me":
     raise ImproperlyConfigured("Set SECRET_KEY before running in production.")

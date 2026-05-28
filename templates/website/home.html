@@ -125,17 +125,20 @@
                     </div>
                     {% if featured_news %}
                         <div id="campusNewsCarousel" class="carousel slide news-carousel" data-bs-ride="false">
+                            {% with featured_news_count=featured_news|length %}
                             <div class="news-carousel-stage">
-                                <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
-                                    <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-                                </button>
+                                {% if featured_news_count > 1 %}
+                                    <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
+                                        <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                                    </button>
+                                {% endif %}
                                 <div class="news-carousel-viewport">
                                     <div class="carousel-inner">
                                         {% for item in featured_news %}
                                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                                 <div class="announcement-card news-carousel-card">
                                                     {% if item.cover_image %}
-                                                        <div class="news-carousel-visual-shell mb-4">
+                                                        <div class="news-carousel-visual-shell">
                                                             <div class="news-visual-wrap news-carousel-visual">
                                                                 <img
                                                                     src="{{ item.cover_image.url }}"
@@ -148,38 +151,54 @@
                                                             </div>
                                                         </div>
                                                     {% endif %}
-                                                    <div class="d-flex flex-wrap justify-content-between gap-2">
-                                                        <span class="signal-badge">{{ item.event_date }}</span>
-                                                        {% if item.location %}<span class="muted-copy">{{ item.location }}</span>{% endif %}
+                                                    <div class="news-carousel-body">
+                                                        <div class="news-carousel-meta">
+                                                            <span class="signal-badge">{{ item.event_date }}</span>
+                                                            {% if item.location %}
+                                                                <span class="news-location-inline">
+                                                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                                                    {{ item.location }}
+                                                                </span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <h3 class="news-carousel-title">{{ item.title }}</h3>
+                                                        <div class="news-carousel-text">
+                                                            {% if item.summary %}
+                                                                <p class="muted-copy news-carousel-summary">{{ item.summary|truncatewords:28 }}</p>
+                                                            {% endif %}
+                                                            {% if item.content %}
+                                                                <p class="news-carousel-copy mb-0">{{ item.content|truncatewords:36 }}</p>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
-                                                    <h3 class="mt-3">{{ item.title }}</h3>
-                                                    <p class="muted-copy">{{ item.summary|truncatewords:28 }}</p>
-                                                    {% if item.content %}
-                                                        <p class="mb-0">{{ item.content|truncatewords:36 }}</p>
-                                                    {% endif %}
                                                 </div>
                                             </div>
                                         {% endfor %}
                                     </div>
                                 </div>
-                                <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
-                                    <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-                                </button>
+                                {% if featured_news_count > 1 %}
+                                    <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
+                                        <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                                    </button>
+                                {% endif %}
                             </div>
-                            <div class="news-carousel-controls">
-                                <div class="carousel-indicators news-carousel-indicators">
-                                    {% for item in featured_news %}
-                                        <button
-                                            type="button"
-                                            data-bs-target="#campusNewsCarousel"
-                                            data-bs-slide-to="{{ forloop.counter0 }}"
-                                            class="{% if forloop.first %}active{% endif %}"
-                                            {% if forloop.first %}aria-current="true"{% endif %}
-                                            aria-label="Go to news slide {{ forloop.counter }}">
-                                        </button>
-                                    {% endfor %}
+                            {% if featured_news_count > 1 %}
+                                <div class="news-carousel-controls">
+                                    <div class="carousel-indicators news-carousel-indicators">
+                                        {% for item in featured_news %}
+                                            <button
+                                                type="button"
+                                                data-bs-target="#campusNewsCarousel"
+                                                data-bs-slide-to="{{ forloop.counter0 }}"
+                                                class="{% if forloop.first %}active{% endif %}"
+                                                {% if forloop.first %}aria-current="true"{% endif %}
+                                                aria-label="Go to news slide {{ forloop.counter }}">
+                                            </button>
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
+                            {% endwith %}
                         </div>
                     {% else %}
                         <div class="notice-band">

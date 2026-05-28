@@ -1,5 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://ccbwebremasterv2.onrender.com/admin/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://ccbwebremasterv2.onrender.com/admin/$1",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
