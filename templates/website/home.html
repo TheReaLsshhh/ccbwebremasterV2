@@ -111,104 +111,99 @@
     </div>
 </section>
 
-<section class="section-block pt-0">
+<section class="section-block pt-0 home-news-section">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-12">
-                <div class="portal-panel h-100">
-                    <div class="portal-panel-header">
-                        <div>
-                            <span class="section-eyebrow">Campus Updates</span>
-                            <h2 class="section-title mt-3 mb-1">Latest News and Events</h2>
-                        </div>
-                        <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
-                    </div>
-                    {% if featured_news %}
-                        <div id="campusNewsCarousel" class="carousel slide news-carousel" data-bs-ride="false">
-                            {% with featured_news_count=featured_news|length %}
-                            <div class="news-carousel-stage">
-                                {% if featured_news_count > 1 %}
-                                    <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
-                                        <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-                                    </button>
-                                {% endif %}
-                                <div class="news-carousel-viewport">
-                                    <div class="carousel-inner">
-                                        {% for item in featured_news %}
-                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                <div class="announcement-card news-carousel-card">
-                                                    {% if item.cover_image %}
-                                                        <div class="news-carousel-visual-shell">
-                                                            <div class="news-visual-wrap news-carousel-visual">
-                                                                <img
-                                                                    src="{{ item.cover_image.url }}"
-                                                                    alt="{{ item.title }}"
-                                                                    class="news-visual-image"
-                                                                    width="960"
-                                                                    height="540"
-                                                                    decoding="async"
-                                                                    {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                    <div class="news-carousel-body">
-                                                        <div class="news-carousel-meta">
-                                                            <span class="signal-badge">{{ item.event_date }}</span>
-                                                            {% if item.location %}
-                                                                <span class="news-location-inline">
-                                                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                                                    {{ item.location }}
-                                                                </span>
-                                                            {% endif %}
-                                                        </div>
-                                                        <h3 class="news-carousel-title">{{ item.title }}</h3>
-                                                        <div class="news-carousel-text">
-                                                            {% if item.summary %}
-                                                                <p class="muted-copy news-carousel-summary">{{ item.summary|truncatewords:28 }}</p>
-                                                            {% endif %}
-                                                            {% if item.content %}
-                                                                <p class="news-carousel-copy mb-0">{{ item.content|truncatewords:36 }}</p>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow">Campus Updates</span>
+                <h2 class="section-title mt-3 mb-2">Latest News and Events</h2>
+                <p class="muted-copy mb-0">Stay updated with official campus announcements, public notices, and upcoming school activities.</p>
+            </div>
+            <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
+        </div>
+        {% if featured_news %}
+            <div id="campusNewsCarousel" class="carousel slide news-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+                {% with featured_news_count=featured_news|length %}
+                <div class="news-carousel-stage">
+                    {% if featured_news_count > 1 %}
+                        <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
+                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                        </button>
+                    {% endif %}
+                    <div class="news-carousel-viewport">
+                        <div class="carousel-inner">
+                            {% for item in featured_news %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <div class="announcement-card news-carousel-card">
+                                        {% if item.cover_image %}
+                                            <div class="news-carousel-visual-shell">
+                                                <div class="news-visual-wrap news-carousel-visual">
+                                                    <img
+                                                        src="{{ item.cover_image.url }}"
+                                                        alt="{{ item.title }}"
+                                                        class="news-visual-image"
+                                                        width="960"
+                                                        height="540"
+                                                        decoding="async"
+                                                        {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
                                                 </div>
                                             </div>
-                                        {% endfor %}
+                                        {% endif %}
+                                        <div class="news-carousel-body">
+                                            <div class="news-carousel-meta">
+                                                <span class="signal-badge signal-badge-date">{{ item.event_date }}</span>
+                                                {% if item.location %}
+                                                    <span class="news-location-inline">
+                                                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                                        {{ item.location }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <h3 class="news-carousel-title">{{ item.title }}</h3>
+                                            <div class="news-carousel-text">
+                                                {% if item.summary %}
+                                                    <p class="muted-copy news-carousel-summary">{{ item.summary|truncatewords:28 }}</p>
+                                                {% endif %}
+                                                {% if item.content %}
+                                                    <p class="news-carousel-copy mb-0">{{ item.content|truncatewords:36 }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                {% if featured_news_count > 1 %}
-                                    <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
-                                        <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-                                    </button>
-                                {% endif %}
-                            </div>
-                            {% if featured_news_count > 1 %}
-                                <div class="news-carousel-controls">
-                                    <div class="carousel-indicators news-carousel-indicators">
-                                        {% for item in featured_news %}
-                                            <button
-                                                type="button"
-                                                data-bs-target="#campusNewsCarousel"
-                                                data-bs-slide-to="{{ forloop.counter0 }}"
-                                                class="{% if forloop.first %}active{% endif %}"
-                                                {% if forloop.first %}aria-current="true"{% endif %}
-                                                aria-label="Go to news slide {{ forloop.counter }}">
-                                            </button>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                            {% endwith %}
+                            {% endfor %}
                         </div>
-                    {% else %}
-                        <div class="notice-band">
-                            <strong class="d-block mb-2">No campus updates are published yet.</strong>
-                            Add news or event entries in the admin dashboard to display the latest announcements here.
-                        </div>
+                    </div>
+                    {% if featured_news_count > 1 %}
+                        <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
+                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                        </button>
                     {% endif %}
                 </div>
+                {% if featured_news_count > 1 %}
+                    <div class="news-carousel-controls">
+                        <div class="carousel-indicators news-carousel-indicators">
+                            {% for item in featured_news %}
+                                <button
+                                    type="button"
+                                    data-bs-target="#campusNewsCarousel"
+                                    data-bs-slide-to="{{ forloop.counter0 }}"
+                                    class="{% if forloop.first %}active{% endif %}"
+                                    {% if forloop.first %}aria-current="true"{% endif %}
+                                    aria-label="Go to news slide {{ forloop.counter }}">
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% endwith %}
             </div>
-        </div>
+        {% else %}
+            <div class="notice-band">
+                <strong class="d-block mb-2">No campus updates are published yet.</strong>
+                Add news or event entries in the admin dashboard to display the latest announcements here.
+            </div>
+        {% endif %}
     </div>
 </section>
 
@@ -226,12 +221,12 @@
             {% for program in featured_programs %}
                 <div class="col-md-6 col-xl-4">
                     <div class="catalog-card">
-                        <span class="signal-badge">Program</span>
+                        <span class="signal-badge signal-badge-program">Program</span>
                         <h3 class="mt-3">{{ program.name }}</h3>
                         {% if program.award %}<p class="text-dark fw-semibold mb-2">{{ program.award }}</p>{% endif %}
                         <p class="muted-copy">{{ program.description|truncatewords:28 }}</p>
                         {% if program.brochure_file %}
-                            <a href="{{ program.brochure_file.url }}" class="btn btn-soft btn-sm mt-3">Download Brochure</a>
+                            <a href="{{ program.brochure_file.url }}" class="btn btn-soft btn-sm mt-3 btn-download">Download Brochure</a>
                         {% endif %}
                     </div>
                 </div>

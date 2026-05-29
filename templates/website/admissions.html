@@ -32,7 +32,7 @@
                         <h3 class="mt-3">{{ requirement.title }}</h3>
                         <p class="muted-copy">{{ requirement.description }}</p>
                         {% if requirement.document_file %}
-                            <a class="btn btn-soft btn-sm mt-3" href="{{ requirement.document_file.url }}">Download Document</a>
+                            <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ requirement.document_file.url }}">Download Document</a>
                         {% endif %}
                     </div>
                 </div>
