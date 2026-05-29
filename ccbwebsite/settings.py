@@ -44,6 +44,7 @@ if USE_CLOUDINARY:
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "website.middleware.AdminLoginRateLimitMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -53,6 +54,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "ccbwebsite.urls"
+ADMIN_URL = os.getenv("ADMIN_URL", "admin/").strip("/")
+ADMIN_URL = f"{ADMIN_URL}/" if ADMIN_URL else "admin/"
+ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS", "5"))
+ADMIN_LOGIN_RATE_LIMIT_WINDOW = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_WINDOW", "900"))
 
 TEMPLATES = [
     {
@@ -135,11 +140,18 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
     SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", "3600"))
+    SESSION_EXPIRE_AT_BROWSER_CLOSE = True
     CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = "Lax"
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", True)
     SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
