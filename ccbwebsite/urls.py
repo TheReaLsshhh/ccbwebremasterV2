@@ -13,4 +13,4 @@ if settings.DEBUG:
 
 # Production fallback for environments where collected static files are present
 # but not served correctly by the platform-level static setup.
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT, insecure=True)
