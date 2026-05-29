@@ -19,7 +19,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Download Center</span>
+                <span class="section-eyebrow section-eyebrow-download">Download Center</span>
                 <h2 class="section-title mt-3 mb-2">Forms and Official Files</h2>
                 <p class="muted-copy mb-0">A more structured downloads page makes it easier for students and visitors to access forms, policies, and school documents.</p>
             </div>
@@ -28,7 +28,7 @@
             {% for item in downloads %}
                 <div class="col-lg-4">
                     <div class="content-card">
-                        <span class="signal-badge">{{ item.get_category_display }}</span>
+                        <span class="signal-badge {% if item.category == 'academic' %}signal-badge-download-academic{% elif item.category == 'form' %}signal-badge-download-form{% elif item.category == 'policy' %}signal-badge-download-policy{% elif item.category == 'announcement' %}signal-badge-download-announcement{% endif %}">{{ item.get_category_display }}</span>
                         <h3 class="mt-3">{{ item.title }}</h3>
                         <p class="muted-copy">{{ item.description }}</p>
                         <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ item.file.url }}">Download File</a>

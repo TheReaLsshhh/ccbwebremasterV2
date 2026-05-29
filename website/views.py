@@ -207,17 +207,17 @@ def base_context(active_page):
 
 
 def home(request):
-    featured_news = list(NewsEvent.objects.filter(is_featured=True)[:3])
+    news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "published_at")
+    featured_news = list(NewsEvent.objects.only(*news_fields).filter(is_featured=True)[:3])
     if not featured_news:
-        featured_news = list(NewsEvent.objects.all()[:3])
+        featured_news = list(NewsEvent.objects.only(*news_fields)[:3])
 
     context = base_context("website:home")
     context.update(
         {
             "page_content": get_page_content(PageContent.HOME),
-            "featured_programs": AcademicProgram.objects.filter(is_featured=True)[:3],
+            "featured_programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file").filter(is_featured=True)[:3],
             "featured_news": featured_news,
-            "featured_downloads": DownloadItem.objects.filter(is_featured=True)[:4],
         }
     )
     return render(request, "website/home.html", context)
@@ -228,7 +228,7 @@ def academics(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ACADEMICS),
-            "programs": AcademicProgram.objects.all(),
+            "programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file"),
         }
     )
     return render(request, "website/academics.html", context)
@@ -239,14 +239,14 @@ def admissions(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ADMISSIONS),
-            "requirements": AdmissionRequirement.objects.all(),
+            "requirements": AdmissionRequirement.objects.only("title", "description", "document_file", "sort_order"),
         }
     )
     return render(request, "website/admissions.html", context)
 
 
 def news(request):
-    news_queryset = NewsEvent.objects.all()
+    news_queryset = NewsEvent.objects.only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
     paginator = Paginator(news_queryset, 9)
     page_obj = paginator.get_page(request.GET.get("page"))
 
@@ -272,7 +272,7 @@ def downloads(request):
                 "hero_title": "Downloads",
                 "hero_text": "Quick access to forms, policies, and academic resources.",
             },
-            "downloads": DownloadItem.objects.all(),
+            "downloads": DownloadItem.objects.only("category", "title", "description", "file"),
         }
     )
     return render(request, "website/downloads.html", context)
@@ -283,7 +283,7 @@ def students(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.STUDENTS),
-            "resources": StudentResource.objects.all(),
+            "resources": StudentResource.objects.only("title", "description", "link_url", "attachment"),
         }
     )
     return render(request, "website/students.html", context)
@@ -294,8 +294,8 @@ def faculty(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.FACULTY),
-            "leaders": FacultyStaffEntry.objects.filter(is_leadership=True),
-            "team_members": FacultyStaffEntry.objects.filter(is_leadership=False),
+            "leaders": FacultyStaffEntry.objects.only("name", "role", "department", "bio", "email", "profile_image").filter(is_leadership=True),
+            "team_members": FacultyStaffEntry.objects.only("name", "role", "department", "email", "profile_image").filter(is_leadership=False),
         }
     )
     return render(request, "website/faculty.html", context)
@@ -323,7 +323,7 @@ def contact(request):
             send_contact_verification_email(request, inquiry)
             messages.success(
                 request,
-                f"Please check your email and click the verification link so we can send your inquiry to {settings.CONTACT_INQUIRY_RECIPIENT}.",
+                f"Please check your email and click the verification link. Your inquiry will be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT} after verification.",
             )
         except Exception as exc:
             logger.exception("Contact verification email failed for inquiry %s", inquiry.pk)

@@ -15,21 +15,21 @@
         </div>
     </div>
 </section>
-<section class="section-block">
+<section class="section-block contact-content-section">
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Direct Inquiry</span>
+                <span class="section-eyebrow section-eyebrow-inquiry">Direct Inquiry</span>
                 <h2 class="section-title mt-3 mb-2">Reach The Campus Easily</h2>
                 <p class="muted-copy mb-0">A more structured contact page helps students, families, and visitors quickly find the right office, location, and contact channel.</p>
             </div>
         </div>
         <div class="row g-4">
             <div class="col-lg-5">
-                <div class="content-card content-card-static h-100">
+                <div class="content-card content-card-static contact-info-card h-100">
                     <div class="contact-shell">
                         <div>
-                            <span class="section-eyebrow">Contact Desk</span>
+                            <span class="section-eyebrow section-eyebrow-contact">Contact Desk</span>
                             <h2 class="section-title mt-3">Reach The Campus</h2>
                             <p class="muted-copy mb-0">{{ page_content.body_text|default:"Send a question, request information, or direct students and parents to the proper office." }}</p>
                         </div>
@@ -75,8 +75,8 @@
                             {{ form.message }}
                             {{ form.message.errors }}
                             <div class="contact-verification-note">
-                                <strong>Email verification required.</strong>
-                                After you submit, we will send a verification link to your email address first. Your inquiry will only be forwarded to <strong>citycollegeofbayawan@gmail.com</strong> after you click that verification link.
+                                <strong>Email Verification Required.</strong>
+                                We will send a verification link before forwarding your inquiry.
                             </div>
                             <button type="submit" class="btn btn-brand btn-portal"><i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span></button>
                         </form>
@@ -86,12 +86,12 @@
             <div class="col-lg-7 d-flex">
                 <div class="content-card content-card-static contact-map-card h-100 w-100">
                     <div class="contact-map-label">
-                        <span class="section-eyebrow">Campus Map</span>
+                        <span class="section-eyebrow section-eyebrow-map">Campus Map</span>
                         <strong>City College of Bayawan - Map</strong>
                     </div>
                     <iframe
                         class="map-frame"
-                        src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25975.934785811703!2d122.79792745732632!3d9.385117817239498!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33ac93001a7a1fdd%3A0xbc6a4b9b655068bd!2sCity%20College%20of%20Bayawan!5e0!3m2!1sen!2sph!4v1779254209954!5m2!1sen!2sph{% endif %}"
+                        src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                         allowfullscreen>

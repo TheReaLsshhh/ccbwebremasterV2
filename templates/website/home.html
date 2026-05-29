@@ -74,7 +74,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Popular Sections</span>
+                <span class="section-eyebrow section-eyebrow-popular">Popular Sections</span>
                 <h2 class="section-title mt-3 mb-2">What Visitors Usually Look For First</h2>
                 <p class="muted-copy mb-0">These sections help students, parents, and visitors find the information they need without searching through multiple pages.</p>
             </div>
@@ -144,6 +144,7 @@
                                                         class="news-visual-image"
                                                         width="960"
                                                         height="540"
+                                                        sizes="(min-width: 1200px) 72rem, 100vw"
                                                         decoding="async"
                                                         {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
                                                 </div>
@@ -211,7 +212,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Featured Programs</span>
+                <span class="section-eyebrow section-eyebrow-featured-programs">Featured Programs</span>
                 <h2 class="section-title mt-3 mb-2">Featured Academic Programs</h2>
                 <p class="muted-copy mb-0">Explore selected academic offerings currently highlighted by the college.</p>
             </div>

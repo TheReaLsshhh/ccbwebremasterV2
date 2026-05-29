@@ -19,7 +19,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Application Guide</span>
+                <span class="section-eyebrow section-eyebrow-application">Application Guide</span>
                 <h2 class="section-title mt-3 mb-2">Requirements & Next Steps</h2>
                 <p class="muted-copy mb-0">A more structured admissions page helps applicants understand what to prepare.</p>
             </div>
@@ -28,7 +28,7 @@
             {% for requirement in requirements %}
                 <div class="col-lg-6">
                     <div class="content-card">
-                        <span class="signal-badge">Requirement</span>
+                        <span class="signal-badge signal-badge-requirement">Requirement</span>
                         <h3 class="mt-3">{{ requirement.title }}</h3>
                         <p class="muted-copy">{{ requirement.description }}</p>
                         {% if requirement.document_file %}

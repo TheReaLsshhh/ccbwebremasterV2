@@ -19,7 +19,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Institutional Profile</span>
+                <span class="section-eyebrow section-eyebrow-institution">Institutional Profile</span>
                 <h2 class="section-title mt-3 mb-2">Who We Are As A College</h2>
                 <p class="muted-copy mb-0">A more structured about page helps students, parents, and visitors understand the mission, identity, and direction of City College of Bayawan.</p>
             </div>
@@ -28,7 +28,7 @@
             {% for section in about_sections %}
                 <div class="col-lg-6">
                     <div class="content-card h-100">
-                        <span class="signal-badge">Our Legacy & Future</span>
+                        <span class="signal-badge signal-badge-legacy">Our Legacy & Future</span>
                         <h3 class="mt-3">{{ section.body_title|default:"The Heart of Our Institution" }}</h3>
                         <p class="muted-copy mb-0">{{ section.body_text|default:"Discover the story behind our commitment to excellence and the vision that drives every student toward success." }}</p>
                     </div>

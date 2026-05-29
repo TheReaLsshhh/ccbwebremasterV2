@@ -182,7 +182,7 @@
                 <a class="navbar-brand me-4" href="{% url 'website:home' %}">
                     <span class="brand-lockup">
                         <span class="brand-mark">
-                            <img src="{% static 'images/hero-images/ccb-logo.png' %}" alt="City College of Bayawan logo" class="brand-mark-image" width="46" height="46">
+                            <img src="{% static 'images/hero-images/ccb-logo.png' %}" alt="City College of Bayawan logo" class="brand-mark-image" width="46" height="46" decoding="async" fetchpriority="high">
                         </span>
                         <span class="brand-copy">
                             <small>Bayawan City</small>
@@ -283,7 +283,6 @@
         <div class="modal fade feedback-modal" id="siteFeedbackModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if message.tags == 'error' %}is-error{% elif message.tags == 'warning' %}is-warning{% elif message.tags == 'info' %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}">
-                    <div class="feedback-modal-topbar"></div>
                     <div class="modal-body">
                         <button type="button" class="btn-close feedback-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="feedback-modal-header">
@@ -376,7 +375,14 @@
                 return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
             }
 
+            function updateNetworkState() {
+                root.classList.toggle("site-is-offline", !window.navigator.onLine);
+            }
+
             applyTheme(getPreferredTheme());
+            updateNetworkState();
+            window.addEventListener("online", updateNetworkState);
+            window.addEventListener("offline", updateNetworkState);
 
             if (themeButton) {
                 themeButton.addEventListener("click", function () {
@@ -407,6 +413,10 @@
             const feedbackModalElement = document.getElementById("siteFeedbackModal");
             if (feedbackModalElement && window.bootstrap && window.bootstrap.Modal) {
                 const feedbackModal = new window.bootstrap.Modal(feedbackModalElement);
+                const feedbackModalCardElement = feedbackModalElement.querySelector(".feedback-modal-card");
+                const isSuccessFeedback = feedbackModalCardElement
+                    ? feedbackModalCardElement.classList.contains("is-success")
+                    : false;
                 let feedbackAutoCloseTimer = null;
                 let feedbackCountdownTimer = null;
                 let feedbackProgressTimer = null;
@@ -422,6 +432,10 @@
                     : null;
 
                 feedbackModalElement.addEventListener("shown.bs.modal", function () {
+                    if (isSuccessFeedback) {
+                        return;
+                    }
+
                     if (feedbackCountdownValueElement) {
                         let secondsRemaining = 5;
                         feedbackCountdownValueElement.textContent = String(secondsRemaining);

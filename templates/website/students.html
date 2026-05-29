@@ -19,7 +19,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow">Student Hub</span>
+                <span class="section-eyebrow section-eyebrow-student">Student Hub</span>
                 <h2 class="section-title mt-3 mb-2">Resources and Support Tools</h2>
                 <p class="muted-copy mb-0">A more structured students page helps learners quickly find resources, files, and support information in one place.</p>
             </div>
@@ -28,6 +28,7 @@
             {% for resource in resources %}
                 <div class="col-lg-6">
                     <div class="resource-card">
+                        <span class="signal-badge signal-badge-resource">Resource</span>
                         <h3>{{ resource.title }}</h3>
                         <p class="muted-copy">{{ resource.description }}</p>
                         <div class="d-flex gap-2 flex-wrap mt-3">
