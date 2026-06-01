@@ -10,9 +10,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: ".onrender.com,ccbwebremaster-v2.vercel.app"
+        value: ".onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://*.onrender.com,https://ccbwebremaster-v2.vercel.app"
+        value: "https://*.onrender.com"
       - key: ADMIN_URL
         sync: false
       - key: CONTACT_INQUIRY_RECIPIENT
