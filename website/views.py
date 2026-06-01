@@ -24,8 +24,19 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+NEWS_PAGE_SIZE = 9
+
+
+def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
+    news_ids = NewsEvent.objects.order_by("-published_at").values_list("pk", flat=True)
+    return {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
+
 
 def send_contact_verification_email(request, inquiry):
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        logger.error("Contact verification email skipped because SMTP credentials are incomplete.")
+        return False
+
     verify_url = request.build_absolute_uri(
         reverse("website:verify_contact_inquiry", kwargs={"token": inquiry.verification_token})
     )
@@ -66,9 +77,14 @@ def send_contact_verification_email(request, inquiry):
     email.attach_alternative(html_message, "text/html")
     email.send(fail_silently=False)
     inquiry.mark_verification_sent()
+    return True
 
 
 def send_contact_notification_email(inquiry):
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        logger.error("Contact notification email skipped because SMTP credentials are incomplete.")
+        return False
+
     recipient = settings.CONTACT_INQUIRY_RECIPIENT
     safe_name = escape(inquiry.name)
     safe_email = escape(inquiry.email)
@@ -101,6 +117,7 @@ def send_contact_notification_email(inquiry):
     email.attach_alternative(html_message, "text/html")
     email.send(fail_silently=False)
     inquiry.mark_notification_sent()
+    return True
 
 
 NAV_ITEMS = [
@@ -207,10 +224,14 @@ def base_context(active_page):
 
 
 def home(request):
-    news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "published_at")
+    news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
     featured_news = list(NewsEvent.objects.only(*news_fields).filter(is_featured=True)[:3])
     if not featured_news:
         featured_news = list(NewsEvent.objects.only(*news_fields)[:3])
+
+    news_page_by_id = _news_page_by_id()
+    for item in featured_news:
+        item.news_page = news_page_by_id.get(item.pk, 1)
 
     context = base_context("website:home")
     context.update(
@@ -247,8 +268,22 @@ def admissions(request):
 
 def news(request):
     news_queryset = NewsEvent.objects.only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
-    paginator = Paginator(news_queryset, 9)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
+    news_page_by_id = _news_page_by_id()
+
+    page_number = request.GET.get("page")
+    open_news_id = None
+    open_param = request.GET.get("open")
+    if open_param:
+        try:
+            open_pk = int(open_param)
+            if open_pk in news_page_by_id:
+                open_news_id = open_pk
+                page_number = news_page_by_id[open_pk]
+        except (TypeError, ValueError):
+            pass
+
+    page_obj = paginator.get_page(page_number)
 
     context = base_context("website:news")
     context.update(
@@ -259,6 +294,7 @@ def news(request):
             },
             "news_items": page_obj,
             "page_obj": page_obj,
+            "open_news_id": open_news_id,
         }
     )
     return render(request, "website/news.html", context)
@@ -320,11 +356,17 @@ def contact(request):
     if request.method == "POST" and form.is_valid():
         try:
             inquiry = form.save()
-            send_contact_verification_email(request, inquiry)
-            messages.success(
-                request,
-                f"Please check your email and click the verification link. Your inquiry will be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT} after verification.",
-            )
+            email_sent = send_contact_verification_email(request, inquiry)
+            if email_sent:
+                messages.success(
+                    request,
+                    f"Please check your email and click the verification link. Your inquiry will be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT} after verification.",
+                )
+            else:
+                messages.error(
+                    request,
+                    "Your inquiry was saved, but the verification email could not be sent yet. Please contact the office directly.",
+                )
         except Exception as exc:
             logger.exception("Contact inquiry submission failed")
             if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
@@ -374,11 +416,17 @@ def verify_contact_inquiry(request, token):
 
     if not inquiry.notification_sent_at:
         try:
-            send_contact_notification_email(inquiry)
-            messages.success(
-                request,
-                f"Your email has been verified and your inquiry was sent to {settings.CONTACT_INQUIRY_RECIPIENT}.",
-            )
+            email_sent = send_contact_notification_email(inquiry)
+            if email_sent:
+                messages.success(
+                    request,
+                    f"Your email has been verified and your inquiry was sent to {settings.CONTACT_INQUIRY_RECIPIENT}.",
+                )
+            else:
+                messages.error(
+                    request,
+                    f"Your email was verified, but the inquiry could not be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT}. Please contact the office directly.",
+                )
         except Exception as exc:
             logger.exception("Contact notification email failed for inquiry %s", inquiry.pk)
             messages.error(

@@ -1,0 +1,22 @@
+{% for item in news_modal_items %}
+    <div id="news-detail-source-{{ item.pk }}" class="news-detail-source" hidden aria-hidden="true">
+        {% include "website/includes/news_item_detail.html" %}
+    </div>
+{% endfor %}
+
+<div class="modal fade news-detail-modal" id="newsDetailModal" tabindex="-1" aria-labelledby="newsDetailModalTitle" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable news-detail-modal-dialog">
+        <div class="modal-content news-detail-modal-shell">
+            <div class="modal-header news-detail-modal-header">
+                <div>
+                    <span class="news-detail-modal-eyebrow">Campus Update</span>
+                    <p class="news-detail-modal-header-copy mb-0">Official News Details</p>
+                </div>
+                <button type="button" class="btn-close news-detail-modal-close" data-bs-dismiss="modal" aria-label="Close announcement"></button>
+            </div>
+            <div class="modal-body news-detail-modal-panel">
+                <div id="newsDetailModalBody" class="news-detail-modal-body-slot" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<article class="news-detail-modal-content">
+    {% if item.cover_image %}
+        <div class="news-detail-modal-hero">
+            <img
+                src="{{ item.cover_image.url }}"
+                alt="{{ item.title }}"
+                class="news-detail-modal-image"
+                width="960"
+                height="540"
+                decoding="async">
+        </div>
+    {% endif %}
+    <div class="news-detail-modal-main">
+        <div class="news-detail-modal-meta">
+            <span class="signal-badge signal-badge-date">{{ item.event_date }}</span>
+            {% if item.location %}
+                <span class="news-location-inline">
+                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    {{ item.location }}
+                </span>
+            {% endif %}
+        </div>
+        <h2 class="news-detail-modal-title">{{ item.title }}</h2>
+        {% if item.summary %}
+            <p class="news-detail-modal-summary">{{ item.summary }}</p>
+        {% endif %}
+        {% if item.content %}
+            <div class="news-detail-modal-copy">{{ item.content|linebreaksbr }}</div>
+        {% endif %}
+        {% if item.attachment %}
+            <div class="news-detail-modal-actions">
+                <a class="btn btn-soft btn-sm news-detail-ignore" href="{{ item.attachment.url }}">View Attachment</a>
+            </div>
+        {% endif %}
+    </div>
+</article>

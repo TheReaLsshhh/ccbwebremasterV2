@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load news_extras %}
 
 {% block title %}Home | City College of Bayawan{% endblock %}
 
@@ -163,10 +164,22 @@
                                             <h3 class="news-carousel-title">{{ item.title }}</h3>
                                             <div class="news-carousel-text">
                                                 {% if item.summary %}
-                                                    <p class="muted-copy news-carousel-summary">{{ item.summary|truncatewords:28 }}</p>
+                                                    <p class="muted-copy news-carousel-summary">
+                                                        {% if item.summary|exceeds_word_limit:28 %}
+                                                            {{ item.summary|words_truncate:28 }}… <a href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}" class="news-read-more-link">Read more.</a>
+                                                        {% else %}
+                                                            {{ item.summary }}
+                                                        {% endif %}
+                                                    </p>
                                                 {% endif %}
                                                 {% if item.content %}
-                                                    <p class="news-carousel-copy mb-0">{{ item.content|truncatewords:36 }}</p>
+                                                    <p class="news-carousel-copy mb-0">
+                                                        {% if item.content|exceeds_word_limit:36 %}
+                                                            {{ item.content|words_truncate:36 }}… <a href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}" class="news-read-more-link">Read more.</a>
+                                                        {% else %}
+                                                            {{ item.content }}
+                                                        {% endif %}
+                                                    </p>
                                                 {% endif %}
                                             </div>
                                         </div>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load news_extras %}
 
 {% block title %}News | City College of Bayawan{% endblock %}
 
@@ -28,7 +29,13 @@
             <div class="row g-4">
                 {% for item in news_items %}
                     <div class="col-md-6 col-xl-4">
-                        <article class="announcement-card news-grid-card">
+                        <article
+                            id="news-{{ item.pk }}"
+                            class="announcement-card news-grid-card news-grid-card-interactive"
+                            data-news-id="{{ item.pk }}"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View full announcement: {{ item.title }}">
                             {% if item.cover_image %}
                                 <div class="news-visual-wrap news-grid-visual">
                                     <img
@@ -58,11 +65,19 @@
                                 </div>
                                 <div>
                                     <p class="muted-copy mb-2">{{ item.summary }}</p>
-                                    {% if item.content %}<p class="mb-0">{{ item.content|truncatewords:24 }}</p>{% endif %}
+                                    {% if item.content %}
+                                        <p class="mb-0">
+                                            {% if item.content|exceeds_word_limit:24 %}
+                                                {{ item.content|words_truncate:24 }}… <button type="button" class="news-read-more-link" data-news-id="{{ item.pk }}">Read more.</button>
+                                            {% else %}
+                                                {{ item.content }}
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center gap-3">
                                     {% if item.attachment %}
-                                        <a class="btn btn-soft btn-sm" href="{{ item.attachment.url }}">View Attachment</a>
+                                        <a class="btn btn-soft btn-sm news-detail-ignore" href="{{ item.attachment.url }}">View Attachment</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -97,4 +112,13 @@
         {% endif %}
     </div>
 </section>
+{% endblock %}
+
+{% block page_modals %}
+    {% if page_obj.object_list %}
+        {% include "website/includes/news_detail_modal.html" with news_modal_items=news_items %}
+    {% endif %}
+    {% if open_news_id %}
+        <script>window.ccbOpenNewsId = "{{ open_news_id }}";</script>
+    {% endif %}
 {% endblock %}
