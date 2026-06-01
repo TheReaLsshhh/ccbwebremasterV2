@@ -10,9 +10,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: "ccbwebremasterv2.onrender.com,.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://*.onrender.com"
+        value: "https://ccbwebremasterv2.onrender.com,https://*.onrender.com"
       - key: ADMIN_URL
         sync: false
       - key: CONTACT_INQUIRY_RECIPIENT

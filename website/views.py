@@ -185,6 +185,14 @@ DEFAULT_PAGE_CONTENT = {
         "hero_text": "Help students, families, and community partners reach the right office quickly.",
         "body_text": "You can change the contact details and map embed from the Site Settings section in admin.",
     },
+    PageContent.NEWS: {
+        "hero_title": "News & Events",
+        "hero_text": "Stay updated with campus announcements, activities, and upcoming milestones.",
+    },
+    PageContent.DOWNLOADS: {
+        "hero_title": "Downloads",
+        "hero_text": "Quick access to forms, policies, and academic resources.",
+    },
 }
 
 
@@ -288,10 +296,7 @@ def news(request):
     context = base_context("website:news")
     context.update(
         {
-            "page_content": {
-                "hero_title": "News & Events",
-                "hero_text": "Stay updated with campus announcements, activities, and upcoming milestones.",
-            },
+            "page_content": get_page_content(PageContent.NEWS),
             "news_items": page_obj,
             "page_obj": page_obj,
             "open_news_id": open_news_id,
@@ -304,10 +309,7 @@ def downloads(request):
     context = base_context("website:downloads")
     context.update(
         {
-            "page_content": {
-                "hero_title": "Downloads",
-                "hero_text": "Quick access to forms, policies, and academic resources.",
-            },
+            "page_content": get_page_content(PageContent.DOWNLOADS),
             "downloads": DownloadItem.objects.only("category", "title", "description", "file"),
         }
     )

@@ -103,6 +103,8 @@ class PageContent(TimeStampedModel):
     HOME = "home"
     ACADEMICS = "academics"
     ADMISSIONS = "admissions"
+    NEWS = "news"
+    DOWNLOADS = "downloads"
     STUDENTS = "students"
     FACULTY = "faculty"
     ABOUT = "about"
@@ -112,6 +114,8 @@ class PageContent(TimeStampedModel):
         (HOME, "Home"),
         (ACADEMICS, "Academics"),
         (ADMISSIONS, "Admissions"),
+        (NEWS, "News"),
+        (DOWNLOADS, "Downloads"),
         (STUDENTS, "Students"),
         (FACULTY, "Faculty"),
         (ABOUT, "About"),

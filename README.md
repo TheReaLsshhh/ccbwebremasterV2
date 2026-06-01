@@ -38,18 +38,50 @@ python manage.py runserver
 
 ## Content Management
 
-After creating a superuser, log in to `/admin/` and manage:
+Production admin URL (default): `https://ccbwebremasterv2.onrender.com/admin/`
 
-- `Site settings`
-- `Page contents`
-- `Academic programs`
-- `Admission requirements`
-- `Services`
-- `News and events`
-- `Downloads`
-- `Student resources`
-- `Faculty and staff`
-- `Contact inquiries`
+After creating a superuser (see below), manage:
+
+| Admin section | Controls on the public site |
+|---------------|-----------------------------|
+| **Site settings** | Site name, tagline, contact email/phone, address, Facebook, map embed, footer |
+| **Page contents** | Hero title, text, and banner per page (Home, Academics, News, Downloads, etc.) |
+| **Academic programs** | Academics page and featured programs on Home |
+| **Admission requirements** | Admissions page list and files |
+| **News and events** | News page, home carousel (featured items) |
+| **Downloads** | Download cards and files |
+| **Student resources** | Students page links and attachments |
+| **Faculty and staff** | Faculty page (leadership vs directory) |
+| **Contact inquiries** | Messages from the contact form (read-only; mark resolved) |
+
+### Admin on Render
+
+1. Open your web service → **Shell**.
+2. Create the first admin account:
+   ```bash
+   python manage.py createsuperuser
+   ```
+3. Log in at `/admin/` on your Render URL.
+4. Ensure **`CLOUDINARY_URL`** is set — uploads (banners, news images, download files) are stored in Cloudinary, not on the Render disk.
+5. Optional: set **`ADMIN_URL`** to a non-default path (e.g. `ccb-office/`) so the login URL is harder to guess. Use the same value in bookmarks: `/ccb-office/` instead of `/admin/`.
+
+**Security (already enabled in production):** HTTPS, secure cookies, CSRF protection, and rate-limited admin login attempts.
+
+### Admin cannot save (Add / Edit / Delete does nothing)
+
+If you can open admin but **Save** fails or you are sent back to login, check these on the Render **Environment** tab:
+
+| Variable | Required value (example) |
+|----------|---------------------------|
+| `ALLOWED_HOSTS` | `ccbwebremasterv2.onrender.com,.onrender.com` |
+| `CSRF_TRUSTED_ORIGINS` | `https://ccbwebremasterv2.onrender.com,https://*.onrender.com` |
+| `DATABASE_URL` | Linked Postgres internal URL (not SQLite) |
+| `SECRET_KEY` | Set once; do not change after going live or all sessions reset |
+| `CLOUDINARY_URL` | Required before uploading files in admin |
+
+Also confirm your user is a **superuser** (Render Shell: `python manage.py createsuperuser`).
+
+After changing env vars, **Save** and **Manual Deploy**. On save you should see a green success banner; a **403 Forbidden** page usually means `CSRF_TRUSTED_ORIGINS` is wrong or missing.
 
 ## Deployment Notes
 
@@ -130,7 +162,7 @@ Optional: `ADMIN_URL` (non-default admin path), `TIME_ZONE`, `SECURE_HSTS_PRELOA
 #### 7. Verify after deploy
 
 - Open `/` and a few pages under `templates/website/` (downloads, contact, news).
-- Log in to `/admin/`, upload a test image (Cloudinary).
+- Run `createsuperuser` in Render Shell if needed; log in to `/admin/`, upload a test image (Cloudinary).
 - Submit the contact form and complete email verification.
 
 ### Local production check (optional)

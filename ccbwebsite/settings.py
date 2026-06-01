@@ -16,6 +16,20 @@ def env_bool(name, default=False):
     return value.lower() in {"1", "true", "yes", "on"}
 
 
+def csrf_trusted_origins_from_hosts(hosts):
+    """Build https:// origins for Django CSRF checks (required for HTTPS admin saves)."""
+    origins = set()
+    for host in hosts:
+        host = host.strip()
+        if not host or host == "*":
+            continue
+        if host.startswith("."):
+            origins.add(f"https://*{host}")
+        else:
+            origins.add(f"https://{host}")
+    return sorted(origins)
+
+
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 DEBUG = env_bool("DEBUG", False)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()]
@@ -137,16 +151,26 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 if not DEBUG:
+    # Without trusted origins, every admin Save POST returns 403 on HTTPS (Render).
+    if not CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS = csrf_trusted_origins_from_hosts(ALLOWED_HOSTS)
+    else:
+        CSRF_TRUSTED_ORIGINS = sorted(
+            set(CSRF_TRUSTED_ORIGINS) | set(csrf_trusted_origins_from_hosts(ALLOWED_HOSTS))
+        )
+
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     USE_X_FORWARDED_HOST = env_bool("USE_X_FORWARDED_HOST", True)
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", "3600"))
-    SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+    SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", "28800"))
+    SESSION_EXPIRE_AT_BROWSER_CLOSE = env_bool("SESSION_EXPIRE_AT_BROWSER_CLOSE", False)
+    SESSION_SAVE_EVERY_REQUEST = env_bool("SESSION_SAVE_EVERY_REQUEST", True)
     CSRF_COOKIE_SECURE = True
-    CSRF_COOKIE_HTTPONLY = True
+    # Must be readable for some admin flows; form POST still sends csrfmiddlewaretoken.
+    CSRF_COOKIE_HTTPONLY = env_bool("CSRF_COOKIE_HTTPONLY", False)
     CSRF_COOKIE_SAMESITE = "Lax"
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", True)
