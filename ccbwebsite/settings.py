@@ -40,7 +40,17 @@ if DEBUG and os.getenv("ALLOWED_HOSTS") is None:
 if not DEBUG and SECRET_KEY == "django-insecure-change-me":
     raise ImproperlyConfigured("Set SECRET_KEY before running in production.")
 
-USE_CLOUDINARY = bool(os.getenv("CLOUDINARY_URL") or os.getenv("CLOUDINARY_CLOUD_NAME"))
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
+CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "").strip()
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "").strip()
+
+# Only enable Cloudinary when configuration is complete.
+# A partial setup causes admin file uploads to fail at runtime.
+USE_CLOUDINARY = bool(
+    CLOUDINARY_URL
+    or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -150,11 +160,11 @@ WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", False)
 DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
 STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
 
-if os.getenv("CLOUDINARY_CLOUD_NAME"):
+if USE_CLOUDINARY and CLOUDINARY_CLOUD_NAME:
     CLOUDINARY_STORAGE = {
-        "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", ""),
-        "API_KEY": os.getenv("CLOUDINARY_API_KEY", ""),
-        "API_SECRET": os.getenv("CLOUDINARY_API_SECRET", ""),
+        "CLOUD_NAME": CLOUDINARY_CLOUD_NAME,
+        "API_KEY": CLOUDINARY_API_KEY,
+        "API_SECRET": CLOUDINARY_API_SECRET,
     }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
