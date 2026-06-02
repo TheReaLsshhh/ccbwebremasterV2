@@ -128,8 +128,6 @@ WHITENOISE_USE_FINDERS = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-from whitenoise.storage import CompressedStaticFilesStorage
-
 STORAGES = {
     "default": {
         "BACKEND": (
@@ -139,7 +137,11 @@ STORAGES = {
         ),
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": (
+            "whitenoise.storage.CompressedStaticFilesStorage"
+            if env_bool("WHITENOISE_COMPRESS_STATIC", False)
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
     },
 }
 WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", False)
