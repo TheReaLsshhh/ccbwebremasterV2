@@ -44,17 +44,15 @@ CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
 CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
 CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "").strip()
 CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "").strip()
-ENABLE_CLOUDINARY = env_bool("ENABLE_CLOUDINARY", False)
+HAS_CLOUDINARY_CONFIG = bool(
+    CLOUDINARY_URL
+    or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
+ENABLE_CLOUDINARY = env_bool("ENABLE_CLOUDINARY", HAS_CLOUDINARY_CONFIG)
 
 # Only enable Cloudinary when explicitly turned on and configuration is complete.
 # This avoids admin 500s from partial/misconfigured Cloudinary secrets in production.
-USE_CLOUDINARY = bool(
-    ENABLE_CLOUDINARY
-    and (
-        CLOUDINARY_URL
-        or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
-    )
-)
+USE_CLOUDINARY = bool(ENABLE_CLOUDINARY and HAS_CLOUDINARY_CONFIG)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
