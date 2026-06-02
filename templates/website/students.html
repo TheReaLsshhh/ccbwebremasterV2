@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load news_extras %}
 
 {% block title %}Students | City College of Bayawan{% endblock %}
 
@@ -36,7 +37,7 @@
                                 <a class="btn btn-brand btn-sm" href="{{ resource.link_url }}">Open Link</a>
                             {% endif %}
                             {% if resource.attachment %}
-                                <a class="btn btn-soft btn-sm btn-download" href="{{ resource.attachment.url }}">Download File</a>
+                                <a class="btn btn-soft btn-sm btn-download" href="{{ resource.attachment|file_download_url }}">Download File</a>
                             {% endif %}
                         </div>
                     </div>

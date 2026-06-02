@@ -240,7 +240,7 @@
                         {% if program.award %}<p class="text-dark fw-semibold mb-2">{{ program.award }}</p>{% endif %}
                         <p class="muted-copy">{{ program.description|truncatewords:28 }}</p>
                         {% if program.brochure_file %}
-                            <a href="{{ program.brochure_file.url }}" class="btn btn-soft btn-sm mt-3 btn-download">Download Brochure</a>
+                            <a href="{{ program.brochure_file|file_download_url }}" class="btn btn-soft btn-sm mt-3 btn-download">Download Brochure</a>
                         {% endif %}
                     </div>
                 </div>
