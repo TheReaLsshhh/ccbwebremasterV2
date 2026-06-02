@@ -128,10 +128,7 @@ WHITENOISE_USE_FINDERS = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-from whitenoise.storage import CompressedManifestStaticFilesStorage
-
-class SafeCompressedManifestStaticFilesStorage(CompressedManifestStaticFilesStorage):
-    manifest_strict = False
+from whitenoise.storage import CompressedStaticFilesStorage
 
 STORAGES = {
     "default": {
@@ -142,7 +139,7 @@ STORAGES = {
         ),
     },
     "staticfiles": {
-        "BACKEND": "ccbwebsite.settings.SafeCompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", False)
