@@ -1,4 +1,5 @@
 import html
+import os
 import re
 import secrets
 
@@ -18,6 +19,14 @@ def optimize_uploaded_image(image_field):
 
     try:
         image_path = image_field.path
+    except Exception:
+        # Non-local storages (e.g., Cloudinary) may not expose local file paths.
+        return
+
+    if not image_path or not os.path.exists(image_path):
+        return
+
+    try:
         with Image.open(image_path) as image:
             image_format = image.format
             original_size = image.size
@@ -31,7 +40,7 @@ def optimize_uploaded_image(image_field):
             elif image_format == "PNG":
                 save_kwargs["compress_level"] = PNG_COMPRESS_LEVEL
             image.save(image_path, format=image_format, **save_kwargs)
-    except (NotImplementedError, OSError, ValueError):
+    except Exception:
         return
 
 
