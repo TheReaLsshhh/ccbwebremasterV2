@@ -44,12 +44,16 @@ CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
 CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
 CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "").strip()
 CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "").strip()
+ENABLE_CLOUDINARY = env_bool("ENABLE_CLOUDINARY", False)
 
-# Only enable Cloudinary when configuration is complete.
-# A partial setup causes admin file uploads to fail at runtime.
+# Only enable Cloudinary when explicitly turned on and configuration is complete.
+# This avoids admin 500s from partial/misconfigured Cloudinary secrets in production.
 USE_CLOUDINARY = bool(
-    CLOUDINARY_URL
-    or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+    ENABLE_CLOUDINARY
+    and (
+        CLOUDINARY_URL
+        or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+    )
 )
 
 INSTALLED_APPS = [
