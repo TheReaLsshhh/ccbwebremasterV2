@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
@@ -28,8 +29,13 @@ NEWS_PAGE_SIZE = 9
 
 
 def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
-    news_ids = NewsEvent.objects.order_by("-published_at").values_list("pk", flat=True)
-    return {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
+    cache_key = f"news_page_by_id_{per_page}"
+    data = cache.get(cache_key)
+    if data is None:
+        news_ids = list(NewsEvent.objects.order_by("-published_at").values_list("pk", flat=True))
+        data = {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
+        cache.set(cache_key, data, 3600)  # cache for 1 hour
+    return data
 
 
 def send_contact_verification_email(request, inquiry):
@@ -197,7 +203,9 @@ DEFAULT_PAGE_CONTENT = {
 
 
 def get_site_settings():
-    return SiteSettings.objects.order_by("id").first()
+    return cache.get_or_set(
+        "site_settings", lambda: SiteSettings.objects.order_by("id").first(), 3600
+    )
 
 
 def get_page_content(page_key):
@@ -306,11 +314,20 @@ def news(request):
 
 
 def downloads(request):
+    # Paginate the DownloadItem list (show 12 items per page – adjust as needed for layout)
+    download_queryset = DownloadItem.objects.only("category", "title", "description", "file")
+    paginator = Paginator(download_queryset, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = base_context("website:downloads")
     context.update(
         {
             "page_content": get_page_content(PageContent.DOWNLOADS),
-            "downloads": DownloadItem.objects.only("category", "title", "description", "file"),
+            # Pass the Page object for pagination controls
+            "page_obj": page_obj,
+            # Pass the items for the current page
+            "downloads": page_obj.object_list,
         }
     )
     return render(request, "website/downloads.html", context)

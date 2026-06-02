@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}City College of Bayawan{% endblock %}</title>
     <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo.png' %}">
-    <script>
+    <script defer>
         (function () {
             try {
                 var storageKey = "ccb-theme";
@@ -346,9 +346,9 @@
         </div>
     {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/news-modal.js' %}"></script>
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="{% static 'js/news-modal.js' %}" defer></script>
+    <script defer>
         (function () {
             const storageKey = "ccb-theme";
             const root = document.documentElement;

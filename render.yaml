@@ -3,8 +3,10 @@ services:
     name: ccbwebsite
     env: python
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn ccbwebsite.wsgi:application
+    startCommand: gunicorn ccbwebsite.wsgi:application --workers 2 --threads 4 --timeout 60 --log-file -
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY

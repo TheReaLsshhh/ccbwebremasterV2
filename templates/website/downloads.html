@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="row g-4">
-            {% for item in downloads %}
+            {% for item in page_obj.object_list %}
                 <div class="col-lg-4">
                     <div class="content-card">
                         <span class="signal-badge {% if item.category == 'academic' %}signal-badge-download-academic{% elif item.category == 'form' %}signal-badge-download-form{% elif item.category == 'policy' %}signal-badge-download-policy{% elif item.category == 'announcement' %}signal-badge-download-announcement{% endif %}">{{ item.get_category_display }}</span>

@@ -55,6 +55,15 @@ INSTALLED_APPS = [
 if USE_CLOUDINARY:
     INSTALLED_APPS = ["cloudinary_storage", *INSTALLED_APPS, "cloudinary"]
 
+# Dynamic Caching Backend (Redis in production with local memory fallback)
+REDIS_URL = os.getenv("REDIS_URL") or os.getenv("REDIS_TLS_URL")
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache" if REDIS_URL else "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": REDIS_URL or "ccb-locmem-cache",
+    }
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -94,7 +103,8 @@ ASGI_APPLICATION = "ccbwebsite.asgi.application"
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
+        conn_max_age=int(os.getenv("DATABASE_CONN_MAX_AGE", "600")),
+        conn_health_checks=env_bool("DATABASE_CONN_HEALTH_CHECKS", True),
     )
 }
 
@@ -127,9 +137,10 @@ STORAGES = {
         ),
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", False)
 
 # Compatibility aliases for packages that still expect the legacy Django storage settings.
 DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
@@ -167,7 +178,7 @@ if not DEBUG:
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", "28800"))
     SESSION_EXPIRE_AT_BROWSER_CLOSE = env_bool("SESSION_EXPIRE_AT_BROWSER_CLOSE", False)
-    SESSION_SAVE_EVERY_REQUEST = env_bool("SESSION_SAVE_EVERY_REQUEST", True)
+    SESSION_SAVE_EVERY_REQUEST = env_bool("SESSION_SAVE_EVERY_REQUEST", False)
     CSRF_COOKIE_SECURE = True
     # Must be readable for some admin flows; form POST still sends csrfmiddlewaretoken.
     CSRF_COOKIE_HTTPONLY = env_bool("CSRF_COOKIE_HTTPONLY", False)

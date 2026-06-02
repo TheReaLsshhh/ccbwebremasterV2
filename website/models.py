@@ -77,6 +77,13 @@ class SiteSettings(TimeStampedModel):
         if self.map_embed_url:
             self.map_embed_url = self._extract_url_value(self.map_embed_url)
         super().save(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete("site_settings")
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete("site_settings")
 
     @property
     def normalized_facebook_url(self):
@@ -192,6 +199,13 @@ class NewsEvent(TimeStampedModel):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         optimize_uploaded_image(self.cover_image)
+        from django.core.cache import cache
+        cache.delete("news_page_by_id_9")
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete("news_page_by_id_9")
 
 
 class DownloadItem(TimeStampedModel):
