@@ -143,7 +143,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 STORAGES = {
     "default": {
         "BACKEND": (
-            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            "website.storage.CCBMediaCloudinaryStorage"
             if USE_CLOUDINARY
             else "django.core.files.storage.FileSystemStorage"
         ),
