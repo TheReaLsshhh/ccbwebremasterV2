@@ -1,5 +1,3 @@
-import re
-
 from django import template
 from urllib.parse import urlparse
 
@@ -33,7 +31,12 @@ def words_truncate(value, limit):
 
 @register.filter
 def file_download_url(file_field):
-    """Return a working Cloudinary download URL for stored media files."""
+    """Return a working Cloudinary download URL for stored media files.
+
+    Document files (PDF, Word, Excel, etc.) are stored via RawMediaCloudinaryStorage
+    and served from /raw/upload/ — do not rewrite those URLs.
+    Image files are served from /image/upload/ — also leave those alone.
+    """
     if not file_field:
         return ""
 
@@ -42,17 +45,19 @@ def file_download_url(file_field):
     except Exception:
         return ""
 
-    if not url or "res.cloudinary.com" not in url:
+    if not url:
+        return ""
+
+    # If it's not a Cloudinary URL, return as-is (local filesystem).
+    if "res.cloudinary.com" not in url:
         return url
 
     path = urlparse(url).path.lower()
     extension = path.rsplit(".", 1)[-1] if "." in path else ""
 
-    # Older uploads used image delivery even for documents; undo raw rewrites that 404.
-    if extension in DOCUMENT_EXTENSIONS and "/raw/upload/" in url:
-        url = url.replace("/raw/upload/", "/image/upload/", 1)
-
-    # Placeholder version segments often 404; latest asset is served without them.
-    url = re.sub(r"/v1/", "/", url, count=1)
+    # Fix legacy records: old uploads of documents went through the image endpoint
+    # and may have /image/upload/ in their URL. Correct those to /raw/upload/.
+    if extension in DOCUMENT_EXTENSIONS and "/image/upload/" in url:
+        url = url.replace("/image/upload/", "/raw/upload/", 1)
 
     return url
