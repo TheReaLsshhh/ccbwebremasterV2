@@ -8,6 +8,21 @@ from django.db import models
 from django.utils import timezone
 from PIL import Image, ImageOps
 
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+
+# Use Cloudinary raw storage for document files when Cloudinary is configured,
+# otherwise fall back to local filesystem storage (local dev / no Cloudinary).
+try:
+    if getattr(settings, "USE_CLOUDINARY", False):
+        from .storage import CCBRawCloudinaryStorage
+        _raw_storage = CCBRawCloudinaryStorage()
+    else:
+        raise ImportError("Cloudinary not enabled")
+except Exception:
+    _raw_storage = FileSystemStorage()
+
+
 
 MAX_IMAGE_SIZE = (1600, 1600)
 JPEG_QUALITY = 82
@@ -168,6 +183,7 @@ class AcademicProgram(TimeStampedModel):
         upload_to="academics/",
         blank=True,
         null=True,
+        storage=_raw_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -187,6 +203,7 @@ class AdmissionRequirement(TimeStampedModel):
         upload_to="admissions/",
         blank=True,
         null=True,
+        storage=_raw_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -206,7 +223,12 @@ class NewsEvent(TimeStampedModel):
     event_date = models.DateField(default=timezone.now)
     location = models.CharField(max_length=200, blank=True)
     cover_image = models.ImageField(upload_to="news/", blank=True, null=True)
-    attachment = models.FileField(upload_to="news/", blank=True, null=True)
+    attachment = models.FileField(
+        upload_to="news/",
+        blank=True,
+        null=True,
+        storage=_raw_storage,
+    )
     is_featured = models.BooleanField(default=False)
     published_at = models.DateTimeField(default=timezone.now)
 
@@ -248,6 +270,7 @@ class DownloadItem(TimeStampedModel):
     description = models.TextField(blank=True)
     file = models.FileField(
         upload_to="downloads/",
+        storage=_raw_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -268,6 +291,7 @@ class StudentResource(TimeStampedModel):
         upload_to="students/",
         blank=True,
         null=True,
+        storage=_raw_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
