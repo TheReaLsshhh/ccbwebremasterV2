@@ -18,8 +18,10 @@ urlpatterns = [
     path("", include("website.urls")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files in all environments.
+# With Cloudinary active, Django admin redirects to Cloudinary CDN URLs automatically.
+# Without Cloudinary, this serves local files (Render ephemeral disk within session).
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT, insecure=True)
 
 # Production fallback for environments where collected static files are present
 # but not served correctly by the platform-level static setup.
