@@ -3,6 +3,7 @@ import os
 import re
 import secrets
 
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 from PIL import Image, ImageOps
@@ -163,7 +164,13 @@ class AcademicProgram(TimeStampedModel):
     name = models.CharField(max_length=200)
     award = models.CharField(max_length=200, blank=True)
     description = models.TextField()
-    brochure_file = models.FileField(upload_to="academics/", blank=True, null=True)
+    brochure_file = models.FileField(
+        upload_to="academics/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
+        help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
+    )
     is_featured = models.BooleanField(default=False)
 
     class Meta:
@@ -176,7 +183,13 @@ class AcademicProgram(TimeStampedModel):
 class AdmissionRequirement(TimeStampedModel):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    document_file = models.FileField(upload_to="admissions/", blank=True, null=True)
+    document_file = models.FileField(
+        upload_to="admissions/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
+        help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
+    )
     sort_order = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -233,7 +246,11 @@ class DownloadItem(TimeStampedModel):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default=FORM)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    file = models.FileField(upload_to="downloads/")
+    file = models.FileField(
+        upload_to="downloads/",
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
+        help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
+    )
     is_featured = models.BooleanField(default=False)
 
     class Meta:
@@ -247,7 +264,13 @@ class StudentResource(TimeStampedModel):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     link_url = models.URLField(blank=True)
-    attachment = models.FileField(upload_to="students/", blank=True, null=True)
+    attachment = models.FileField(
+        upload_to="students/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
+        help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
+    )
 
     class Meta:
         ordering = ["title"]
