@@ -1,3 +1,5 @@
+import time
+
 from cloudinary_storage.storage import MediaCloudinaryStorage, RawMediaCloudinaryStorage
 
 
@@ -8,6 +10,7 @@ class CCBMediaCloudinaryStorage(MediaCloudinaryStorage):
     - Cloudinary is unreachable
     - A stored file name is empty or in an unexpected format
     - Admin tries to render an image field for a record with no image
+    - Render Free Tier cold start delays the first upload
     """
 
     def exists(self, name):
@@ -27,10 +30,14 @@ class CCBMediaCloudinaryStorage(MediaCloudinaryStorage):
             return ""
 
     def _save(self, name, content):
-        try:
-            return super()._save(name, content)
-        except Exception as exc:
-            raise OSError(f"Cloudinary image upload failed: {exc}") from exc
+        for attempt in range(3):
+            try:
+                return super()._save(name, content)
+            except Exception as exc:
+                if attempt < 2:
+                    time.sleep(1 + attempt)
+                    continue
+                raise OSError(f"Cloudinary image upload failed: {exc}") from exc
 
     def delete(self, name):
         if not name:
@@ -65,10 +72,14 @@ class CCBRawCloudinaryStorage(RawMediaCloudinaryStorage):
             return ""
 
     def _save(self, name, content):
-        try:
-            return super()._save(name, content)
-        except Exception as exc:
-            raise OSError(f"Cloudinary raw upload failed: {exc}") from exc
+        for attempt in range(3):
+            try:
+                return super()._save(name, content)
+            except Exception as exc:
+                if attempt < 2:
+                    time.sleep(1 + attempt)
+                    continue
+                raise OSError(f"Cloudinary raw upload failed: {exc}") from exc
 
     def delete(self, name):
         if not name:
