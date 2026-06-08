@@ -380,11 +380,33 @@ def about(request):
     return render(request, "website/about.html", context)
 
 
+CONTACT_RATE_LIMIT = 3  # max submissions per IP
+CONTACT_RATE_WINDOW = 3600  # 1 hour in seconds
+
+
+def _client_ip(request):
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    if forwarded_for:
+        return forwarded_for.split(",", 1)[0].strip()
+    return request.META.get("REMOTE_ADDR", "unknown")
+
+
 def contact(request):
     context = base_context("website:contact")
     form = ContactInquiryForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
+        ip = _client_ip(request)
+        cache_key = f"contact-submissions:{ip}"
+        attempts = cache.get(cache_key, 0)
+        if attempts >= CONTACT_RATE_LIMIT:
+            messages.error(
+                request,
+                "Too many submissions. Please try again later.",
+            )
+            return redirect("website:contact")
+        cache.set(cache_key, attempts + 1, CONTACT_RATE_WINDOW)
+
         try:
             try:
                 inquiry = form.save()
@@ -404,7 +426,7 @@ def contact(request):
                 try:
                     if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
                         error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
-                    elif settings.EMAIL_HOST_PASSWORD in {"", "PASTE_YOUR_NEW_BREVO_SMTP_KEY_HERE"}:
+                    elif not getattr(settings, "BREVO_API_KEY", ""):
                         error_message = "Your inquiry was saved, but the email service is not configured yet."
                     else:
                         error_message = "Your inquiry could not be sent right now. Please try again later."
