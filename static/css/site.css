@@ -1462,6 +1462,7 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
   min-height: 0;
   max-height: none;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0;
   background: var(--ccb-surface-solid);
 }
@@ -1473,6 +1474,9 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 .news-detail-modal-content {
   display: block;
   min-height: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
   background: var(--ccb-surface-solid);
 }
 
@@ -1497,12 +1501,17 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 .news-detail-modal-main {
   display: grid;
   gap: 1rem;
+  min-width: 0;
   padding: 1.35rem clamp(1.25rem, 2.5vw, 2.75rem) 1.75rem;
 }
 
 @media (max-width: 767.98px) {
   #newsDetailModal {
     --news-modal-gutter: 0.65rem;
+  }
+
+  .news-detail-modal-main {
+    padding: 1rem 1rem 1.5rem;
   }
 }
 
@@ -1511,6 +1520,7 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem 0.9rem;
+  min-width: 0;
   color: var(--ccb-stone-500);
   font-size: 0.94rem;
   font-weight: 600;
@@ -1518,6 +1528,12 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 
 .news-detail-modal-meta .signal-badge {
   flex: 0 0 auto;
+}
+
+.news-detail-modal-meta .news-location-inline {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .news-detail-modal-title {
@@ -1539,6 +1555,8 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 
 .news-detail-modal-copy {
   margin: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
   color: var(--ccb-stone-700);
   font-size: 0.98rem;
   line-height: 1.68;
