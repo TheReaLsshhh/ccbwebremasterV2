@@ -2660,13 +2660,21 @@ p.text-dark.fw-semibold.mb-2 {
     min-height: 24rem;
   }
 
+  .container {
+    max-width: calc(100% - 1.5rem);
+  }
+
   .hero-main,
   .hero-sidebar {
-    padding: 2rem;
+    padding: 1.75rem;
   }
 
   .hero-main-wide {
-    padding: 2rem;
+    padding: 1.75rem;
+  }
+
+  .section-block {
+    padding-bottom: 3rem;
   }
 
   .section-header {
@@ -2816,6 +2824,12 @@ p.text-dark.fw-semibold.mb-2 {
   }
 }
 
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .container {
+    max-width: calc(100% - 2rem);
+  }
+}
+
 @media (min-width: 1200px) {
   .navbar-collapse {
     contain: none;
@@ -2846,6 +2860,10 @@ p.text-dark.fw-semibold.mb-2 {
 @media (max-width: 767.98px) {
   html {
     scroll-behavior: auto;
+  }
+
+  .container {
+    max-width: calc(100% - 1rem);
   }
 
   .site-skeleton-topbar {
@@ -2909,6 +2927,15 @@ p.text-dark.fw-semibold.mb-2 {
     background: none;
   }
 
+  .hero-main,
+  .hero-sidebar {
+    padding: 1.35rem;
+  }
+
+  .hero-main-wide {
+    padding: 1.35rem;
+  }
+
   .hero-grid,
   .portal-panel,
   .content-card,
@@ -2917,6 +2944,21 @@ p.text-dark.fw-semibold.mb-2 {
   .resource-card,
   .catalog-card {
     box-shadow: var(--ccb-shadow);
+  }
+
+  .feature-card,
+  .content-card,
+  .announcement-card,
+  .resource-card {
+    padding: 1.25rem;
+  }
+
+  .portal-panel {
+    padding: 1.25rem;
+  }
+
+  .section-block {
+    padding: 0.75rem 0 2.5rem;
   }
 
   .feature-card:hover,
@@ -3103,11 +3145,11 @@ p.text-dark.fw-semibold.mb-2 {
   }
 
   .floating-action-left {
-    left: 1rem;
+    left: 0.75rem;
   }
 
   .floating-action-right {
-    right: 1rem;
+    right: 0.75rem;
   }
 }
 
