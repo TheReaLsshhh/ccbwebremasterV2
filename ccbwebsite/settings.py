@@ -177,6 +177,32 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "website": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
 if not DEBUG:
     # Without trusted origins, every admin Save POST returns 403 on HTTPS (Render).
     if not CSRF_TRUSTED_ORIGINS:

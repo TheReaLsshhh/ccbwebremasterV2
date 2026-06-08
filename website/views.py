@@ -283,34 +283,38 @@ def admissions(request):
 
 
 def news(request):
-    news_queryset = NewsEvent.objects.only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
-    paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
-    news_page_by_id = _news_page_by_id()
+    try:
+        news_queryset = NewsEvent.objects.only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
+        paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
+        news_page_by_id = _news_page_by_id()
 
-    page_number = request.GET.get("page")
-    open_news_id = None
-    open_param = request.GET.get("open")
-    if open_param:
-        try:
-            open_pk = int(open_param)
-            if open_pk in news_page_by_id:
-                open_news_id = open_pk
-                page_number = news_page_by_id[open_pk]
-        except (TypeError, ValueError):
-            pass
+        page_number = request.GET.get("page")
+        open_news_id = None
+        open_param = request.GET.get("open")
+        if open_param:
+            try:
+                open_pk = int(open_param)
+                if open_pk in news_page_by_id:
+                    open_news_id = open_pk
+                    page_number = news_page_by_id[open_pk]
+            except (TypeError, ValueError):
+                pass
 
-    page_obj = paginator.get_page(page_number)
+        page_obj = paginator.get_page(page_number)
 
-    context = base_context("website:news")
-    context.update(
-        {
-            "page_content": get_page_content(PageContent.NEWS),
-            "news_items": page_obj,
-            "page_obj": page_obj,
-            "open_news_id": open_news_id,
-        }
-    )
-    return render(request, "website/news.html", context)
+        context = base_context("website:news")
+        context.update(
+            {
+                "page_content": get_page_content(PageContent.NEWS),
+                "news_items": page_obj,
+                "page_obj": page_obj,
+                "open_news_id": open_news_id,
+            }
+        )
+        return render(request, "website/news.html", context)
+    except Exception:
+        logger.exception("Unhandled error in news view")
+        raise
 
 
 def downloads(request):
