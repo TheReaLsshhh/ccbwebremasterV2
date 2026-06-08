@@ -43,47 +43,51 @@ def send_contact_verification_email(request, inquiry):
         logger.error("Contact verification email skipped because SMTP credentials are incomplete.")
         return False
 
-    verify_url = request.build_absolute_uri(
-        reverse("website:verify_contact_inquiry", kwargs={"token": inquiry.verification_token})
-    )
-    recipient = settings.CONTACT_INQUIRY_RECIPIENT
-    safe_name = escape(inquiry.name)
-    safe_recipient = escape(recipient)
-    safe_verify_url = escape(verify_url)
-    html_message = f"""
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
-            <p>Hello {safe_name},</p>
-            <p>Thank you for contacting City College of Bayawan.</p>
-            <p>Please verify your email address first so we can forward your inquiry to <strong>{safe_recipient}</strong>.</p>
-            <p style="margin: 24px 0;">
-                <a
-                    href="{safe_verify_url}"
-                    style="display: inline-block; padding: 12px 20px; border-radius: 999px; background: #d97706; color: #ffffff; text-decoration: none; font-weight: 700;">
-                    Verify My Inquiry
-                </a>
-            </p>
-            <p>If the button does not work, open this link:</p>
-            <p><a href="{safe_verify_url}">{safe_verify_url}</a></p>
-            <p>If you did not submit this inquiry, you can safely ignore this message.</p>
-        </div>
-    """
-    text_message = (
-        f"Hello {inquiry.name},\n\n"
-        "Thank you for contacting City College of Bayawan.\n\n"
-        f"Please verify your email address first so we can forward your inquiry to {recipient}.\n\n"
-        f"Verify your inquiry here:\n{verify_url}\n\n"
-        "If you did not submit this inquiry, you can safely ignore this message."
-    )
-    email = EmailMultiAlternatives(
-        subject="Verify your City College of Bayawan inquiry",
-        body=text_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[inquiry.email],
-    )
-    email.attach_alternative(html_message, "text/html")
-    email.send(fail_silently=False)
-    inquiry.mark_verification_sent()
-    return True
+    try:
+        verify_url = request.build_absolute_uri(
+            reverse("website:verify_contact_inquiry", kwargs={"token": inquiry.verification_token})
+        )
+        recipient = settings.CONTACT_INQUIRY_RECIPIENT
+        safe_name = escape(inquiry.name)
+        safe_recipient = escape(recipient)
+        safe_verify_url = escape(verify_url)
+        html_message = f"""
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
+                <p>Hello {safe_name},</p>
+                <p>Thank you for contacting City College of Bayawan.</p>
+                <p>Please verify your email address first so we can forward your inquiry to <strong>{safe_recipient}</strong>.</p>
+                <p style="margin: 24px 0;">
+                    <a
+                        href="{safe_verify_url}"
+                        style="display: inline-block; padding: 12px 20px; border-radius: 999px; background: #d97706; color: #ffffff; text-decoration: none; font-weight: 700;">
+                        Verify My Inquiry
+                    </a>
+                </p>
+                <p>If the button does not work, open this link:</p>
+                <p><a href="{safe_verify_url}">{safe_verify_url}</a></p>
+                <p>If you did not submit this inquiry, you can safely ignore this message.</p>
+            </div>
+        """
+        text_message = (
+            f"Hello {inquiry.name},\n\n"
+            "Thank you for contacting City College of Bayawan.\n\n"
+            f"Please verify your email address first so we can forward your inquiry to {recipient}.\n\n"
+            f"Verify your inquiry here:\n{verify_url}\n\n"
+            "If you did not submit this inquiry, you can safely ignore this message."
+        )
+        email = EmailMultiAlternatives(
+            subject="Verify your City College of Bayawan inquiry",
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[inquiry.email],
+        )
+        email.attach_alternative(html_message, "text/html")
+        email.send(fail_silently=False)
+        inquiry.mark_verification_sent()
+        return True
+    except Exception:
+        logger.exception("Failed to send contact verification email for inquiry %s", inquiry.pk)
+        return False
 
 
 def send_contact_notification_email(inquiry):
@@ -91,39 +95,43 @@ def send_contact_notification_email(inquiry):
         logger.error("Contact notification email skipped because SMTP credentials are incomplete.")
         return False
 
-    recipient = settings.CONTACT_INQUIRY_RECIPIENT
-    safe_name = escape(inquiry.name)
-    safe_email = escape(inquiry.email)
-    safe_subject = escape(inquiry.subject)
-    safe_message = escape(inquiry.message)
-    text_message = (
-        "A website visitor verified their email and submitted an inquiry.\n\n"
-        f"Name: {inquiry.name}\n"
-        f"Email: {inquiry.email}\n"
-        f"Subject: {inquiry.subject}\n\n"
-        f"Message:\n{inquiry.message}"
-    )
-    html_message = f"""
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
-            <p>A website visitor verified their email and submitted an inquiry.</p>
-            <p><strong>Name:</strong> {safe_name}<br>
-            <strong>Email:</strong> {safe_email}<br>
-            <strong>Subject:</strong> {safe_subject}</p>
-            <p><strong>Message:</strong></p>
-            <div style="padding: 14px 16px; border-radius: 16px; background: #f8f7f3; border: 1px solid rgba(79, 75, 70, 0.12); white-space: pre-line;">{safe_message}</div>
-        </div>
-    """
-    email = EmailMultiAlternatives(
-        subject=f"Verified website inquiry: {inquiry.subject}",
-        body=text_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[recipient],
-        reply_to=[inquiry.email],
-    )
-    email.attach_alternative(html_message, "text/html")
-    email.send(fail_silently=False)
-    inquiry.mark_notification_sent()
-    return True
+    try:
+        recipient = settings.CONTACT_INQUIRY_RECIPIENT
+        safe_name = escape(inquiry.name)
+        safe_email = escape(inquiry.email)
+        safe_subject = escape(inquiry.subject)
+        safe_message = escape(inquiry.message)
+        text_message = (
+            "A website visitor verified their email and submitted an inquiry.\n\n"
+            f"Name: {inquiry.name}\n"
+            f"Email: {inquiry.email}\n"
+            f"Subject: {inquiry.subject}\n\n"
+            f"Message:\n{inquiry.message}"
+        )
+        html_message = f"""
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
+                <p>A website visitor verified their email and submitted an inquiry.</p>
+                <p><strong>Name:</strong> {safe_name}<br>
+                <strong>Email:</strong> {safe_email}<br>
+                <strong>Subject:</strong> {safe_subject}</p>
+                <p><strong>Message:</strong></p>
+                <div style="padding: 14px 16px; border-radius: 16px; background: #f8f7f3; border: 1px solid rgba(79, 75, 70, 0.12); white-space: pre-line;">{safe_message}</div>
+            </div>
+        """
+        email = EmailMultiAlternatives(
+            subject=f"Verified website inquiry: {inquiry.subject}",
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient],
+            reply_to=[inquiry.email],
+        )
+        email.attach_alternative(html_message, "text/html")
+        email.send(fail_silently=False)
+        inquiry.mark_notification_sent()
+        return True
+    except Exception:
+        logger.exception("Failed to send contact notification email for inquiry %s", inquiry.pk)
+        return False
 
 
 NAV_ITEMS = [
