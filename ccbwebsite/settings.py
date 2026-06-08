@@ -231,6 +231,12 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
+    SECURE_PERMISSIONS_POLICY = {
+        "camera": [],
+        "microphone": [],
+        "geolocation": [],
+        "payment": [],
+    }
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "website.email_backend.BrevoEmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp-relay.brevo.com")
