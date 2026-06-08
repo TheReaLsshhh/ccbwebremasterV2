@@ -414,85 +414,88 @@
             }
 
             const feedbackModalElement = document.getElementById("siteFeedbackModal");
-            if (feedbackModalElement && window.bootstrap && window.bootstrap.Modal) {
-                const feedbackModal = new window.bootstrap.Modal(feedbackModalElement);
-                const feedbackModalCardElement = feedbackModalElement.querySelector(".feedback-modal-card");
-                const isSuccessFeedback = feedbackModalCardElement
-                    ? feedbackModalCardElement.classList.contains("is-success")
-                    : false;
-                let feedbackAutoCloseTimer = null;
-                let feedbackCountdownTimer = null;
-                let feedbackProgressTimer = null;
-                const feedbackCountdownElement = document.getElementById("feedbackModalCountdown");
-                const feedbackCountdownValueElement = feedbackCountdownElement
-                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-value")
-                    : null;
-                const feedbackCountdownRingElement = feedbackCountdownElement
-                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-ring")
-                    : null;
-                const feedbackCountdownProgressElement = feedbackCountdownElement
-                    ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-progress")
-                    : null;
+            if (feedbackModalElement) {
+                document.addEventListener("DOMContentLoaded", function () {
+                    if (!window.bootstrap || !window.bootstrap.Modal) return;
+                    const feedbackModal = new window.bootstrap.Modal(feedbackModalElement);
+                    const feedbackModalCardElement = feedbackModalElement.querySelector(".feedback-modal-card");
+                    const isSuccessFeedback = feedbackModalCardElement
+                        ? feedbackModalCardElement.classList.contains("is-success")
+                        : false;
+                    let feedbackAutoCloseTimer = null;
+                    let feedbackCountdownTimer = null;
+                    let feedbackProgressTimer = null;
+                    const feedbackCountdownElement = document.getElementById("feedbackModalCountdown");
+                    const feedbackCountdownValueElement = feedbackCountdownElement
+                        ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-value")
+                        : null;
+                    const feedbackCountdownRingElement = feedbackCountdownElement
+                        ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-ring")
+                        : null;
+                    const feedbackCountdownProgressElement = feedbackCountdownElement
+                        ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-progress")
+                        : null;
 
-                feedbackModalElement.addEventListener("shown.bs.modal", function () {
-                    if (isSuccessFeedback) {
-                        return;
-                    }
+                    feedbackModalElement.addEventListener("shown.bs.modal", function () {
+                        if (isSuccessFeedback) {
+                            return;
+                        }
 
-                    if (feedbackCountdownValueElement) {
-                        let secondsRemaining = 5;
-                        feedbackCountdownValueElement.textContent = String(secondsRemaining);
-                        feedbackCountdownTimer = window.setInterval(function () {
-                            secondsRemaining -= 1;
-                            if (secondsRemaining >= 0) {
-                                feedbackCountdownValueElement.textContent = String(secondsRemaining);
-                            }
-                            if (secondsRemaining <= 0 && feedbackCountdownTimer) {
-                                window.clearInterval(feedbackCountdownTimer);
-                                feedbackCountdownTimer = null;
-                            }
-                        }, 1000);
-                    }
+                        if (feedbackCountdownValueElement) {
+                            let secondsRemaining = 5;
+                            feedbackCountdownValueElement.textContent = String(secondsRemaining);
+                            feedbackCountdownTimer = window.setInterval(function () {
+                                secondsRemaining -= 1;
+                                if (secondsRemaining >= 0) {
+                                    feedbackCountdownValueElement.textContent = String(secondsRemaining);
+                                }
+                                if (secondsRemaining <= 0 && feedbackCountdownTimer) {
+                                    window.clearInterval(feedbackCountdownTimer);
+                                    feedbackCountdownTimer = null;
+                                }
+                            }, 1000);
+                        }
 
-                    if (feedbackCountdownRingElement && feedbackCountdownProgressElement) {
-                        const startedAt = Date.now();
-                        const duration = 5000;
-                        const radius = Number(feedbackCountdownProgressElement.getAttribute("r")) || 20;
-                        const circumference = 2 * Math.PI * radius;
-                        feedbackCountdownProgressElement.style.strokeDasharray = `${circumference}`;
-                        feedbackCountdownProgressElement.style.strokeDashoffset = "0";
-                        feedbackProgressTimer = window.setInterval(function () {
-                            const elapsed = Math.min(Date.now() - startedAt, duration);
-                            const progress = 1 - (elapsed / duration);
-                            feedbackCountdownProgressElement.style.strokeDashoffset = `${circumference * (1 - Math.max(progress, 0))}`;
-                            if (elapsed >= duration && feedbackProgressTimer) {
-                                window.clearInterval(feedbackProgressTimer);
-                                feedbackProgressTimer = null;
-                            }
-                        }, 50);
-                    }
+                        if (feedbackCountdownRingElement && feedbackCountdownProgressElement) {
+                            const startedAt = Date.now();
+                            const duration = 5000;
+                            const radius = Number(feedbackCountdownProgressElement.getAttribute("r")) || 20;
+                            const circumference = 2 * Math.PI * radius;
+                            feedbackCountdownProgressElement.style.strokeDasharray = `${circumference}`;
+                            feedbackCountdownProgressElement.style.strokeDashoffset = "0";
+                            feedbackProgressTimer = window.setInterval(function () {
+                                const elapsed = Math.min(Date.now() - startedAt, duration);
+                                const progress = 1 - (elapsed / duration);
+                                feedbackCountdownProgressElement.style.strokeDashoffset = `${circumference * (1 - Math.max(progress, 0))}`;
+                                if (elapsed >= duration && feedbackProgressTimer) {
+                                    window.clearInterval(feedbackProgressTimer);
+                                    feedbackProgressTimer = null;
+                                }
+                            }, 50);
+                        }
 
-                    feedbackAutoCloseTimer = window.setTimeout(function () {
-                        feedbackModal.hide();
-                    }, 5000);
+                        feedbackAutoCloseTimer = window.setTimeout(function () {
+                            feedbackModal.hide();
+                        }, 5000);
+                    });
+
+                    feedbackModalElement.addEventListener("hide.bs.modal", function () {
+                        if (feedbackAutoCloseTimer) {
+                            window.clearTimeout(feedbackAutoCloseTimer);
+                            feedbackAutoCloseTimer = null;
+                        }
+                        if (feedbackCountdownTimer) {
+                            window.clearInterval(feedbackCountdownTimer);
+                            feedbackCountdownTimer = null;
+                        }
+                        if (feedbackProgressTimer) {
+                            window.clearInterval(feedbackProgressTimer);
+                            feedbackProgressTimer = null;
+                        }
+                    });
+
+                    feedbackModal.show();
                 });
-
-                feedbackModalElement.addEventListener("hide.bs.modal", function () {
-                    if (feedbackAutoCloseTimer) {
-                        window.clearTimeout(feedbackAutoCloseTimer);
-                        feedbackAutoCloseTimer = null;
-                    }
-                    if (feedbackCountdownTimer) {
-                        window.clearInterval(feedbackCountdownTimer);
-                        feedbackCountdownTimer = null;
-                    }
-                    if (feedbackProgressTimer) {
-                        window.clearInterval(feedbackProgressTimer);
-                        feedbackProgressTimer = null;
-                    }
-                });
-
-                feedbackModal.show();
             }
 
             window.addEventListener("scroll", updateScrollButton, { passive: true });
