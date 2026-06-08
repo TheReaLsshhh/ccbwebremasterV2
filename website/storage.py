@@ -59,6 +59,11 @@ class CCBRawCloudinaryStorage(RawMediaCloudinaryStorage):
     are accepted and can be downloaded directly via a public URL.
     """
 
+    def _upload_params(self, name):
+        params = super()._upload_params(name)
+        params["access_mode"] = "public"
+        return params
+
     def exists(self, name):
         if not name:
             return False
@@ -78,7 +83,7 @@ class CCBRawCloudinaryStorage(RawMediaCloudinaryStorage):
     def _save(self, name, content):
         for attempt in range(3):
             try:
-                return super()._save(name, content, access_mode="public")
+                return super()._save(name, content)
             except Exception as exc:
                 if attempt < 2:
                     try:
