@@ -35,6 +35,10 @@ class CCBMediaCloudinaryStorage(MediaCloudinaryStorage):
                 return super()._save(name, content)
             except Exception as exc:
                 if attempt < 2:
+                    try:
+                        content.seek(0)
+                    except Exception:
+                        pass
                     time.sleep(1 + attempt)
                     continue
                 raise OSError(f"Cloudinary image upload failed: {exc}") from exc
@@ -74,9 +78,13 @@ class CCBRawCloudinaryStorage(RawMediaCloudinaryStorage):
     def _save(self, name, content):
         for attempt in range(3):
             try:
-                return super()._save(name, content)
+                return super()._save(name, content, access_mode="public")
             except Exception as exc:
                 if attempt < 2:
+                    try:
+                        content.seek(0)
+                    except Exception:
+                        pass
                     time.sleep(1 + attempt)
                     continue
                 raise OSError(f"Cloudinary raw upload failed: {exc}") from exc
