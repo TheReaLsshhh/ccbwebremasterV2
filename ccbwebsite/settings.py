@@ -240,6 +240,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "City College of Bayawan <no-reply@citycollegeofbayawan.edu.ph>")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "City College of Bayawan <citycollegeofbayawan@gmail.com>")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 CONTACT_INQUIRY_RECIPIENT = os.getenv("CONTACT_INQUIRY_RECIPIENT", "citycollegeofbayawan@gmail.com")

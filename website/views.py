@@ -39,8 +39,8 @@ def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
 
 
 def send_contact_verification_email(request, inquiry):
-    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-        logger.error("Contact verification email skipped because SMTP credentials are incomplete.")
+    if not getattr(settings, "BREVO_API_KEY", ""):
+        logger.error("Contact verification email skipped because BREVO_API_KEY is not configured.")
         return False
 
     try:
@@ -91,8 +91,8 @@ def send_contact_verification_email(request, inquiry):
 
 
 def send_contact_notification_email(inquiry):
-    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-        logger.error("Contact notification email skipped because SMTP credentials are incomplete.")
+    if not getattr(settings, "BREVO_API_KEY", ""):
+        logger.error("Contact notification email skipped because BREVO_API_KEY is not configured.")
         return False
 
     try:
