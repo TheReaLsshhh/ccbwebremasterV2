@@ -400,5 +400,5 @@ class ContactInquiry(TimeStampedModel):
 pre_save.connect(_delete_old_file_on_change, sender=AcademicProgram)
 pre_save.connect(_delete_old_file_on_change, sender=AdmissionRequirement)
 pre_save.connect(_delete_old_file_on_change, sender=NewsEvent)
-pre_save.connect(_delete_old_file_on_change, sender=Download)
+pre_save.connect(_delete_old_file_on_change, sender=DownloadItem)
 pre_save.connect(_delete_old_file_on_change, sender=StudentResource)
