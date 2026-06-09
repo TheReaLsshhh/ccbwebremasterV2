@@ -2,9 +2,12 @@ import html
 import os
 import re
 import secrets
+import uuid
 
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from PIL import Image, ImageOps
 
@@ -21,6 +24,33 @@ try:
         raise ImportError("Cloudinary not enabled")
 except Exception:
     _raw_storage = FileSystemStorage()
+
+
+def _delete_old_file_on_change(sender, instance, **kwargs):
+    """Delete old file from storage when a file field is changed."""
+    if not instance.pk:
+        return
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+
+    for field in instance._meta.fields:
+        if isinstance(field, models.FileField):
+            old_file = getattr(old_instance, field.name)
+            new_file = getattr(instance, field.name)
+            if old_file and old_file != new_file:
+                try:
+                    old_file.delete(save=False)
+                except Exception:
+                    pass
+
+
+def _generate_unique_filename(instance, filename):
+    """Generate a unique filename using UUID to avoid Cloudinary conflicts."""
+    ext = os.path.splitext(filename)[1].lower()
+    unique_name = f"{uuid.uuid4().hex[:12]}{ext}"
+    return unique_name
 
 
 
@@ -180,7 +210,7 @@ class AcademicProgram(TimeStampedModel):
     award = models.CharField(max_length=200, blank=True)
     description = models.TextField()
     brochure_file = models.FileField(
-        upload_to="academics/",
+        upload_to=lambda instance, filename: f"academics/{_generate_unique_filename(instance, filename)}",
         blank=True,
         null=True,
         storage=_raw_storage,
@@ -200,7 +230,7 @@ class AdmissionRequirement(TimeStampedModel):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     document_file = models.FileField(
-        upload_to="admissions/",
+        upload_to=lambda instance, filename: f"admissions/{_generate_unique_filename(instance, filename)}",
         blank=True,
         null=True,
         storage=_raw_storage,
@@ -224,7 +254,7 @@ class NewsEvent(TimeStampedModel):
     location = models.CharField(max_length=200, blank=True)
     cover_image = models.ImageField(upload_to="news/", blank=True, null=True)
     attachment = models.FileField(
-        upload_to="news/",
+        upload_to=lambda instance, filename: f"news/{_generate_unique_filename(instance, filename)}",
         blank=True,
         null=True,
         storage=_raw_storage,
@@ -269,7 +299,7 @@ class DownloadItem(TimeStampedModel):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     file = models.FileField(
-        upload_to="downloads/",
+        upload_to=lambda instance, filename: f"downloads/{_generate_unique_filename(instance, filename)}",
         storage=_raw_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
@@ -288,7 +318,7 @@ class StudentResource(TimeStampedModel):
     description = models.TextField(blank=True)
     link_url = models.URLField(blank=True)
     attachment = models.FileField(
-        upload_to="students/",
+        upload_to=lambda instance, filename: f"students/{_generate_unique_filename(instance, filename)}",
         blank=True,
         null=True,
         storage=_raw_storage,
@@ -364,3 +394,11 @@ class ContactInquiry(TimeStampedModel):
         if not self.verification_token:
             self.verification_token = secrets.token_urlsafe(32)
         super().save(*args, **kwargs)
+
+
+# Connect pre_save signals to delete old files when file fields are changed
+pre_save.connect(_delete_old_file_on_change, sender=AcademicProgram)
+pre_save.connect(_delete_old_file_on_change, sender=AdmissionRequirement)
+pre_save.connect(_delete_old_file_on_change, sender=NewsEvent)
+pre_save.connect(_delete_old_file_on_change, sender=Download)
+pre_save.connect(_delete_old_file_on_change, sender=StudentResource)
