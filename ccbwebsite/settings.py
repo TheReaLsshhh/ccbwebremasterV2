@@ -57,6 +57,8 @@ USE_CLOUDINARY = bool(ENABLE_CLOUDINARY and HAS_CLOUDINARY_CONFIG)
 RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "")
 RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
 
+ABSTRACT_API_EMAIL_KEY = os.getenv("ABSTRACT_API_EMAIL_KEY", "")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

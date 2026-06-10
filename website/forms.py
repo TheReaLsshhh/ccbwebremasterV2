@@ -1,6 +1,8 @@
 from django import forms
 from django.conf import settings
 
+import requests
+
 from .models import ContactInquiry
 
 try:
@@ -15,6 +17,30 @@ try:
     _HAS_RECAPTCHA = bool(settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY)
 except ImportError:
     _HAS_RECAPTCHA = False
+
+
+def verify_email_with_abstract_api(email):
+    """Verify email exists using Abstract API. Returns (is_valid, error_message)"""
+    api_key = getattr(settings, "ABSTRACT_API_EMAIL_KEY", "")
+    if not api_key:
+        return True, ""  # Skip if key not configured
+
+    try:
+        url = "https://emailvalidation.abstractapi.com/v1/"
+        response = requests.get(url, params={"api_key": api_key, "email": email}, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        # Check if email is deliverable
+        deliverability = data.get("deliverability", "UNKNOWN")
+        if deliverability == "UNDELIVERABLE":
+            return False, "This email address does not exist or is not deliverable."
+        if deliverability == "RISKY":
+            return False, "This email address appears to be invalid or risky."
+
+        return True, ""
+    except requests.RequestException:
+        return True, ""  # Fail gracefully if API unavailable
 
 
 class ContactInquiryForm(forms.ModelForm):
@@ -78,5 +104,10 @@ class ContactInquiryForm(forms.ModelForm):
             domain = email.split("@")[1]
             if domain in blocklist:
                 raise forms.ValidationError("This email domain is not accepted. Please use a personal or institutional email.")
+
+        # Verify email exists with Abstract API
+        is_valid, error_msg = verify_email_with_abstract_api(email)
+        if not is_valid:
+            raise forms.ValidationError(error_msg)
 
         return email
