@@ -14,5 +14,4 @@ urlpatterns = [
     path("faculty/", views.faculty, name="faculty"),
     path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
-    path("contact/verify/<str:token>/", views.verify_contact_inquiry, name="verify_contact_inquiry"),
 ]
