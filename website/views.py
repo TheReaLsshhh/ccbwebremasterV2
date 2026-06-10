@@ -367,10 +367,11 @@ def contact(request):
                 )
         except Exception as exc:
             logger.exception("Contact inquiry submission failed")
-            if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
-                error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
+            exc_str = str(exc).lower()
+            if "no such table" in exc_str or "relation" in exc_str or "does not exist" in exc_str or "undefined table" in exc_str:
+                error_message = f"Database error: {exc} — Please run migrations."
             else:
-                error_message = "Your inquiry could not be sent right now. Please try again later."
+                error_message = f"Submission error: {exc}"
             messages.error(request, error_message)
 
         return redirect("website:contact")
