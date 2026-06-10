@@ -186,14 +186,14 @@
         email = email.trim().toLowerCase();
 
         var isGmail = email.endsWith('@gmail.com');
-        var isEduPh = email.endsWith('.edu.ph');
+        var isEduPh = email.endsWith('@edu.ph');
         var hasValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
         if (!hasValidFormat) {
             return { valid: false, message: 'Invalid email format' };
         }
         if (!isGmail && !isEduPh) {
-            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
+            return { valid: false, message: 'Only Gmail or Edu.ph emails are allowed' };
         }
         return { valid: true, message: '' };
     }
