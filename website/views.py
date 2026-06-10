@@ -353,7 +353,6 @@ def contact(request):
 
         try:
             inquiry = form.save()
-            inquiry.mark_verified()
             email_sent = send_contact_notification_email(inquiry)
             if email_sent:
                 messages.success(
@@ -368,10 +367,10 @@ def contact(request):
         except Exception as exc:
             logger.exception("Contact inquiry submission failed")
             exc_str = str(exc).lower()
-            if "no such table" in exc_str or "relation" in exc_str or "does not exist" in exc_str or "undefined table" in exc_str:
-                error_message = f"Database error: {exc} — Please run migrations."
+            if "no such table" in exc_str or "relation" in exc_str or "does not exist" in exc_str or "not-null" in exc_str or "null value" in exc_str:
+                error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
             else:
-                error_message = f"Submission error: {exc}"
+                error_message = "Your inquiry could not be sent right now. Please try again later."
             messages.error(request, error_message)
 
         return redirect("website:contact")
