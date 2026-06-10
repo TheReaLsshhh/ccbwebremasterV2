@@ -2028,6 +2028,28 @@ span.signal-badge.signal-badge-resource {
   font-size: 1rem;
 }
 
+.contact-captcha-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.contact-captcha-wrap .g-recaptcha {
+  transform-origin: left top;
+}
+
+.contact-captcha-error ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-captcha-error li {
+  color: #b91c1c;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 .contact-verification-note {
   padding: 0.95rem 1rem;
   border-radius: var(--ccb-radius-md);
