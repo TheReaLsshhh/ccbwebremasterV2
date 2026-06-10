@@ -142,7 +142,7 @@
             {# Body #}
             <div class="captcha-modal-body">
                 {# This form carries all field values + the reCAPTCHA token to the server #}
-                <form id="captchaModalForm" method="post" action="">
+                <form id="captchaModalForm" method="post" action="{% url 'website:contact' %}">
                     {% csrf_token %}
                     <input type="hidden" name="name"    id="cm_name">
                     <input type="hidden" name="email"   id="cm_email">
@@ -210,10 +210,6 @@
 
     /* Mirror main-form values into the modal's hidden fields */
     function syncFields() {
-        var modalForm = document.getElementById('captchaModalForm');
-        /* Set action to current page so POST goes to the contact view */
-        modalForm.action = window.location.pathname;
-
         document.getElementById('cm_name').value    = document.querySelector('#contactInquiryForm [name="name"]').value.trim();
         document.getElementById('cm_email').value   = document.querySelector('#contactInquiryForm [name="email"]').value.trim();
         document.getElementById('cm_subject').value = document.querySelector('#contactInquiryForm [name="subject"]').value.trim();
