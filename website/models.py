@@ -1,7 +1,6 @@
 import html
 import os
 import re
-import secrets
 import uuid
 
 from django.core.validators import FileExtensionValidator
@@ -360,10 +359,6 @@ class ContactInquiry(TimeStampedModel):
     email = models.EmailField()
     subject = models.CharField(max_length=200)
     message = models.TextField()
-    verification_token = models.CharField(max_length=64, unique=True, blank=True)
-    verification_sent_at = models.DateTimeField(blank=True, null=True)
-    verified_at = models.DateTimeField(blank=True, null=True)
-    notification_sent_at = models.DateTimeField(blank=True, null=True)
     is_resolved = models.BooleanField(default=False)
 
     class Meta:
@@ -373,26 +368,10 @@ class ContactInquiry(TimeStampedModel):
     def __str__(self):
         return f"{self.name} - {self.subject}"
 
-    @property
-    def is_verified(self):
-        return self.verified_at is not None
-
-    def mark_verification_sent(self):
-        self.verification_sent_at = timezone.now()
-        self.save(update_fields=["verification_sent_at", "updated_at"])
-
-    def mark_verified(self):
-        if not self.verified_at:
-            self.verified_at = timezone.now()
-            self.save(update_fields=["verified_at", "updated_at"])
-
     def mark_notification_sent(self):
-        self.notification_sent_at = timezone.now()
-        self.save(update_fields=["notification_sent_at", "updated_at"])
+        pass  # retained for compatibility; no-op with reCAPTCHA flow
 
     def save(self, *args, **kwargs):
-        if not self.verification_token:
-            self.verification_token = secrets.token_urlsafe(32)
         super().save(*args, **kwargs)
 
 

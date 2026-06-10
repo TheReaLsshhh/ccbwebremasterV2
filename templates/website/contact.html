@@ -15,6 +15,7 @@
         </div>
     </div>
 </section>
+
 <section class="section-block contact-content-section">
     <div class="container">
         <div class="section-header">
@@ -63,7 +64,9 @@
                                 </a>
                             </div>
                         {% endif %}
-                        <form id="contactInquiryForm" method="post" class="vstack gap-3">
+
+                        {# ── Main inquiry form — NO captcha field here ── #}
+                        <form id="contactInquiryForm" method="post" class="vstack gap-3" novalidate>
                             {% csrf_token %}
                             {{ form.website }}
                             {{ form.name }}
@@ -74,66 +77,15 @@
                             {{ form.subject.errors }}
                             {{ form.message }}
                             {{ form.message.errors }}
-                            {% if form.captcha %}
-                                {# Checkbox widget — hidden until Send Inquiry is clicked #}
-                                <div id="contactCaptchaWrap" style="display:none;">
-                                    {{ form.captcha }}
-                                    {% if form.captcha.errors %}
-                                        <div class="contact-captcha-error">{{ form.captcha.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
-                                    <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
-                                </button>
-                            {% else %}
-                                <button type="submit" class="btn btn-brand btn-portal">
-                                    <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
-                                </button>
-                            {% endif %}
+                            <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
+                                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
+                                <span>Send Inquiry</span>
+                            </button>
                         </form>
-
-                        {% if form.captcha %}
-                        <script>
-                            var _captchaSeen = false;
-
-                            document.getElementById('contactSubmitBtn').addEventListener('click', function () {
-                                // Step 1: validate fields
-                                var inputs = document.querySelectorAll(
-                                    '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
-                                );
-                                for (var i = 0; i < inputs.length; i++) {
-                                    if (!inputs[i].checkValidity()) {
-                                        inputs[i].reportValidity();
-                                        return;
-                                    }
-                                }
-
-                                if (!_captchaSeen) {
-                                    // Step 2: show the checkbox for the first time
-                                    document.getElementById('contactCaptchaWrap').style.display = '';
-                                    _captchaSeen = true;
-                                    // Scroll checkbox into view
-                                    document.getElementById('contactCaptchaWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                } else {
-                                    // Step 3: captcha already visible — check if it's been solved
-                                    var token = document.querySelector('#contactInquiryForm [name="g-recaptcha-response"]');
-                                    if (!token || !token.value) {
-                                        // Not checked yet — shake the widget to draw attention
-                                        var wrap = document.getElementById('contactCaptchaWrap');
-                                        wrap.classList.remove('captcha-shake');
-                                        void wrap.offsetWidth; // reflow to restart animation
-                                        wrap.classList.add('captcha-shake');
-                                        return;
-                                    }
-                                    // Token present — submit
-                                    document.getElementById('contactInquiryForm').submit();
-                                }
-                            });
-                        </script>
-                        {% endif %}
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-7 d-flex">
                 <div class="content-card content-card-static contact-map-card h-100 w-100">
                     <div class="contact-map-label">
@@ -154,8 +106,163 @@
 </section>
 {% endblock %}
 
+{# ── CAPTCHA modal — rendered outside the page flow, at body level ── #}
 {% if form.captcha %}
+{% block page_modals %}
+{{ block.super }}
+
+<div class="modal fade captcha-modal-overlay"
+     id="captchaModal"
+     tabindex="-1"
+     aria-labelledby="captchaModalLabel"
+     aria-modal="true"
+     role="dialog"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered captcha-modal-dialog">
+        <div class="modal-content captcha-modal-card">
+
+            {# Header #}
+            <div class="captcha-modal-header">
+                <span class="captcha-modal-icon" aria-hidden="true">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <div class="captcha-modal-titles">
+                    <h5 class="captcha-modal-title" id="captchaModalLabel">Security Check</h5>
+                    <p class="captcha-modal-sub">Please verify you're not a robot before sending.</p>
+                </div>
+                <button type="button"
+                        class="captcha-modal-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            {# Body #}
+            <div class="captcha-modal-body">
+                {# This form carries all field values + the reCAPTCHA token to the server #}
+                <form id="captchaModalForm" method="post" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="name"    id="cm_name">
+                    <input type="hidden" name="email"   id="cm_email">
+                    <input type="hidden" name="subject" id="cm_subject">
+                    <input type="hidden" name="message" id="cm_message">
+                    <input type="hidden" name="website" value="">
+
+                    {# reCAPTCHA widget is injected here by JS after the modal opens #}
+                    <div id="captchaWidgetWrap" class="captcha-widget-wrap"></div>
+
+                    {% if form.captcha.errors %}
+                        <p class="captcha-error-msg">{{ form.captcha.errors }}</p>
+                    {% endif %}
+
+                    <button type="submit" id="captchaConfirmBtn"
+                            class="btn btn-brand btn-portal w-100 captcha-send-btn"
+                            disabled>
+                        <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
+                        Send Inquiry
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var widgetRendered = false;
+    var widgetId = null;
+    var modalEl = document.getElementById('captchaModal');
+    var confirmBtn = document.getElementById('captchaConfirmBtn');
+
+    /* reCAPTCHA explicit-render callback */
+    window.onCaptchaLoad = function () { /* render happens on modal shown */ };
+
+    function renderWidget() {
+        if (widgetRendered) return;
+        var wrap = document.getElementById('captchaWidgetWrap');
+        if (!wrap || typeof grecaptcha === 'undefined') return;
+        widgetId = grecaptcha.render(wrap, {
+            sitekey: '{{ recaptcha_public_key }}',
+            callback: function () {
+                if (confirmBtn) confirmBtn.disabled = false;
+            },
+            'expired-callback': function () {
+                if (confirmBtn) confirmBtn.disabled = true;
+            },
+            'error-callback': function () {
+                if (confirmBtn) confirmBtn.disabled = true;
+            }
+        });
+        widgetRendered = true;
+    }
+
+    /* Validate the main inquiry form fields */
+    function validateMainForm() {
+        var inputs = document.querySelectorAll(
+            '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
+        );
+        for (var i = 0; i < inputs.length; i++) {
+            if (!inputs[i].checkValidity()) {
+                inputs[i].reportValidity();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /* Mirror main-form values into the modal's hidden fields */
+    function syncFields() {
+        document.getElementById('cm_name').value    = document.querySelector('#contactInquiryForm [name="name"]').value.trim();
+        document.getElementById('cm_email').value   = document.querySelector('#contactInquiryForm [name="email"]').value.trim();
+        document.getElementById('cm_subject').value = document.querySelector('#contactInquiryForm [name="subject"]').value.trim();
+        document.getElementById('cm_message').value = document.querySelector('#contactInquiryForm [name="message"]').value.trim();
+    }
+
+    /* "Send Inquiry" click — validate → open modal */
+    var sendBtn = document.getElementById('contactSubmitBtn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', function () {
+            if (!validateMainForm()) return;
+            syncFields();
+
+            /* Reset widget & button each time */
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (widgetRendered && typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset(widgetId);
+            }
+
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        });
+    }
+
+    /* Render widget once the modal is fully visible */
+    if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', function () {
+            if (typeof grecaptcha !== 'undefined') {
+                renderWidget();
+            } else {
+                var tries = 0;
+                var poll = setInterval(function () {
+                    tries++;
+                    if (typeof grecaptcha !== 'undefined') {
+                        clearInterval(poll);
+                        renderWidget();
+                    }
+                    if (tries > 30) clearInterval(poll);
+                }, 200);
+            }
+        });
+    }
+})();
+</script>
+{% endblock %}
+
 {% block extra_js %}
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit" async defer></script>
 {% endblock %}
 {% endif %}

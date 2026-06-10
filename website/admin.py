@@ -126,12 +126,10 @@ class ContactInquiryAdmin(admin.ModelAdmin):
         "name",
         "email",
         "subject",
-        "is_verified_display",
-        "notification_sent_at",
         "is_resolved",
         "created_at",
     )
-    list_filter = ("is_resolved", "verified_at", "notification_sent_at", "created_at")
+    list_filter = ("is_resolved", "created_at")
     search_fields = ("name", "email", "subject", "message")
     list_editable = ("is_resolved",)
     actions = ("mark_resolved", "mark_unresolved")
@@ -140,32 +138,13 @@ class ContactInquiryAdmin(admin.ModelAdmin):
         "email",
         "subject",
         "message",
-        "verification_token",
-        "verification_sent_at",
-        "verified_at",
-        "notification_sent_at",
         "created_at",
         "updated_at",
     )
     fieldsets = (
         ("Inquiry", {"fields": ("name", "email", "subject", "message", "is_resolved")}),
-        (
-            "Email verification",
-            {
-                "fields": (
-                    "verification_token",
-                    "verification_sent_at",
-                    "verified_at",
-                    "notification_sent_at",
-                ),
-            },
-        ),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
-
-    @admin.display(boolean=True, description="Verified")
-    def is_verified_display(self, obj):
-        return obj.is_verified
 
     @admin.action(description="Mark selected inquiries as resolved")
     def mark_resolved(self, request, queryset):
