@@ -73,8 +73,6 @@ College of Bayawan{% endblock %} {% block content %}
               <p class="muted-copy mb-2">{{ item.summary }}</p>
               {% if item.content %}
               <p class="mb-0">
-                {% if item.content|exceeds_word_limit:24 %} {{
-                item.content|words_truncate:24 }}…
                 <button
                   type="button"
                   class="news-read-more-link"
