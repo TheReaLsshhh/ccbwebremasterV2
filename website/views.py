@@ -327,8 +327,10 @@ def about(request):
     return render(request, "website/about.html", context)
 
 
-CONTACT_RATE_LIMIT = 3  # max submissions per IP
-CONTACT_RATE_WINDOW = 3600  # 1 hour in seconds
+CONTACT_RATE_LIMIT_HOUR = 1  # max 1 submission per IP per hour
+CONTACT_RATE_WINDOW_HOUR = 3600  # 1 hour in seconds
+CONTACT_RATE_LIMIT_DAY = 5  # max 5 submissions per IP per day
+CONTACT_RATE_WINDOW_DAY = 86400  # 24 hours in seconds
 
 
 def _client_ip(request):
@@ -344,12 +346,21 @@ def contact(request):
 
     if request.method == "POST" and form.is_valid():
         ip = _client_ip(request)
-        cache_key = f"contact-submissions:{ip}"
-        attempts = cache.get(cache_key, 0)
-        if attempts >= CONTACT_RATE_LIMIT:
-            messages.error(request, "Too many submissions. Please try again later.")
+        cache_key_hour = f"contact-submissions-hour:{ip}"
+        cache_key_day = f"contact-submissions-day:{ip}"
+
+        attempts_hour = cache.get(cache_key_hour, 0)
+        attempts_day = cache.get(cache_key_day, 0)
+
+        if attempts_hour >= CONTACT_RATE_LIMIT_HOUR:
+            messages.error(request, "Too many submissions. Please try again in one hour.")
             return redirect("website:contact")
-        cache.set(cache_key, attempts + 1, CONTACT_RATE_WINDOW)
+        if attempts_day >= CONTACT_RATE_LIMIT_DAY:
+            messages.error(request, "Daily submission limit reached. Please try again tomorrow.")
+            return redirect("website:contact")
+
+        cache.set(cache_key_hour, attempts_hour + 1, CONTACT_RATE_WINDOW_HOUR)
+        cache.set(cache_key_day, attempts_day + 1, CONTACT_RATE_WINDOW_DAY)
 
         try:
             inquiry = form.save()
