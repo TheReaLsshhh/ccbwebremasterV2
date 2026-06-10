@@ -186,15 +186,36 @@
         email = email.trim().toLowerCase();
 
         var isGmail = email.endsWith('@gmail.com');
-        var isEduPh = email.endsWith('@edu.ph');
-        var hasValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        var isEduPh = email.endsWith('.edu.ph');
 
-        if (!hasValidFormat) {
-            return { valid: false, message: 'Invalid email format' };
-        }
         if (!isGmail && !isEduPh) {
-            return { valid: false, message: 'Only Gmail or Edu.ph emails are allowed' };
+            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
         }
+
+        var localPart = email.split('@')[0];
+
+        // Check for non-ASCII characters (emojis, special symbols)
+        try {
+            localPart.match(/[\x80-\xFF]/);
+            if (/[\x80-\xFF]/.test(localPart)) {
+                return { valid: false, message: 'Email contains invalid characters (no emojis or special symbols)' };
+            }
+        } catch (e) {}
+
+        // Placeholder words blacklist
+        var placeholders = ['test', 'admin', 'n/a', 'na', 'demo', 'sample', 'example', 'fake', 'temp', 'nope', 'idk'];
+        var cleanPart = localPart.replace(/[._-]/g, '');
+        for (var i = 0; i < placeholders.length; i++) {
+            if (cleanPart === placeholders[i] || cleanPart.indexOf(placeholders[i]) === 0) {
+                return { valid: false, message: 'Placeholder email addresses are not accepted' };
+            }
+        }
+
+        // Only allow alphanumeric, dots, hyphens, underscores
+        if (!/^[a-z0-9._-]+$/.test(localPart)) {
+            return { valid: false, message: 'Email contains invalid characters. Only letters, numbers, dots, hyphens, underscores allowed' };
+        }
+
         return { valid: true, message: '' };
     }
 
