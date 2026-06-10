@@ -5,7 +5,7 @@ from .models import ContactInquiry
 
 try:
     from django_recaptcha.fields import ReCaptchaField
-    from django_recaptcha.widgets import ReCaptchaV2Invisible
+    from django_recaptcha.widgets import ReCaptchaV2Checkbox
     _HAS_RECAPTCHA = bool(settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY)
 except ImportError:
     _HAS_RECAPTCHA = False
@@ -15,11 +15,7 @@ class ContactInquiryForm(forms.ModelForm):
     website = forms.CharField(required=False, widget=forms.HiddenInput)
 
     if _HAS_RECAPTCHA:
-        captcha = ReCaptchaField(
-            widget=ReCaptchaV2Invisible(
-                attrs={"data-callback": "onContactCaptchaSuccess"}
-            )
-        )
+        captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
 
     class Meta:
         model = ContactInquiry

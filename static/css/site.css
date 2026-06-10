@@ -2055,6 +2055,46 @@ span.signal-badge.signal-badge-resource {
   font-weight: 600;
 }
 
+/* reCAPTCHA overlay */
+.captcha-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(23, 53, 29, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 1.5rem;
+}
+
+.captcha-overlay[hidden] {
+  display: none !important;
+}
+
+.captcha-overlay-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: var(--ccb-radius-xl);
+  background: var(--ccb-surface-solid);
+  border: 1px solid var(--ccb-border-soft);
+  box-shadow: 0 28px 70px rgba(23, 53, 29, 0.22);
+  max-width: 26rem;
+  width: 100%;
+  text-align: center;
+}
+
+.captcha-overlay-label {
+  margin: 0;
+  color: var(--ccb-stone-700);
+  font-size: 0.97rem;
+  line-height: 1.5;
+}
+
 .contact-verification-note {
   padding: 0.95rem 1rem;
   border-radius: var(--ccb-radius-md);
