@@ -2038,6 +2038,11 @@ span.signal-badge.signal-badge-resource {
   transform-origin: left top;
 }
 
+/* Invisible reCAPTCHA — hide the rendered widget div, it fires programmatically */
+.contact-captcha-wrap .g-recaptcha[data-size="invisible"] {
+  display: none;
+}
+
 .contact-captcha-error ul {
   margin: 0;
   padding: 0;

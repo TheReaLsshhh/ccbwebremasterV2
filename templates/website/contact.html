@@ -63,7 +63,7 @@
                                 </a>
                             </div>
                         {% endif %}
-                        <form method="post" class="vstack gap-3">
+                        <form id="contactInquiryForm" method="post" class="vstack gap-3">
                             {% csrf_token %}
                             {{ form.website }}
                             {{ form.name }}
@@ -82,8 +82,29 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-                            <button type="submit" class="btn btn-brand btn-portal"><i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span></button>
+                            <button
+                                type="{% if form.captcha %}button{% else %}submit{% endif %}"
+                                {% if form.captcha %}id="contactSubmitBtn" onclick="contactCaptchaExecute()"{% endif %}
+                                class="btn btn-brand btn-portal">
+                                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
+                            </button>
                         </form>
+                        {% if form.captcha %}
+                        <script>
+                            function contactCaptchaExecute() {
+                                // Validate required fields first before triggering reCAPTCHA
+                                var form = document.getElementById('contactInquiryForm');
+                                if (!form.checkValidity()) {
+                                    form.reportValidity();
+                                    return;
+                                }
+                                grecaptcha.execute();
+                            }
+                            function onContactCaptchaSuccess(token) {
+                                document.getElementById('contactInquiryForm').submit();
+                            }
+                        </script>
+                        {% endif %}
                     </div>
                 </div>
             </div>
