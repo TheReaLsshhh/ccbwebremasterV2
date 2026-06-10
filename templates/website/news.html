@@ -6,13 +6,7 @@ College of Bayawan{% endblock %} {% block content %}
       <div class="col-xl-8">
         <div
           class="hero-main h-100"
-          {%
-          if
-          page_content.banner_image
-          %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"
-          {%
-          endif
-          %}
+          {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"{% endif %}
         >
           <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
           <p class="lead mb-0">{{ page_content.hero_text }}</p>
@@ -146,10 +140,15 @@ College of Bayawan{% endblock %} {% block content %}
     {% endif %}
   </div>
 </section>
-{% endblock %} {% block page_modals %} {% if page_obj.object_list %} {% include
-"website/includes/news_detail_modal.html" with news_modal_items=news_items %} {%
-endif %} {% if open_news_id %}
+{% endblock %}
+
+{% block page_modals %}
+{% if page_obj.object_list %}
+  {% include "website/includes/news_detail_modal.html" with news_modal_items=news_items %}
+{% endif %}
+{% if open_news_id %}
 <script>
   window.ccbOpenNewsId = "{{ open_news_id }}";
 </script>
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}
