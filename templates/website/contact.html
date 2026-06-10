@@ -90,15 +90,6 @@
                         </form>
 
                         {% if form.captcha %}
-                        {# reCAPTCHA overlay modal #}
-                        <div id="captchaOverlay" class="captcha-overlay" role="dialog" aria-modal="true" aria-label="Human verification" hidden>
-                            <div class="captcha-overlay-box">
-                                <p class="captcha-overlay-label">Please verify you're not a robot to send your inquiry.</p>
-                                <div id="captchaWidgetBox"></div>
-                                <button type="button" class="btn btn-soft btn-sm mt-3" id="captchaOverlayCancel">Cancel</button>
-                            </div>
-                        </div>
-
                         <script>
                             var _captchaWidgetId = null;
 
@@ -178,6 +169,76 @@
         </div>
     </div>
 </section>
+
+{% if form.captcha %}
+{# reCAPTCHA overlay — placed at body level so position:fixed covers the full viewport #}
+<div id="captchaOverlay" class="captcha-overlay" role="dialog" aria-modal="true" aria-label="Human verification" hidden>
+    <div class="captcha-overlay-box">
+        <p class="captcha-overlay-label">Please verify you're not a robot to send your inquiry.</p>
+        <div id="captchaWidgetBox"></div>
+        <button type="button" class="btn btn-soft btn-sm mt-3" id="captchaOverlayCancel">Cancel</button>
+    </div>
+</div>
+
+<script>
+    var _captchaWidgetId = null;
+
+    function onContactCaptchaSuccess(token) {
+        var input = document.querySelector('#contactInquiryForm input[name="g-recaptcha-response"]');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'g-recaptcha-response';
+            document.getElementById('contactInquiryForm').appendChild(input);
+        }
+        input.value = token;
+        closeCaptchaOverlay();
+        document.getElementById('contactInquiryForm').submit();
+    }
+
+    function openCaptchaOverlay() {
+        document.getElementById('captchaOverlay').removeAttribute('hidden');
+        if (_captchaWidgetId === null) {
+            var hiddenWidget = document.querySelector('#contactInquiryForm .g-recaptcha');
+            var sitekey = hiddenWidget ? hiddenWidget.getAttribute('data-sitekey') : '';
+            _captchaWidgetId = grecaptcha.render('captchaWidgetBox', {
+                'sitekey': sitekey,
+                'callback': 'onContactCaptchaSuccess',
+                'theme': 'light'
+            });
+        } else {
+            grecaptcha.reset(_captchaWidgetId);
+        }
+    }
+
+    function closeCaptchaOverlay() {
+        document.getElementById('captchaOverlay').setAttribute('hidden', '');
+    }
+
+    document.getElementById('contactSubmitBtn').addEventListener('click', function () {
+        var inputs = document.querySelectorAll(
+            '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
+        );
+        for (var i = 0; i < inputs.length; i++) {
+            if (!inputs[i].checkValidity()) {
+                inputs[i].reportValidity();
+                return;
+            }
+        }
+        openCaptchaOverlay();
+    });
+
+    document.getElementById('captchaOverlayCancel').addEventListener('click', closeCaptchaOverlay);
+    document.getElementById('captchaOverlay').addEventListener('click', function (e) {
+        if (e.target === this) closeCaptchaOverlay();
+    });
+</script>
+{% else %}
+<script>
+    document.getElementById('contactSubmitBtn').setAttribute('type', 'submit');
+</script>
+{% endif %}
+
 {% endblock %}
 
 {% if form.captcha %}
