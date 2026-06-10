@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.shortcuts import redirect, render
 from django.utils.html import escape
 
 from .forms import ContactInquiryForm
@@ -38,58 +37,6 @@ def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
     return data
 
 
-def send_contact_verification_email(request, inquiry):
-    if not getattr(settings, "BREVO_API_KEY", ""):
-        logger.error("Contact verification email skipped because BREVO_API_KEY is not configured.")
-        return False
-
-    try:
-        verify_url = request.build_absolute_uri(
-            reverse("website:verify_contact_inquiry", kwargs={"token": inquiry.verification_token})
-        )
-        recipient = settings.CONTACT_INQUIRY_RECIPIENT
-        safe_name = escape(inquiry.name)
-        safe_recipient = escape(recipient)
-        safe_verify_url = escape(verify_url)
-        html_message = f"""
-            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
-                <p>Hello {safe_name},</p>
-                <p>Thank you for contacting City College of Bayawan.</p>
-                <p>Please verify your email address first so we can forward your inquiry to <strong>{safe_recipient}</strong>.</p>
-                <p style="margin: 24px 0;">
-                    <a
-                        href="{safe_verify_url}"
-                        style="display: inline-block; padding: 12px 20px; border-radius: 999px; background: #d97706; color: #ffffff; text-decoration: none; font-weight: 700;">
-                        Verify My Inquiry
-                    </a>
-                </p>
-                <p>If the button does not work, open this link:</p>
-                <p><a href="{safe_verify_url}">{safe_verify_url}</a></p>
-                <p>If you did not submit this inquiry, you can safely ignore this message.</p>
-            </div>
-        """
-        text_message = (
-            f"Hello {inquiry.name},\n\n"
-            "Thank you for contacting City College of Bayawan.\n\n"
-            f"Please verify your email address first so we can forward your inquiry to {recipient}.\n\n"
-            f"Verify your inquiry here:\n{verify_url}\n\n"
-            "If you did not submit this inquiry, you can safely ignore this message."
-        )
-        email = EmailMultiAlternatives(
-            subject="Verify your City College of Bayawan inquiry",
-            body=text_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[inquiry.email],
-        )
-        email.attach_alternative(html_message, "text/html")
-        email.send(fail_silently=False)
-        inquiry.mark_verification_sent()
-        return True
-    except Exception:
-        logger.exception("Failed to send contact verification email for inquiry %s", inquiry.pk)
-        return False
-
-
 def send_contact_notification_email(inquiry):
     if not getattr(settings, "BREVO_API_KEY", ""):
         logger.error("Contact notification email skipped because BREVO_API_KEY is not configured.")
@@ -102,7 +49,7 @@ def send_contact_notification_email(inquiry):
         safe_subject = escape(inquiry.subject)
         safe_message = escape(inquiry.message)
         text_message = (
-            "A website visitor verified their email and submitted an inquiry.\n\n"
+            "A website visitor submitted an inquiry via the contact form.\n\n"
             f"Name: {inquiry.name}\n"
             f"Email: {inquiry.email}\n"
             f"Subject: {inquiry.subject}\n\n"
@@ -110,7 +57,7 @@ def send_contact_notification_email(inquiry):
         )
         html_message = f"""
             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #17351d;">
-                <p>A website visitor verified their email and submitted an inquiry.</p>
+                <p>A website visitor submitted an inquiry via the contact form.</p>
                 <p><strong>Name:</strong> {safe_name}<br>
                 <strong>Email:</strong> {safe_email}<br>
                 <strong>Subject:</strong> {safe_subject}</p>
@@ -119,7 +66,7 @@ def send_contact_notification_email(inquiry):
             </div>
         """
         email = EmailMultiAlternatives(
-            subject=f"Verified website inquiry: {inquiry.subject}",
+            subject=f"Website inquiry: {inquiry.subject}",
             body=text_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[recipient],
@@ -400,101 +347,50 @@ def contact(request):
         cache_key = f"contact-submissions:{ip}"
         attempts = cache.get(cache_key, 0)
         if attempts >= CONTACT_RATE_LIMIT:
-            messages.error(
-                request,
-                "Too many submissions. Please try again later.",
-            )
+            messages.error(request, "Too many submissions. Please try again later.")
             return redirect("website:contact")
         cache.set(cache_key, attempts + 1, CONTACT_RATE_WINDOW)
 
         try:
-            try:
-                inquiry = form.save()
-                inquiry.mark_verified()
-                email_sent = send_contact_notification_email(inquiry)
-                if email_sent:
-                    messages.success(
-                        request,
-                        f"Your inquiry has been sent to {settings.CONTACT_INQUIRY_RECIPIENT}. Thank you for reaching out.",
-                    )
-                else:
-                    messages.warning(
-                        request,
-                        "Your inquiry was received but could not be forwarded by email. Please contact the office directly.",
-                    )
-            except Exception as exc:
-                logger.exception("Contact inquiry submission failed")
-                try:
-                    if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
-                        error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
-                    else:
-                        error_message = "Your inquiry could not be sent right now. Please try again later."
-                    messages.error(request, error_message)
-                except Exception:
-                    pass
-        except Exception:
-            logger.exception("Unexpected error in contact POST handler")
+            inquiry = form.save()
+            inquiry.mark_verified()
+            email_sent = send_contact_notification_email(inquiry)
+            if email_sent:
+                messages.success(
+                    request,
+                    f"Your inquiry has been sent to {settings.CONTACT_INQUIRY_RECIPIENT}. Thank you for reaching out.",
+                )
+            else:
+                messages.warning(
+                    request,
+                    "Your inquiry was received but could not be forwarded by email. Please contact the office directly.",
+                )
+        except Exception as exc:
+            logger.exception("Contact inquiry submission failed")
+            if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
+                error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
+            else:
+                error_message = "Your inquiry could not be sent right now. Please try again later."
+            messages.error(request, error_message)
+
         return redirect("website:contact")
 
-    if request.method == "POST" and form.is_valid() is False:
-        context.update(
-            {
-                "page_content": get_page_content(PageContent.CONTACT),
-                "form": form,
-            }
-        )
+    if request.method == "POST" and not form.is_valid():
         error_messages = []
         for field_name, errors in form.errors.items():
             if field_name == "__all__":
                 error_messages.extend(errors)
                 continue
-
             label = form.fields.get(field_name).label or field_name.replace("_", " ").title()
             error_messages.extend([f"{label}: {error}" for error in errors])
-
         context["notification_modal"] = {
             "type": "error",
             "message": "Please correct the following before submitting again: " + " ".join(error_messages),
         }
-        return render(request, "website/contact.html", context)
 
-    context.update(
-        {
-            "page_content": get_page_content(PageContent.CONTACT),
-            "form": form,
-        }
-    )
-
+    context.update({
+        "page_content": get_page_content(PageContent.CONTACT),
+        "form": form,
+        "recaptcha_public_key": getattr(settings, "RECAPTCHA_PUBLIC_KEY", ""),
+    })
     return render(request, "website/contact.html", context)
-
-
-def verify_contact_inquiry(request, token):
-    inquiry = get_object_or_404(ContactInquiry, verification_token=token)
-    inquiry.mark_verified()
-
-    if not inquiry.notification_sent_at:
-        try:
-            email_sent = send_contact_notification_email(inquiry)
-            if email_sent:
-                messages.success(
-                    request,
-                    f"Your email has been verified and your inquiry was sent to {settings.CONTACT_INQUIRY_RECIPIENT}.",
-                )
-            else:
-                messages.error(
-                    request,
-                    f"Your email was verified, but the inquiry could not be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT}. Please contact the office directly.",
-                )
-        except Exception as exc:
-            logger.exception("Contact notification email failed for inquiry %s", inquiry.pk)
-            messages.error(
-                request,
-                f"Your email was verified, but the inquiry could not be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT}. Please contact the office directly.",
-            )
-    else:
-        messages.success(
-            request,
-            f"Your inquiry has already been verified and sent to {settings.CONTACT_INQUIRY_RECIPIENT}.",
-        )
-
-    return redirect("website:contact")

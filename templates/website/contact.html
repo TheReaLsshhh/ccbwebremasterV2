@@ -75,25 +75,30 @@
                             {{ form.message }}
                             {{ form.message.errors }}
                             {% if form.captcha %}
-                                {# Hidden — rendered for server-side token validation only #}
+                                {# Hidden django-recaptcha widget — server-side token validation only #}
                                 <div style="display:none;">{{ form.captcha }}</div>
                                 {% if form.captcha.errors %}
                                     <div class="contact-captcha-error">{{ form.captcha.errors }}</div>
                                 {% endif %}
+                                {# Invisible reCAPTCHA bound to the button — Google handles the challenge natively #}
+                                <div id="contactRecaptchaBtn"
+                                    class="g-recaptcha btn btn-brand btn-portal"
+                                    data-sitekey="{{ recaptcha_public_key }}"
+                                    data-callback="onContactCaptchaSuccess"
+                                    data-size="invisible">
+                                    <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
+                                </div>
+                            {% else %}
+                                <button type="submit" class="btn btn-brand btn-portal">
+                                    <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
+                                </button>
                             {% endif %}
-                            <button
-                                type="button"
-                                id="contactSubmitBtn"
-                                class="btn btn-brand btn-portal">
-                                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
-                            </button>
                         </form>
 
                         {% if form.captcha %}
                         <script>
-                            var _captchaWidgetId = null;
-
                             function onContactCaptchaSuccess(token) {
+                                // Token from invisible reCAPTCHA — write into django-recaptcha hidden input and submit
                                 var input = document.querySelector('#contactInquiryForm input[name="g-recaptcha-response"]');
                                 if (!input) {
                                     input = document.createElement('input');
@@ -102,50 +107,24 @@
                                     document.getElementById('contactInquiryForm').appendChild(input);
                                 }
                                 input.value = token;
-                                closeCaptchaOverlay();
                                 document.getElementById('contactInquiryForm').submit();
                             }
 
-                            function openCaptchaOverlay() {
-                                document.getElementById('captchaOverlay').removeAttribute('hidden');
-                                if (_captchaWidgetId === null) {
-                                    var hiddenWidget = document.querySelector('#contactInquiryForm .g-recaptcha');
-                                    var sitekey = hiddenWidget ? hiddenWidget.getAttribute('data-sitekey') : '';
-                                    _captchaWidgetId = grecaptcha.render('captchaWidgetBox', {
-                                        'sitekey': sitekey,
-                                        'callback': 'onContactCaptchaSuccess',
-                                        'theme': 'light'
-                                    });
-                                } else {
-                                    grecaptcha.reset(_captchaWidgetId);
-                                }
-                            }
-
-                            function closeCaptchaOverlay() {
-                                document.getElementById('captchaOverlay').setAttribute('hidden', '');
-                            }
-
-                            document.getElementById('contactSubmitBtn').addEventListener('click', function () {
+                            // Validate fields before grecaptcha.execute() fires on button click
+                            document.getElementById('contactRecaptchaBtn').addEventListener('click', function (e) {
                                 var inputs = document.querySelectorAll(
                                     '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
                                 );
                                 for (var i = 0; i < inputs.length; i++) {
                                     if (!inputs[i].checkValidity()) {
+                                        e.preventDefault();
+                                        e.stopImmediatePropagation();
                                         inputs[i].reportValidity();
                                         return;
                                     }
                                 }
-                                openCaptchaOverlay();
+                                // Valid — let reCAPTCHA handle the rest via data-callback
                             });
-
-                            document.getElementById('captchaOverlayCancel').addEventListener('click', closeCaptchaOverlay);
-                            document.getElementById('captchaOverlay').addEventListener('click', function (e) {
-                                if (e.target === this) closeCaptchaOverlay();
-                            });
-                        </script>
-                        {% else %}
-                        <script>
-                            document.getElementById('contactSubmitBtn').setAttribute('type', 'submit');
                         </script>
                         {% endif %}
                     </div>
@@ -169,83 +148,10 @@
         </div>
     </div>
 </section>
-
-{% if form.captcha %}
-{# reCAPTCHA overlay — placed at body level so position:fixed covers the full viewport #}
-<div id="captchaOverlay" class="captcha-overlay" role="dialog" aria-modal="true" aria-label="Human verification" hidden>
-    <div class="captcha-overlay-box">
-        <p class="captcha-overlay-label">Please verify you're not a robot to send your inquiry.</p>
-        <div id="captchaWidgetBox"></div>
-        <button type="button" class="btn btn-soft btn-sm mt-3" id="captchaOverlayCancel">Cancel</button>
-    </div>
-</div>
-
-<script>
-    var _captchaWidgetId = null;
-
-    function onContactCaptchaSuccess(token) {
-        var input = document.querySelector('#contactInquiryForm input[name="g-recaptcha-response"]');
-        if (!input) {
-            input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'g-recaptcha-response';
-            document.getElementById('contactInquiryForm').appendChild(input);
-        }
-        input.value = token;
-        closeCaptchaOverlay();
-        document.getElementById('contactInquiryForm').submit();
-    }
-
-    function openCaptchaOverlay() {
-        document.getElementById('captchaOverlay').removeAttribute('hidden');
-        document.body.classList.add('captcha-overlay-open');
-        if (_captchaWidgetId === null) {
-            var hiddenWidget = document.querySelector('#contactInquiryForm .g-recaptcha');
-            var sitekey = hiddenWidget ? hiddenWidget.getAttribute('data-sitekey') : '';
-            _captchaWidgetId = grecaptcha.render('captchaWidgetBox', {
-                'sitekey': sitekey,
-                'callback': 'onContactCaptchaSuccess',
-                'theme': 'light'
-            });
-        } else {
-            grecaptcha.reset(_captchaWidgetId);
-        }
-    }
-
-    function closeCaptchaOverlay() {
-        document.getElementById('captchaOverlay').setAttribute('hidden', '');
-        document.body.classList.remove('captcha-overlay-open');
-    }
-
-    document.getElementById('contactSubmitBtn').addEventListener('click', function () {
-        var inputs = document.querySelectorAll(
-            '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
-        );
-        for (var i = 0; i < inputs.length; i++) {
-            if (!inputs[i].checkValidity()) {
-                inputs[i].reportValidity();
-                return;
-            }
-        }
-        openCaptchaOverlay();
-    });
-
-    document.getElementById('captchaOverlayCancel').addEventListener('click', closeCaptchaOverlay);
-    document.getElementById('captchaOverlay').addEventListener('click', function (e) {
-        if (e.target === this) closeCaptchaOverlay();
-    });
-</script>
-{% else %}
-<script>
-    document.getElementById('contactSubmitBtn').setAttribute('type', 'submit');
-</script>
-{% endif %}
-
 {% endblock %}
 
 {% if form.captcha %}
 {% block extra_js %}
-{# Load reCAPTCHA with render=explicit so we control when/where the widget renders #}
-<script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 {% endif %}
