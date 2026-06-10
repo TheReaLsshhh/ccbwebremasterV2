@@ -2,8 +2,8 @@ services:
   - type: web
     name: ccbwebsite
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn ccbwebsite.wsgi:application --workers 2 --threads 4 --timeout 60 --log-file -
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --run-syncdb && gunicorn ccbwebsite.wsgi:application --workers 2 --threads 4 --timeout 60 --log-file -
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
@@ -34,4 +34,8 @@ services:
       - key: CLOUDINARY_URL
         sync: false
       - key: DATABASE_URL
+        sync: false
+      - key: RECAPTCHA_PUBLIC_KEY
+        value: "6LcAXhUtAAAAAHEfverzI1IQPzo8gwzHUP8m8WNt"
+      - key: RECAPTCHA_PRIVATE_KEY
         sync: false
