@@ -71,8 +71,17 @@
                             {{ form.website }}
                             {{ form.name }}
                             {{ form.name.errors }}
-                            {{ form.email }}
+
+                            {# Email field with real-time validation #}
+                            <div class="position-relative">
+                                {{ form.email }}
+                                <span id="emailErrorIcon" class="email-error-icon d-none" title="Invalid email format">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </span>
+                            </div>
                             {{ form.email.errors }}
+                            <small id="emailErrorMsg" class="text-danger d-none"></small>
+
                             {{ form.subject }}
                             {{ form.subject.errors }}
                             {{ form.message }}
@@ -167,6 +176,58 @@
 (function () {
     'use strict';
 
+    var emailField = document.querySelector('#contactInquiryForm [name="email"]');
+    var emailErrorIcon = document.getElementById('emailErrorIcon');
+    var emailErrorMsg = document.getElementById('emailErrorMsg');
+
+    /* Validate email format and domain */
+    function validateEmail(email) {
+        if (!email) return { valid: true, message: '' };
+        email = email.trim().toLowerCase();
+
+        var isGmail = email.endsWith('@gmail.com');
+        var isEduPh = email.endsWith('.edu.ph');
+        var hasValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        if (!hasValidFormat) {
+            return { valid: false, message: 'Invalid email format' };
+        }
+        if (!isGmail && !isEduPh) {
+            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
+        }
+        return { valid: true, message: '' };
+    }
+
+    /* Update email field styling based on validation */
+    function updateEmailUI() {
+        var email = emailField.value.trim();
+        var result = validateEmail(email);
+
+        if (!email) {
+            emailField.classList.remove('is-invalid');
+            emailErrorIcon.classList.add('d-none');
+            emailErrorMsg.classList.add('d-none');
+            return;
+        }
+
+        if (!result.valid) {
+            emailField.classList.add('is-invalid');
+            emailErrorIcon.classList.remove('d-none');
+            emailErrorMsg.textContent = result.message;
+            emailErrorMsg.classList.remove('d-none');
+        } else {
+            emailField.classList.remove('is-invalid');
+            emailErrorIcon.classList.add('d-none');
+            emailErrorMsg.classList.add('d-none');
+        }
+    }
+
+    /* Listen to email field changes */
+    if (emailField) {
+        emailField.addEventListener('blur', updateEmailUI);
+        emailField.addEventListener('input', updateEmailUI);
+    }
+
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
@@ -204,6 +265,14 @@
                 inputs[i].reportValidity();
                 return false;
             }
+        }
+
+        /* Validate email domain */
+        var email = emailField.value.trim();
+        var emailResult = validateEmail(email);
+        if (!emailResult.valid) {
+            emailField.focus();
+            return false;
         }
         return true;
     }

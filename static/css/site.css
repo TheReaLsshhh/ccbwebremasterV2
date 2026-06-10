@@ -3426,6 +3426,28 @@ p.text-dark.fw-semibold.mb-2 {
   margin: 0.4rem 0 0;
 }
 
+/* Email validation feedback */
+.form-control.is-invalid {
+  border-color: #dc2626;
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: none;
+}
+
+.form-control.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+}
+
+.email-error-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #dc2626;
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
 /* Send button — kept for reference, button removed from modal */
 .captcha-send-btn {
   margin-top: 1rem !important;
