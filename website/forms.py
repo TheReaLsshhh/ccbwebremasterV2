@@ -43,6 +43,30 @@ def verify_email_with_abstract_api(email):
         return True, ""  # Fail gracefully if API unavailable
 
 
+def is_suspicious_email(email):
+    """Check for placeholder/suspicious email patterns. Returns (is_suspicious, error_message)"""
+    import re
+
+    local_part = email.split("@")[0].lower()
+
+    # Blacklist common placeholder words
+    placeholders = {"test", "admin", "n/a", "na", "demo", "sample", "example", "fake", "temp", "nope", "idk"}
+    if local_part in placeholders or any(p in local_part.replace(".", "").replace("_", "").replace("-", "") for p in placeholders):
+        return True, "Placeholder email addresses are not accepted."
+
+    # Check for non-ASCII characters (emojis, special symbols)
+    try:
+        email.encode("ascii")
+    except UnicodeEncodeError:
+        return True, "Email contains invalid characters. Only English letters, numbers, dots, hyphens, and underscores are allowed."
+
+    # Only allow alphanumeric, dots, hyphens, underscores in local part
+    if not re.match(r"^[a-z0-9._-]+$", local_part):
+        return True, "Email contains invalid characters. Only English letters, numbers, dots, hyphens, and underscores are allowed."
+
+    return False, ""
+
+
 class ContactInquiryForm(forms.ModelForm):
     website = forms.CharField(required=False, widget=forms.HiddenInput)
 
@@ -98,6 +122,11 @@ class ContactInquiryForm(forms.ModelForm):
         # Check domain whitelist (Gmail and .edu.ph only)
         if not (email.endswith("@gmail.com") or email.endswith(".edu.ph")):
             raise forms.ValidationError("Email must be a Gmail account or .edu.ph institutional email.")
+
+        # Check for placeholder/suspicious patterns
+        is_suspicious, error_msg = is_suspicious_email(email)
+        if is_suspicious:
+            raise forms.ValidationError(error_msg)
 
         # Check if email domain is on disposable email blocklist
         if _HAS_DISPOSABLE_CHECK:
