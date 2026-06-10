@@ -2063,10 +2063,18 @@ span.signal-badge.signal-badge-resource {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.5rem;
+}
+
+/* Blur via pseudo-element so backdrop-filter doesn't trap reCAPTCHA's challenge iframe */
+.captcha-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background: rgba(23, 53, 29, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  padding: 1.5rem;
 }
 
 .captcha-overlay[hidden] {
@@ -2074,6 +2082,8 @@ span.signal-badge.signal-badge-resource {
 }
 
 .captcha-overlay-box {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2093,6 +2103,11 @@ span.signal-badge.signal-badge-resource {
   color: var(--ccb-stone-700);
   font-size: 0.97rem;
   line-height: 1.5;
+}
+
+/* Lock body scroll when overlay is open */
+body.captcha-overlay-open {
+  overflow: hidden;
 }
 
 .contact-verification-note {

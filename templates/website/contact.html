@@ -198,6 +198,7 @@
 
     function openCaptchaOverlay() {
         document.getElementById('captchaOverlay').removeAttribute('hidden');
+        document.body.classList.add('captcha-overlay-open');
         if (_captchaWidgetId === null) {
             var hiddenWidget = document.querySelector('#contactInquiryForm .g-recaptcha');
             var sitekey = hiddenWidget ? hiddenWidget.getAttribute('data-sitekey') : '';
@@ -213,6 +214,7 @@
 
     function closeCaptchaOverlay() {
         document.getElementById('captchaOverlay').setAttribute('hidden', '');
+        document.body.classList.remove('captcha-overlay-open');
     }
 
     document.getElementById('contactSubmitBtn').addEventListener('click', function () {
