@@ -54,6 +54,9 @@ ENABLE_CLOUDINARY = env_bool("ENABLE_CLOUDINARY", HAS_CLOUDINARY_CONFIG)
 # This avoids admin 500s from partial/misconfigured Cloudinary secrets in production.
 USE_CLOUDINARY = bool(ENABLE_CLOUDINARY and HAS_CLOUDINARY_CONFIG)
 
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "")
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -66,6 +69,9 @@ INSTALLED_APPS = [
 
 if USE_CLOUDINARY:
     INSTALLED_APPS = ["cloudinary_storage", *INSTALLED_APPS, "cloudinary"]
+
+if RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY:
+    INSTALLED_APPS = [*INSTALLED_APPS, "django_recaptcha"]
 
 # Dynamic Caching Backend (Redis in production with local memory fallback)
 REDIS_URL = os.getenv("REDIS_URL") or os.getenv("REDIS_TLS_URL")
@@ -249,3 +255,4 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "City College of Bayawan <citycollegeofbayawan@gmail.com>")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 CONTACT_INQUIRY_RECIPIENT = os.getenv("CONTACT_INQUIRY_RECIPIENT", "citycollegeofbayawan@gmail.com")
+SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]

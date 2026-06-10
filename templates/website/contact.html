@@ -74,10 +74,9 @@
                             {{ form.subject.errors }}
                             {{ form.message }}
                             {{ form.message.errors }}
-                            <div class="contact-verification-note">
-                                <strong>Email Verification Required.</strong>
-                                We will send a verification link before forwarding your inquiry.
-                            </div>
+                            {% if form.captcha %}
+                                {{ form.captcha }}
+                            {% endif %}
                             <button type="submit" class="btn btn-brand btn-portal"><i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span></button>
                         </form>
                     </div>

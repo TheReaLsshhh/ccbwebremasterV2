@@ -1678,7 +1678,7 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 .news-grid-visual {
   margin: 0;
   border: 0;
-  border-radius: 0;
+  border-radius: calc(var(--ccb-radius-xl) - 1px) calc(var(--ccb-radius-xl) - 1px) 0 0;
   background: transparent;
 }
 

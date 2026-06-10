@@ -410,24 +410,23 @@ def contact(request):
         try:
             try:
                 inquiry = form.save()
-                email_sent = send_contact_verification_email(request, inquiry)
+                inquiry.mark_verified()
+                email_sent = send_contact_notification_email(inquiry)
                 if email_sent:
                     messages.success(
                         request,
-                        f"Please check your email and click the verification link. Your inquiry will be forwarded to {settings.CONTACT_INQUIRY_RECIPIENT} after verification.",
+                        f"Your inquiry has been sent to {settings.CONTACT_INQUIRY_RECIPIENT}. Thank you for reaching out.",
                     )
                 else:
-                    messages.error(
+                    messages.warning(
                         request,
-                        "Your inquiry was saved, but the verification email could not be sent yet. Please contact the office directly.",
+                        "Your inquiry was received but could not be forwarded by email. Please contact the office directly.",
                     )
             except Exception as exc:
                 logger.exception("Contact inquiry submission failed")
                 try:
                     if "no such table" in str(exc).lower() or "relation" in str(exc).lower():
                         error_message = "The inquiry system is not ready yet. Please try again after the site finishes updating."
-                    elif not getattr(settings, "BREVO_API_KEY", ""):
-                        error_message = "Your inquiry was saved, but the email service is not configured yet."
                     else:
                         error_message = "Your inquiry could not be sent right now. Please try again later."
                     messages.error(request, error_message)

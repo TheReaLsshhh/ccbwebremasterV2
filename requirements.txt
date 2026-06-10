@@ -8,3 +8,4 @@ cloudinary>=1.40
 django-cloudinary-storage>=0.3
 python-dotenv>=1.0
 requests>=2.31
+django-recaptcha>=4.0
