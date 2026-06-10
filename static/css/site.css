@@ -3426,13 +3426,7 @@ p.text-dark.fw-semibold.mb-2 {
   margin: 0.4rem 0 0;
 }
 
-/* Send button */
+/* Send button — kept for reference, button removed from modal */
 .captcha-send-btn {
   margin-top: 1rem !important;
-}
-
-.captcha-send-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: auto;
 }

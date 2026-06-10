@@ -156,13 +156,6 @@
                     {% if form.captcha.errors %}
                         <p class="captcha-error-msg">{{ form.captcha.errors }}</p>
                     {% endif %}
-
-                    <button type="submit" id="captchaConfirmBtn"
-                            class="btn btn-brand btn-portal w-100 captcha-send-btn"
-                            disabled>
-                        <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
-                        Send Inquiry
-                    </button>
                 </form>
             </div>
 
@@ -177,7 +170,6 @@
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
-    var confirmBtn = document.getElementById('captchaConfirmBtn');
 
     /* reCAPTCHA explicit-render callback */
     window.onCaptchaLoad = function () { /* render happens on modal shown */ };
@@ -188,14 +180,15 @@
         if (!wrap || typeof grecaptcha === 'undefined') return;
         widgetId = grecaptcha.render(wrap, {
             sitekey: '{{ recaptcha_public_key }}',
+            /* Auto-submit the moment the puzzle is solved */
             callback: function () {
-                if (confirmBtn) confirmBtn.disabled = false;
+                document.getElementById('captchaModalForm').submit();
             },
             'expired-callback': function () {
-                if (confirmBtn) confirmBtn.disabled = true;
+                grecaptcha.reset(widgetId);
             },
             'error-callback': function () {
-                if (confirmBtn) confirmBtn.disabled = true;
+                grecaptcha.reset(widgetId);
             }
         });
         widgetRendered = true;
@@ -217,6 +210,10 @@
 
     /* Mirror main-form values into the modal's hidden fields */
     function syncFields() {
+        var modalForm = document.getElementById('captchaModalForm');
+        /* Set action to current page so POST goes to the contact view */
+        modalForm.action = window.location.pathname;
+
         document.getElementById('cm_name').value    = document.querySelector('#contactInquiryForm [name="name"]').value.trim();
         document.getElementById('cm_email').value   = document.querySelector('#contactInquiryForm [name="email"]').value.trim();
         document.getElementById('cm_subject').value = document.querySelector('#contactInquiryForm [name="subject"]').value.trim();
@@ -230,8 +227,7 @@
             if (!validateMainForm()) return;
             syncFields();
 
-            /* Reset widget & button each time */
-            if (confirmBtn) confirmBtn.disabled = true;
+            /* Reset widget each time modal opens */
             if (widgetRendered && typeof grecaptcha !== 'undefined') {
                 grecaptcha.reset(widgetId);
             }
