@@ -80,14 +80,11 @@
                                 {% if form.captcha.errors %}
                                     <div class="contact-captcha-error">{{ form.captcha.errors }}</div>
                                 {% endif %}
-                                {# Invisible reCAPTCHA bound to the button — Google handles the challenge natively #}
-                                <div id="contactRecaptchaBtn"
-                                    class="g-recaptcha btn btn-brand btn-portal"
-                                    data-sitekey="{{ recaptcha_public_key }}"
-                                    data-callback="onContactCaptchaSuccess"
-                                    data-size="invisible">
+                                {# Hidden container where invisible reCAPTCHA widget is rendered #}
+                                <div id="contactRecaptchaWidget"></div>
+                                <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
                                     <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
-                                </div>
+                                </button>
                             {% else %}
                                 <button type="submit" class="btn btn-brand btn-portal">
                                     <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i><span>Send Inquiry</span>
@@ -97,8 +94,19 @@
 
                         {% if form.captcha %}
                         <script>
+                            var _widgetId = null;
+
+                            // Called by reCAPTCHA API once script loads
+                            function onRecaptchaLoad() {
+                                _widgetId = grecaptcha.render('contactRecaptchaWidget', {
+                                    'sitekey': '{{ recaptcha_public_key }}',
+                                    'size': 'invisible',
+                                    'callback': onContactCaptchaSuccess
+                                });
+                            }
+
                             function onContactCaptchaSuccess(token) {
-                                // Token from invisible reCAPTCHA — write into django-recaptcha hidden input and submit
+                                // Inject token into the hidden django-recaptcha input and submit
                                 var input = document.querySelector('#contactInquiryForm input[name="g-recaptcha-response"]');
                                 if (!input) {
                                     input = document.createElement('input');
@@ -110,20 +118,19 @@
                                 document.getElementById('contactInquiryForm').submit();
                             }
 
-                            // Validate fields before grecaptcha.execute() fires on button click
-                            document.getElementById('contactRecaptchaBtn').addEventListener('click', function (e) {
+                            document.getElementById('contactSubmitBtn').addEventListener('click', function () {
+                                // Validate visible fields first
                                 var inputs = document.querySelectorAll(
                                     '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
                                 );
                                 for (var i = 0; i < inputs.length; i++) {
                                     if (!inputs[i].checkValidity()) {
-                                        e.preventDefault();
-                                        e.stopImmediatePropagation();
                                         inputs[i].reportValidity();
                                         return;
                                     }
                                 }
-                                // Valid — let reCAPTCHA handle the rest via data-callback
+                                // Fields valid — execute reCAPTCHA (shows puzzle if Google requires it)
+                                grecaptcha.execute(_widgetId);
                             });
                         </script>
                         {% endif %}
@@ -152,6 +159,6 @@
 
 {% if form.captcha %}
 {% block extra_js %}
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit" async defer></script>
 {% endblock %}
 {% endif %}
