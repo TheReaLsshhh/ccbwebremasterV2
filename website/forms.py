@@ -1,10 +1,14 @@
 from django import forms
 from django.conf import settings
 
+import logging
 import re
 import requests
 
 from .models import ContactInquiry
+
+
+logger = logging.getLogger(__name__)
 
 try:
     from disposable_email_domains import blocklist
@@ -48,7 +52,14 @@ def verify_email_with_abstract_api(email):
     try:
         url = "https://emailvalidation.abstractapi.com/v1/"
         response = requests.get(url, params={"api_key": api_key, "email": email}, timeout=5)
-        response.raise_for_status()
+        if response.status_code != 200:
+            logger.warning(
+                "Abstract email verification skipped for %s because API returned HTTP %s.",
+                email,
+                response.status_code,
+            )
+            return True, ""
+
         data = response.json()
 
         if data.get("is_valid_format", {}).get("value") is False:
@@ -63,12 +74,13 @@ def verify_email_with_abstract_api(email):
         deliverability = data.get("deliverability", "UNKNOWN")
         if deliverability == "UNDELIVERABLE":
             return False, "This email address does not exist or is not deliverable."
-        if deliverability in {"RISKY", "UNKNOWN"}:
+        if deliverability == "RISKY":
             return False, "This email address appears to be invalid or risky."
 
         return True, ""
-    except requests.RequestException:
-        return False, "We could not verify this email right now. Please try again later."
+    except (ValueError, requests.RequestException):
+        logger.warning("Abstract email verification skipped for %s.", email, exc_info=True)
+        return True, ""
 
 
 def validate_email_text(email):
