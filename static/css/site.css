@@ -649,6 +649,10 @@ button,
   font-size: 1rem;
 }
 
+.brand-copy strong .brand-initial {
+  color: var(--ccb-orange-600);
+}
+
 .nav-link {
   padding: 0.65rem 0.9rem !important;
   border-radius: 999px;
