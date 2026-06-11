@@ -7,8 +7,8 @@ from django.contrib import messages
 from django.core import signing
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpResponseBadRequest
 from django.core.paginator import Paginator
+from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, render
 from django.utils.html import escape
 
@@ -93,7 +93,9 @@ def cloudinary_download(request):
         if _cloudinary_url_is_available(candidate):
             return redirect(candidate)
 
-    return redirect(candidates[0])
+    return HttpResponseNotFound(
+        "This download file is unavailable. Please reupload it in the admin dashboard."
+    )
 
 
 def send_contact_notification_email(inquiry):
