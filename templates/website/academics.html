@@ -34,7 +34,7 @@
                         {% if program.award %}<p class="text-dark fw-semibold">{{ program.award }}</p>{% endif %}
                         <p class="muted-copy">{{ program.description }}</p>
                         {% if program.brochure_file %}
-                            <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ program.brochure_file|file_download_url }}">Download File</a>
+                            <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ program.brochure_file|file_download_url }}" download>Download Brochure</a>
                         {% endif %}
                     </div>
                 </div>
