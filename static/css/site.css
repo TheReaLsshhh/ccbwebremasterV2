@@ -635,12 +635,9 @@ button,
   display: block;
 }
 
-.brand-copy small {
-  display: block;
-  color: var(--ccb-stone-500);
-  font-family: "Public Sans", "Segoe UI", sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.brand-copy {
+  display: inline-flex;
+  align-items: center;
 }
 
 .brand-copy strong {
