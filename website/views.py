@@ -1,9 +1,13 @@
 import logging
+from urllib.parse import urlparse
 
+import requests
 from django.conf import settings
 from django.contrib import messages
+from django.core import signing
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponseBadRequest
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.utils.html import escape
@@ -25,6 +29,7 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 NEWS_PAGE_SIZE = 9
+CLOUDINARY_DOWNLOAD_TIMEOUT = 4
 
 
 def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
@@ -35,6 +40,60 @@ def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
         data = {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
         cache.set(cache_key, data, 3600)  # cache for 1 hour
     return data
+
+
+def _cloudinary_download_candidates(url):
+    candidates = [url]
+    if "/raw/upload/" in url:
+        candidates.append(url.replace("/raw/upload/", "/image/upload/", 1))
+    elif "/image/upload/" in url:
+        candidates.insert(0, url.replace("/image/upload/", "/raw/upload/", 1))
+
+    deduped_candidates = []
+    for candidate in candidates:
+        if candidate not in deduped_candidates:
+            deduped_candidates.append(candidate)
+    return deduped_candidates
+
+
+def _cloudinary_url_is_available(url):
+    try:
+        response = requests.head(
+            url,
+            allow_redirects=True,
+            timeout=CLOUDINARY_DOWNLOAD_TIMEOUT,
+        )
+        if response.status_code == 405:
+            response = requests.get(
+                url,
+                allow_redirects=True,
+                stream=True,
+                timeout=CLOUDINARY_DOWNLOAD_TIMEOUT,
+            )
+        is_available = response.status_code < 400
+        response.close()
+        return is_available
+    except requests.RequestException:
+        return False
+
+
+def cloudinary_download(request):
+    signed_url = request.GET.get("u", "")
+    try:
+        url = signing.Signer(salt="website.download").unsign(signed_url)
+    except signing.BadSignature:
+        return HttpResponseBadRequest("Invalid download link.")
+
+    parsed_url = urlparse(url)
+    if parsed_url.scheme != "https" or parsed_url.netloc != "res.cloudinary.com":
+        return HttpResponseBadRequest("Invalid download host.")
+
+    candidates = _cloudinary_download_candidates(url)
+    for candidate in candidates:
+        if _cloudinary_url_is_available(candidate):
+            return redirect(candidate)
+
+    return redirect(candidates[0])
 
 
 def send_contact_notification_email(inquiry):

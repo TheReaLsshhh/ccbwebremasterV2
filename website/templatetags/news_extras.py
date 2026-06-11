@@ -1,5 +1,8 @@
 from django import template
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
+
+from django.core import signing
+from django.urls import NoReverseMatch, reverse
 
 register = template.Library()
 
@@ -55,9 +58,11 @@ def file_download_url(file_field):
     path = urlparse(url).path.lower()
     extension = path.rsplit(".", 1)[-1] if "." in path else ""
 
-    # Fix legacy records: old uploads of documents went through the image endpoint
-    # and may have /image/upload/ in their URL. Correct those to /raw/upload/.
-    if extension in DOCUMENT_EXTENSIONS and "/image/upload/" in url:
-        url = url.replace("/image/upload/", "/raw/upload/", 1)
+    if extension in DOCUMENT_EXTENSIONS:
+        try:
+            signed_url = signing.Signer(salt="website.download").sign(url)
+            return f"{reverse('website:cloudinary_download')}?{urlencode({'u': signed_url})}"
+        except NoReverseMatch:
+            return url
 
     return url
