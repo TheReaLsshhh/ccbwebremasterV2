@@ -185,22 +185,42 @@
         if (!email) return { valid: true, message: '' };
         email = email.trim().toLowerCase();
 
-        var isGmail = email.endsWith('@gmail.com');
-        var isEduPh = email.endsWith('.edu.ph');
-
-        if (!isGmail && !isEduPh) {
-            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
+        if ((email.match(/@/g) || []).length !== 1) {
+            return { valid: false, message: 'Enter a valid email address' };
+        }
+        if (/[^\x00-\x7F]/.test(email)) {
+            return { valid: false, message: 'Email cannot contain emojis or non-English symbols' };
+        }
+        if (email.indexOf('..') !== -1) {
+            return { valid: false, message: 'Email cannot contain consecutive dots' };
         }
 
-        var localPart = email.split('@')[0];
+        var parts = email.split('@');
+        var localPart = parts[0];
+        var domain = parts[1];
+        var domainPattern = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
 
-        // Check for non-ASCII characters (emojis, special symbols)
-        try {
-            localPart.match(/[\x80-\xFF]/);
-            if (/[\x80-\xFF]/.test(localPart)) {
-                return { valid: false, message: 'Email contains invalid characters (no emojis or special symbols)' };
+        if (!localPart || !domain || !domainPattern.test(domain)) {
+            return { valid: false, message: 'Enter a valid email domain' };
+        }
+
+        if (domain === 'gmail.com') {
+            if (localPart.length < 6) {
+                return { valid: false, message: 'Gmail addresses must have at least 6 characters before @gmail.com' };
             }
-        } catch (e) {}
+            if (!/^[a-z0-9](?:[a-z0-9.]*[a-z0-9])?$/.test(localPart)) {
+                return { valid: false, message: 'Gmail addresses can only use letters, numbers, and dots' };
+            }
+        } else if (domain.endsWith('.edu.ph')) {
+            if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/.test(localPart)) {
+                return { valid: false, message: 'Email contains invalid characters. Only letters, numbers, dots, hyphens, and underscores allowed' };
+            }
+            if (/[._-]{2,}/.test(localPart)) {
+                return { valid: false, message: 'Email cannot contain repeated special characters' };
+            }
+        } else {
+            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
+        }
 
         // Placeholder words blacklist
         var placeholders = ['test', 'admin', 'n/a', 'na', 'demo', 'sample', 'example', 'fake', 'temp', 'nope', 'idk'];
@@ -209,11 +229,6 @@
             if (cleanPart === placeholders[i] || cleanPart.indexOf(placeholders[i]) === 0) {
                 return { valid: false, message: 'Placeholder email addresses are not accepted' };
             }
-        }
-
-        // Only allow alphanumeric, dots, hyphens, underscores
-        if (!/^[a-z0-9._-]+$/.test(localPart)) {
-            return { valid: false, message: 'Email contains invalid characters. Only letters, numbers, dots, hyphens, underscores allowed' };
         }
 
         return { valid: true, message: '' };
