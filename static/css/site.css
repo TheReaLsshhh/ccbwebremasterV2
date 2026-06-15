@@ -1222,7 +1222,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
   height: auto;
 }
 
-.home-news-section .news-carousel-card,
+.home-news-section .news-grid-card,
 .news-content-section .news-grid-card {
   overflow: visible;
 }
@@ -1241,11 +1241,6 @@ a.btn.btn-soft.btn-sm.mt-3 {
   display: block;
   content-visibility: auto;
   background: var(--ccb-surface-muted);
-}
-
-.home-news-section .news-carousel-image,
-.home-news-section .news-visual-image {
-  max-height: min(42rem, 78vh);
 }
 
 .news-content-section .news-grid-image {
@@ -3159,11 +3154,6 @@ p.text-dark.fw-semibold.mb-2 {
 
   .news-visual-image {
     max-height: min(34rem, 70vh);
-  }
-
-  .home-news-section .news-carousel-image,
-  .home-news-section .news-visual-image {
-    max-height: min(36rem, 68vh);
   }
 
   .contact-map-card {

@@ -112,7 +112,7 @@
     </div>
 </section>
 
-<section class="section-block pt-0 home-news-section">
+<section class="section-block pt-0 home-news-section news-content-section">
     <div class="container">
         <div class="section-header">
             <div>
@@ -123,93 +123,67 @@
             <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
         </div>
         {% if featured_news %}
-            <div id="campusNewsCarousel" class="carousel slide news-carousel" data-bs-ride="carousel" data-bs-interval="5000">
-                {% with featured_news_count=featured_news|length %}
-                <div class="news-carousel-stage">
-                    {% if featured_news_count > 1 %}
-                        <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
-                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-                        </button>
-                    {% endif %}
-                    <div class="news-carousel-viewport">
-                        <div class="carousel-inner">
-                            {% for item in featured_news %}
-                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                    <div class="announcement-card news-carousel-card">
-                                        {% if item.cover_image %}
-                                            <div class="news-carousel-visual-shell">
-                                                <div class="news-visual-wrap news-carousel-visual">
-                                                    <img
-                                                        src="{{ item.cover_image.url }}"
-                                                        alt="{{ item.title }}"
-                                                        class="news-visual-image news-carousel-image"
-                                                        width="960"
-                                                        sizes="(min-width: 1200px) 72rem, 100vw"
-                                                        decoding="async"
-                                                        {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                        <div class="news-carousel-body">
-                                            <div class="news-carousel-meta">
-                                                <span class="signal-badge signal-badge-date">{{ item.event_date }}</span>
-                                                {% if item.location %}
-                                                    <span class="news-location-inline">
-                                                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                                        {{ item.location }}
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                            <h3 class="news-carousel-title">{{ item.title }}</h3>
-                                            <div class="news-carousel-text">
-                                                {% if item.summary %}
-                                                    <p class="muted-copy news-carousel-summary">
-                                                        {% if item.summary|exceeds_word_limit:28 %}
-                                                            {{ item.summary|words_truncate:28 }}… <a href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}" class="news-read-more-link">Read more.</a>
-                                                        {% else %}
-                                                            {{ item.summary }}
-                                                        {% endif %}
-                                                    </p>
-                                                {% endif %}
-                                                {% if item.content %}
-                                                    <p class="news-carousel-copy mb-0">
-                                                        {% if item.content|exceeds_word_limit:36 %}
-                                                            {{ item.content|words_truncate:36 }}… <a href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}" class="news-read-more-link">Read more.</a>
-                                                        {% else %}
-                                                            {{ item.content }}
-                                                        {% endif %}
-                                                    </p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
+            <div class="row g-4">
+                {% for item in featured_news %}
+                    <div class="col-md-6 col-xl-4">
+                        <article
+                            id="news-{{ item.pk }}"
+                            class="announcement-card news-grid-card news-grid-card-interactive"
+                            data-news-id="{{ item.pk }}"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View full announcement: {{ item.title }}"
+                        >
+                            {% if item.cover_image %}
+                                <div class="news-visual-wrap news-grid-visual">
+                                    <img
+                                        src="{{ item.cover_image.url }}"
+                                        alt="{{ item.title }}"
+                                        class="news-visual-image news-grid-image"
+                                        width="720"
+                                        sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 100vw"
+                                        decoding="async"
+                                        {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}
+                                    >
                                 </div>
-                            {% endfor %}
-                        </div>
+                            {% endif %}
+                            <div class="news-grid-body d-flex flex-column gap-3">
+                                <div class="news-grid-meta">
+                                    <span class="signal-badge signal-badge-date">{{ item.event_date }}</span>
+                                    {% if item.location %}
+                                        <span class="news-location-inline">
+                                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                            {{ item.location }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-column align-items-start gap-2">
+                                    <h3 class="mt-0 mb-0">{{ item.title }}</h3>
+                                </div>
+                                <div>
+                                    <p class="muted-copy mb-2">{{ item.summary }}</p>
+                                    {% if item.content %}
+                                        <p class="mb-0">
+                                            {% if item.content|exceeds_word_limit:24 %}
+                                                {{ item.content|words_truncate:24 }}…
+                                                <button type="button" class="news-read-more-link" data-news-id="{{ item.pk }}">
+                                                    Read more.
+                                                </button>
+                                            {% else %}
+                                                {{ item.content }}
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                {% if item.attachment %}
+                                    <div class="d-flex justify-content-between align-items-center gap-3">
+                                        <a class="btn btn-soft btn-sm news-detail-ignore" href="{{ item.attachment|file_download_url }}">View Attachment</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </article>
                     </div>
-                    {% if featured_news_count > 1 %}
-                        <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#campusNewsCarousel" data-bs-slide="next" aria-label="Next news item">
-                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-                        </button>
-                    {% endif %}
-                </div>
-                {% if featured_news_count > 1 %}
-                    <div class="news-carousel-controls">
-                        <div class="carousel-indicators news-carousel-indicators">
-                            {% for item in featured_news %}
-                                <button
-                                    type="button"
-                                    data-bs-target="#campusNewsCarousel"
-                                    data-bs-slide-to="{{ forloop.counter0 }}"
-                                    class="{% if forloop.first %}active{% endif %}"
-                                    {% if forloop.first %}aria-current="true"{% endif %}
-                                    aria-label="Go to news slide {{ forloop.counter }}">
-                                </button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                {% endwith %}
+                {% endfor %}
             </div>
         {% else %}
             <div class="notice-band">
@@ -251,4 +225,10 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block page_modals %}
+{% if featured_news %}
+    {% include "website/includes/news_detail_modal.html" with news_modal_items=featured_news %}
+{% endif %}
 {% endblock %}
