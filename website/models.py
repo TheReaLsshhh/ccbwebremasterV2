@@ -3,6 +3,8 @@ import os
 import re
 import uuid
 
+from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
@@ -373,6 +375,72 @@ class ContactInquiry(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+WEAK_ADMIN_PINS = frozenset(
+    {
+        "000000",
+        "111111",
+        "222222",
+        "333333",
+        "444444",
+        "555555",
+        "666666",
+        "777777",
+        "888888",
+        "999999",
+        "123456",
+        "654321",
+        "012345",
+        "543210",
+        "121212",
+        "112233",
+    }
+)
+
+
+class StaffSecurityProfile(models.Model):
+    """Six-digit PIN used as a second factor after admin password login."""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="security_profile")
+    pin_hash = models.CharField(max_length=128, blank=True)
+    pin_updated_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Staff security profile"
+        verbose_name_plural = "Staff security profiles"
+
+    def __str__(self):
+        return f"Security profile for {self.user.username}"
+
+    @property
+    def has_pin(self):
+        return bool(self.pin_hash)
+
+    @staticmethod
+    def validate_pin_format(pin):
+        pin = (pin or "").strip()
+        if not pin.isdigit() or len(pin) != 6:
+            return False, "PIN must be exactly 6 digits."
+        if pin in WEAK_ADMIN_PINS:
+            return False, "Choose a stronger PIN. Avoid repeated or sequential digits."
+        return True, pin
+
+    def set_pin(self, pin):
+        is_valid, result = self.validate_pin_format(pin)
+        if not is_valid:
+            raise ValueError(result)
+        self.pin_hash = make_password(result)
+        self.pin_updated_at = timezone.now()
+        self.save(update_fields=["pin_hash", "pin_updated_at"])
+
+    def check_pin(self, pin):
+        if not self.has_pin:
+            return False
+        is_valid, result = self.validate_pin_format(pin)
+        if not is_valid:
+            return False
+        return check_password(result, self.pin_hash)
 
 
 # Connect pre_save signals to delete old files when file fields are changed

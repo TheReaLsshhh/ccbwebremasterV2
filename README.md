@@ -38,7 +38,9 @@ python manage.py runserver
 
 ## Content Management
 
-Production admin URL (default): `https://ccbwebremasterv2.onrender.com/admin/`
+Production admin URL (default): `https://ccbacad.dpdns.org/ccb-office/`
+
+The old `/admin/` path returns **404** on purpose. Bookmark the hidden URL above.
 
 After creating a superuser (see below), manage:
 
@@ -61,11 +63,25 @@ After creating a superuser (see below), manage:
    ```bash
    python manage.py createsuperuser
    ```
-3. Log in at `/admin/` on your Render URL.
-4. Ensure **`CLOUDINARY_URL`** is set — uploads (banners, news images, download files) are stored in Cloudinary, not on the Render disk.
-5. Optional: set **`ADMIN_URL`** to a non-default path (e.g. `ccb-office/`) so the login URL is harder to guess. Use the same value in bookmarks: `/ccb-office/` instead of `/admin/`.
+3. Log in at `/ccb-office/` on your production domain (not `/admin/`).
+4. On first login, set your **6-digit admin PIN** when prompted.
+5. Ensure **`CLOUDINARY_URL`** is set — uploads are stored in Cloudinary, not on the Render disk.
 
-**Security (already enabled in production):** HTTPS, secure cookies, CSRF protection, and rate-limited admin login attempts.
+**Admin security enabled:**
+- Hidden path: `/ccb-office/` (configurable via `ADMIN_URL`)
+- `/admin/` returns 404 to confuse scanners
+- **2FA:** password + 6-digit PIN on every login
+- **Rate limits:** 2 password attempts and 2 PIN attempts per IP every 15 minutes
+
+**Set or reset a PIN from Render Shell:**
+```bash
+python manage.py set_admin_pin your_username 482913
+```
+
+Optional env vars:
+- `ADMIN_URL=ccb-office` (default)
+- `ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS=2`
+- `ADMIN_PIN_RATE_LIMIT_ATTEMPTS=2`
 
 ### Admin cannot save (Add / Edit / Delete does nothing)
 

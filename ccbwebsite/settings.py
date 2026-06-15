@@ -92,15 +92,18 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "website.middleware.AdminTwoFactorMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "ccbwebsite.urls"
-ADMIN_URL = os.getenv("ADMIN_URL", "admin/").strip("/")
-ADMIN_URL = f"{ADMIN_URL}/" if ADMIN_URL else "admin/"
-ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS", "5"))
+ADMIN_URL = os.getenv("ADMIN_URL", "ccb-office").strip("/")
+ADMIN_URL = f"{ADMIN_URL}/" if ADMIN_URL else "ccb-office/"
+ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS", "2"))
 ADMIN_LOGIN_RATE_LIMIT_WINDOW = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_WINDOW", "900"))
+ADMIN_PIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_PIN_RATE_LIMIT_ATTEMPTS", "2"))
+ADMIN_PIN_RATE_LIMIT_WINDOW = int(os.getenv("ADMIN_PIN_RATE_LIMIT_WINDOW", "900"))
 
 TEMPLATES = [
     {

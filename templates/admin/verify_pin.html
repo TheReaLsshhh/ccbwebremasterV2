@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+
+{% block usertools %}{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <p class="login-subtitle">Password accepted. Enter your 6-digit admin PIN to continue.</p>
+
+  {% if messages %}
+    <ul class="messagelist">
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form action="" method="post" id="login-form">
+    {% csrf_token %}
+    <div class="form-row">
+      {{ form.pin.errors }}
+      <label for="id_pin" class="required">{{ form.pin.label }}:</label>
+      {{ form.pin }}
+    </div>
+    <div class="submit-row">
+      <input type="submit" value="{% translate 'Verify PIN' %}">
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -16,7 +16,11 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://ccbwebremasterv2.onrender.com,https://*.onrender.com"
       - key: ADMIN_URL
-        sync: false
+        value: "ccb-office"
+      - key: ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS
+        value: "2"
+      - key: ADMIN_PIN_RATE_LIMIT_ATTEMPTS
+        value: "2"
       - key: CONTACT_INQUIRY_RECIPIENT
         value: "citycollegeofbayawan@gmail.com"
       - key: EMAIL_HOST

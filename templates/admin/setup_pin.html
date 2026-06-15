@@ -1,0 +1,43 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+
+{% block usertools %}{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  {% if is_first_setup %}
+    <p class="login-subtitle">Create a 6-digit PIN. You will need it after every admin login.</p>
+  {% else %}
+    <p class="login-subtitle">Set a new 6-digit admin PIN to continue.</p>
+  {% endif %}
+
+  <form action="" method="post" id="login-form">
+    {% csrf_token %}
+    <div class="form-row">
+      {{ form.pin.errors }}
+      <label for="id_pin" class="required">{{ form.pin.label }}:</label>
+      {{ form.pin }}
+    </div>
+    <div class="form-row">
+      {{ form.pin_confirm.errors }}
+      <label for="id_pin_confirm" class="required">{{ form.pin_confirm.label }}:</label>
+      {{ form.pin_confirm }}
+    </div>
+    <div class="submit-row">
+      <input type="submit" value="{% translate 'Save PIN' %}">
+    </div>
+  </form>
+</div>
+{% endblock %}
