@@ -276,7 +276,7 @@ def _home_news_mosaic_items(queryset_fields):
 
     featured = featured[:HOME_NEWS_MOSAIC_SIZE]
     if not featured:
-        return [], None, []
+        return [], None, None, []
 
     news_page_by_id = _news_page_by_id()
     for item in featured:
@@ -286,18 +286,20 @@ def _home_news_mosaic_items(queryset_fields):
     layout = random.choice(HOME_NEWS_MOSAIC_LAYOUTS)
     wide_item = featured[wide_index]
     small_items = [item for index, item in enumerate(featured) if index != wide_index]
-    return wide_item, layout, small_items
+    return featured, layout, wide_item, small_items
 
 
 def home(request):
     news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
-    home_news_wide, home_news_layout, home_news_small = _home_news_mosaic_items(news_fields)
+    home_news_items, home_news_layout, home_news_wide, home_news_small = _home_news_mosaic_items(news_fields)
 
     context = base_context("website:home")
     context.update(
         {
             "page_content": get_page_content(PageContent.HOME),
             "featured_programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file").filter(is_featured=True)[:3],
+            "home_news_items": home_news_items,
+            "home_news_count": len(home_news_items),
             "home_news_wide": home_news_wide,
             "home_news_layout": home_news_layout,
             "home_news_small": home_news_small,
