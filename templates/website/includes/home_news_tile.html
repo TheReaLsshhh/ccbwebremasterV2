@@ -1,0 +1,37 @@
+<article class="home-news-tile home-news-tile--{{ size }}{% if not item.cover_image %} home-news-tile--no-image{% endif %}">
+    <div class="home-news-tile-visual">
+        {% if item.cover_image %}
+            <img
+                src="{{ item.cover_image.url }}"
+                alt=""
+                class="home-news-tile-image"
+                width="960"
+                height="540"
+                decoding="async"
+                {% if priority_image %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}
+            >
+        {% else %}
+            <div class="home-news-tile-placeholder" aria-hidden="true"></div>
+        {% endif %}
+        {% if item.cover_image %}
+            <a
+                class="home-news-tile-plus"
+                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
+                aria-label="Read announcement: {{ item.title }}"
+            >
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            </a>
+        {% else %}
+            <a
+                class="home-news-tile-hover-read"
+                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
+            >
+                <span>Read More</span>
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+    </div>
+    <div class="home-news-tile-caption">
+        <h3 class="home-news-tile-title">{{ item.title }}</h3>
+    </div>
+</article>
