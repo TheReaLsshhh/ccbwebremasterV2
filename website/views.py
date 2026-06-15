@@ -1,5 +1,4 @@
 import logging
-import random
 from urllib.parse import urlparse
 
 import requests
@@ -256,42 +255,37 @@ def base_context(active_page):
     }
 
 
-HOME_NEWS_MOSAIC_SIZE = 5
-HOME_NEWS_MOSAIC_LAYOUTS = ("left", "right", "top", "bottom")
+HOME_NEWS_CAROUSEL_SIZE = 5
 
 
-def _home_news_mosaic_items(queryset_fields):
-    """Build up to five homepage news tiles with one random wide feature."""
+def _home_news_carousel_items(queryset_fields):
+    """Build up to five homepage news slides for the carousel."""
     featured = list(
-        NewsEvent.objects.only(*queryset_fields).filter(is_featured=True)[:HOME_NEWS_MOSAIC_SIZE]
+        NewsEvent.objects.only(*queryset_fields).filter(is_featured=True)[:HOME_NEWS_CAROUSEL_SIZE]
     )
-    if len(featured) < HOME_NEWS_MOSAIC_SIZE:
+    if len(featured) < HOME_NEWS_CAROUSEL_SIZE:
         existing_ids = {item.pk for item in featured}
         extras = list(
             NewsEvent.objects.only(*queryset_fields)
             .exclude(pk__in=existing_ids)
-            .order_by("-published_at")[: HOME_NEWS_MOSAIC_SIZE - len(featured)]
+            .order_by("-published_at")[: HOME_NEWS_CAROUSEL_SIZE - len(featured)]
         )
         featured.extend(extras)
 
-    featured = featured[:HOME_NEWS_MOSAIC_SIZE]
+    featured = featured[:HOME_NEWS_CAROUSEL_SIZE]
     if not featured:
-        return [], None, None, []
+        return []
 
     news_page_by_id = _news_page_by_id()
     for item in featured:
         item.news_page = news_page_by_id.get(item.pk, 1)
 
-    wide_index = random.randrange(len(featured))
-    layout = random.choice(HOME_NEWS_MOSAIC_LAYOUTS)
-    wide_item = featured[wide_index]
-    small_items = [item for index, item in enumerate(featured) if index != wide_index]
-    return featured, layout, wide_item, small_items
+    return featured
 
 
 def home(request):
     news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
-    home_news_items, home_news_layout, home_news_wide, home_news_small = _home_news_mosaic_items(news_fields)
+    home_news_items = _home_news_carousel_items(news_fields)
 
     context = base_context("website:home")
     context.update(
@@ -300,9 +294,6 @@ def home(request):
             "featured_programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file").filter(is_featured=True)[:3],
             "home_news_items": home_news_items,
             "home_news_count": len(home_news_items),
-            "home_news_wide": home_news_wide,
-            "home_news_layout": home_news_layout,
-            "home_news_small": home_news_small,
         }
     )
     return render(request, "website/home.html", context)

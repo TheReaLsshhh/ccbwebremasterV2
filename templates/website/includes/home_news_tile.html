@@ -1,5 +1,6 @@
+{% load news_extras %}
 <article class="home-news-tile home-news-tile--{{ size }}{% if not item.cover_image %} home-news-tile--no-image{% endif %}">
-    <div class="home-news-tile-visual">
+    <div class="home-news-tile-inner">
         {% if item.cover_image %}
             <img
                 src="{{ item.cover_image.url }}"
@@ -13,6 +14,45 @@
         {% else %}
             <div class="home-news-tile-placeholder" aria-hidden="true"></div>
         {% endif %}
+
+        <div class="home-news-tile-slide">
+            <a
+                class="home-news-tile-slide-bar"
+                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
+            >
+                <span class="home-news-tile-slide-cta">
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    Read More
+                </span>
+            </a>
+            <div class="home-news-tile-slide-content">
+                <div class="home-news-tile-slide-meta">
+                    {% if item.event_date %}
+                        <span class="signal-badge signal-badge-date">{{ item.event_date }}</span>
+                    {% endif %}
+                    {% if item.location %}
+                        <span class="news-location-inline">
+                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                            {{ item.location }}
+                        </span>
+                    {% endif %}
+                </div>
+                <h3 class="home-news-tile-title">{{ item.title }}</h3>
+                {% if item.summary %}
+                    <p class="news-detail-modal-summary home-news-tile-summary">{{ item.summary }}</p>
+                {% endif %}
+                {% if item.content %}
+                    <div class="news-detail-modal-copy home-news-tile-copy">
+                        {% if item.content|exceeds_word_limit:1000 %}
+                            {{ item.content|words_truncate:1000 }}…
+                        {% else %}
+                            {{ item.content|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         {% if item.cover_image %}
             <a
                 class="home-news-tile-plus"
@@ -30,8 +70,5 @@
                 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </a>
         {% endif %}
-    </div>
-    <div class="home-news-tile-caption">
-        <h3 class="home-news-tile-title">{{ item.title }}</h3>
     </div>
 </article>

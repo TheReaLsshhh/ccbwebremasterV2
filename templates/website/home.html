@@ -122,18 +122,9 @@
             </div>
             <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
         </div>
-        {% if home_news_wide %}
-            <div class="home-news-desktop d-none d-lg-block">
-                <div class="home-news-mosaic home-news-mosaic--layout-{{ home_news_layout }} home-news-mosaic--count-{{ home_news_count }}" role="list">
-                    {% include "website/includes/home_news_tile.html" with item=home_news_wide size="wide" priority_image=True %}
-                    {% for item in home_news_small %}
-                        {% include "website/includes/home_news_tile.html" with item=item size="small" %}
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="home-news-mobile d-lg-none">
-                <div id="homeNewsCompactCarousel" class="carousel slide news-carousel" data-bs-ride="carousel" data-bs-interval="5500">
+        {% if home_news_items %}
+            <div id="homeNewsCarousel" class="carousel slide news-carousel home-news-carousel" data-bs-ride="carousel" data-bs-interval="10000">
+                <div class="home-news-carousel-stage">
                     <div class="carousel-inner">
                         {% for item in home_news_items %}
                             <div class="carousel-item{% if forloop.first %} active{% endif %}">
@@ -142,26 +133,12 @@
                         {% endfor %}
                     </div>
                     {% if home_news_count > 1 %}
-                        <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#homeNewsCompactCarousel" data-bs-slide="prev" aria-label="Previous news item">
+                        <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#homeNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
                             <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
                         </button>
-                        <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#homeNewsCompactCarousel" data-bs-slide="next" aria-label="Next news item">
+                        <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#homeNewsCarousel" data-bs-slide="next" aria-label="Next news item">
                             <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
                         </button>
-                        <div class="news-carousel-controls mt-3">
-                            <div class="carousel-indicators news-carousel-indicators">
-                                {% for item in home_news_items %}
-                                    <button
-                                        type="button"
-                                        data-bs-target="#homeNewsCompactCarousel"
-                                        data-bs-slide-to="{{ forloop.counter0 }}"
-                                        class="{% if forloop.first %}active{% endif %}"
-                                        {% if forloop.first %}aria-current="true"{% endif %}
-                                        aria-label="Go to news slide {{ forloop.counter }}">
-                                    </button>
-                                {% endfor %}
-                            </div>
-                        </div>
                     {% endif %}
                 </div>
             </div>
