@@ -142,9 +142,8 @@
                                                     <img
                                                         src="{{ item.cover_image.url }}"
                                                         alt="{{ item.title }}"
-                                                        class="news-visual-image"
+                                                        class="news-visual-image news-carousel-image"
                                                         width="960"
-                                                        height="540"
                                                         sizes="(min-width: 1200px) 72rem, 100vw"
                                                         decoding="async"
                                                         {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}>
