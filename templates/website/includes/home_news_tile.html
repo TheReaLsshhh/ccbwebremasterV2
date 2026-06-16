@@ -46,7 +46,7 @@
                 {% if item.content %}
                     <div class="news-detail-modal-copy home-news-tile-copy">
                         {% if item.content|exceeds_word_limit:200 %}
-                            {{ item.content|words_truncate:200 }}…
+                            {{ item.content|words_truncate:200 }}
                         {% else %}
                             {{ item.content|linebreaksbr }}
                         {% endif %}
