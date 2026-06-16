@@ -2,15 +2,17 @@
 <article class="home-news-tile home-news-tile--{{ size }}{% if not item.cover_image %} home-news-tile--no-image{% endif %}">
     <div class="home-news-tile-inner">
         {% if item.cover_image %}
-            <img
-                src="{{ item.cover_image.url }}"
-                alt=""
-                class="home-news-tile-image"
-                width="960"
-                height="540"
-                decoding="async"
-                {% if priority_image %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}
-            >
+            <div class="home-news-tile-image-wrap">
+                <img
+                    src="{{ item.cover_image.url }}"
+                    alt=""
+                    class="home-news-tile-image"
+                    width="960"
+                    height="540"
+                    decoding="async"
+                    {% if priority_image %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}
+                >
+            </div>
         {% else %}
             <div class="home-news-tile-placeholder" aria-hidden="true"></div>
         {% endif %}
