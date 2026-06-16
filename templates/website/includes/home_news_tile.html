@@ -45,8 +45,8 @@
                 {% endif %}
                 {% if item.content %}
                     <div class="news-detail-modal-copy home-news-tile-copy">
-                        {% if item.content|exceeds_word_limit:1000 %}
-                            {{ item.content|words_truncate:1000 }}…
+                        {% if item.content|exceeds_word_limit:200 %}
+                            {{ item.content|words_truncate:200 }}…
                         {% else %}
                             {{ item.content|linebreaksbr }}
                         {% endif %}
@@ -54,23 +54,5 @@
                 {% endif %}
             </div>
         </div>
-
-        {% if item.cover_image %}
-            <a
-                class="home-news-tile-plus"
-                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
-                aria-label="Read announcement: {{ item.title }}"
-            >
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-            </a>
-        {% else %}
-            <a
-                class="home-news-tile-hover-read"
-                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
-            >
-                <span>Read More</span>
-                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            </a>
-        {% endif %}
     </div>
 </article>

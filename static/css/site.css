@@ -1366,7 +1366,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
   justify-content: flex-start;
   gap: 0.78rem;
   padding: clamp(1.35rem, 2.45vw, 2.15rem);
-  overflow: hidden;
+  overflow-y: auto;          /* scroll only if the panel truly can't fit */
 }
 
 .home-news-carousel .home-news-tile-slide-meta {
@@ -1396,10 +1396,14 @@ a.btn.btn-soft.btn-sm.mt-3 {
   overflow: hidden;
 }
 
-.home-news-carousel .home-news-tile-summary,
-.home-news-carousel .home-news-tile-copy {
+.home-news-carousel .home-news-tile-summary {
   margin: 0;
   overflow: hidden;
+}
+
+.home-news-carousel .home-news-tile-copy {
+  margin: 0;
+  /* overflow visible — expands with content */
 }
 
 .home-news-carousel .home-news-tile-slide-content .news-detail-modal-summary {
@@ -1416,53 +1420,11 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 .home-news-carousel .home-news-tile-slide-content .news-detail-modal-copy {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
   color: var(--ccb-stone-700);
   font-size: 0.88rem;
   line-height: 1.5;
+  /* No line-clamp — text expands freely; the panel scrolls if needed */
 }
-
-/* Orange "+" button anchored to bottom-right of the tile */
-.home-news-carousel .home-news-tile-plus {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.65rem;
-  height: 2.65rem;
-  border-radius: 999px;
-  background: var(--ccb-orange-500);
-  color: var(--ccb-white);
-  text-decoration: none;
-  box-shadow: 0 12px 24px rgba(217, 119, 6, 0.28);
-  transition:
-    background-color 0.22s ease,
-    box-shadow 0.22s ease,
-    transform 0.22s ease;
-}
-
-.home-news-carousel .home-news-tile-plus:hover,
-.home-news-carousel .home-news-tile-plus:focus {
-  color: var(--ccb-white);
-  background: var(--ccb-orange-600);
-  box-shadow: 0 14px 28px rgba(217, 119, 6, 0.34);
-  transform: scale(1.08);
-}
-
-.home-news-carousel .home-news-tile-plus i {
-  font-size: 1.05rem;
-  line-height: 1;
-}
-
-.home-news-carousel .home-news-tile-hover-read {
-  display: none;
-}
-
 /* Arrow buttons */
 @media (min-width: 992px) {
   .home-news-carousel .news-carousel-arrow-side {
@@ -1525,11 +1487,6 @@ a.btn.btn-soft.btn-sm.mt-3 {
 
   .home-news-carousel .home-news-tile-title {
     font-size: clamp(1.15rem, 5vw, 1.45rem);
-  }
-
-  .home-news-carousel .home-news-tile-slide-content .news-detail-modal-copy {
-    -webkit-line-clamp: 3;
-    padding-right: 2.8rem;
   }
 
   .home-news-carousel .news-carousel-arrow-side {
@@ -3820,4 +3777,47 @@ p.text-dark.fw-semibold.mb-2 {
 /* Send button — kept for reference, button removed from modal */
 .captcha-send-btn {
   margin-top: 1rem !important;
+}
+
+/* Uniform cover image for home news tiles */
+.home-news-tile-image-wrap {
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+  overflow: hidden;
+}
+.home-news-tile-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Stable carousel arrows */
+.home-news-carousel-stage {
+  position: relative;
+  min-height: 480px; /* adjust as needed for tallest tile */
+}
+.news-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+.news-carousel-arrow-left { left: 1rem; }
+.news-carousel-arrow-right { right: 1rem; }
+.news-detail-modal-copy {
+  max-height: 8rem; /* adjust to fit roughly 200 words */
+  overflow: hidden;
+}
+
+/* Ensure consistent tile content height */
+.home-news-tile-slide-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
