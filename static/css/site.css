@@ -4060,6 +4060,12 @@ p.text-dark.fw-semibold.mb-2 {
 }
 
 @media (hover: hover) {
+  .home-news-carousel .home-news-tile:not(.home-news-tile--no-image):hover .home-news-tile-image,
+  .home-news-carousel .home-news-tile:not(.home-news-tile--no-image):focus-within .home-news-tile-image {
+    opacity: 1;
+    transform: scale(1.018);
+  }
+
   .home-news-carousel .home-news-tile:not(.home-news-tile--no-image):hover .home-news-tile-slide,
   .home-news-carousel .home-news-tile:not(.home-news-tile--no-image):focus-within .home-news-tile-slide,
   .home-news-carousel .home-news-tile--no-image:hover .home-news-tile-slide,
