@@ -6,6 +6,8 @@ from django.http import Http404
 from django.urls import include, path
 from django.views.static import serve
 from pathlib import Path
+from django.views.generic import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 from website.admin_security import setup_pin, verify_pin
 
@@ -29,6 +31,21 @@ urlpatterns = [
     path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
     path(settings.ADMIN_URL, admin.site.urls),
     path("", include("website.urls")),
+]
+
+urlpatterns += [
+    path(
+        "robots.txt",
+        RedirectView.as_view(
+            url=staticfiles_storage.url("robots.txt")
+        )
+    ),
+    path(
+        "sitemap.xml",
+        RedirectView.as_view(
+            url=staticfiles_storage.url("sitemap.xml")
+        )
+    ),
 ]
 
 # Serve media files in all environments.
