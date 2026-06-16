@@ -20,7 +20,7 @@
         <div class="home-news-tile-slide">
             <a
                 class="home-news-tile-slide-bar"
-                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
+                href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
             >
                 <span class="home-news-tile-slide-cta">
                     <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
@@ -47,6 +47,8 @@
                     <div class="news-detail-modal-copy home-news-tile-copy">
                         {% if item.content|exceeds_word_limit:200 %}
                             {{ item.content|words_truncate:200 }}
+                        {% if item.content|exceeds_word_limit:120 %}
+                            {{ item.content|words_truncate:120 }}…
                         {% else %}
                             {{ item.content|linebreaksbr }}
                         {% endif %}
