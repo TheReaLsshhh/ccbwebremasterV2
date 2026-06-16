@@ -1265,7 +1265,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .home-news-carousel .home-news-tile-inner {
   display: grid;
   grid-template-columns: minmax(19rem, 0.96fr) minmax(0, 1.04fr);
-  min-height: clamp(22rem, 34vw, 28rem);
+  min-height: clamp(22rem, 34vw);
   overflow: hidden;
   background: var(--ccb-surface-solid);
 }
