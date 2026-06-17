@@ -1358,6 +1358,24 @@ a.btn.btn-soft.btn-sm.mt-3 {
   overflow: hidden;
 }
 
+.coverflow-card-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  color: var(--ccb-stone-500);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.coverflow-card-location i {
+  flex: 0 0 auto;
+  color: var(--ccb-orange-500);
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
 .coverflow-card-excerpt {
   margin: 0;
   flex: 1 1 auto;
@@ -1374,7 +1392,8 @@ a.btn.btn-soft.btn-sm.mt-3 {
 /* Side cards: image + title only — excerpt and CTA fade out */
 .coverflow-slot:not(.is-center) .coverflow-card-excerpt,
 .coverflow-slot:not(.is-center) .coverflow-card-cta,
-.coverflow-slot:not(.is-center) .coverflow-card-date {
+.coverflow-slot:not(.is-center) .coverflow-card-date,
+.coverflow-slot:not(.is-center) .coverflow-card-location {
   display: none;
 }
 
@@ -1569,6 +1588,10 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 :root[data-theme="dark"] .coverflow-card-excerpt {
+  color: var(--ccb-stone-500);
+}
+
+:root[data-theme="dark"] .coverflow-card-location {
   color: var(--ccb-stone-500);
 }
 
