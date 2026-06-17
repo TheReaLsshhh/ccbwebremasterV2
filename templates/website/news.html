@@ -51,13 +51,20 @@ College of Bayawan{% endblock %} {% block content %}
               decoding="async"
               fetchpriority="low"
             />
+            {% if item.event_date %}
+            <span class="signal-badge signal-badge-date news-grid-date-badge"
+              >{{ item.event_date }}</span
+            >
+            {% endif %}
           </div>
           {% endif %}
-          <div class="news-grid-body d-flex flex-column gap-3">
+          <div class="news-grid-body d-flex flex-column gap-2">
             <div class="news-grid-meta">
+              {% if not item.cover_image and item.event_date %}
               <span class="signal-badge signal-badge-date"
                 >{{ item.event_date }}</span
               >
+              {% endif %}
               {% if item.location %}
               <span class="news-location-inline">
                 <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
@@ -73,13 +80,7 @@ College of Bayawan{% endblock %} {% block content %}
               {% if item.content %}
               <p class="mb-0">
                 {% if item.content|exceeds_word_limit:24 %}
-                                                {{ item.content|words_truncate:24 }}… <button
-                  type="button"
-                  class="news-read-more-link"
-                  data-news-id="{{ item.pk }}"
-                >
-                  Read more.
-                </button>
+                  {{ item.content|words_truncate:24 }}...
                 {% else %} {{ item.content }} {% endif %}
               </p>
               {% endif %}
@@ -94,6 +95,13 @@ College of Bayawan{% endblock %} {% block content %}
                 >View Attachment</a
               >
               {% endif %}
+              <button
+                type="button"
+                class="news-read-more-link news-grid-read-more"
+                data-news-id="{{ item.pk }}"
+              >
+                Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
         </article>
