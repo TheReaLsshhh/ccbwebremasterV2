@@ -1733,7 +1733,7 @@ p.muted-copy {
 .news-read-more-link:hover,
 .news-read-more-link:focus {
   color: var(--ccb-green-900);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .news-grid-text .news-read-more-link {
@@ -2417,6 +2417,7 @@ span.signal-badge.signal-badge-resource {
 }
 
 .news-grid-card .news-grid-body p.muted-copy.mb-2 {
+  margin-top: -5px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
