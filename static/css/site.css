@@ -1224,6 +1224,11 @@ a.btn.btn-soft.btn-sm.mt-3 {
 
 .news-content-section .news-grid-card {
   overflow: visible;
+  height: auto;
+}
+
+.news-content-section .row {
+  align-items: flex-start;
 }
 
 /* ── Homepage Latest News and Events: Coverflow carousel ─────────────── */
@@ -2372,10 +2377,7 @@ span.signal-badge.signal-badge-resource {
   margin-top: -15px;
 }
 
-/* Equal-height news grid cards: text block grows to fill space,
-   long summary/content text is clamped so one tall card can't
-   force the whole row taller; footer row always sticks to the
-   card's bottom edge. */
+/* News grid cards keep natural height so tall cover images do not stretch neighboring cards. */
 .news-grid-card .news-grid-text {
   flex: 1 1 auto;
   min-height: 0;
