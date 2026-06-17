@@ -123,25 +123,124 @@
             <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
         </div>
         {% if home_news_items %}
-            <div id="homeNewsCarousel" class="carousel slide news-carousel home-news-carousel" data-bs-ride="carousel" data-bs-interval="10000">
-                <div class="home-news-carousel-stage">
-                    <div class="carousel-inner">
-                        {% for item in home_news_items %}
-                            <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                                {% include "website/includes/home_news_tile.html" with item=item size="wide" priority_image=forloop.first %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    {% if home_news_count > 1 %}
-                        <button class="carousel-control-prev news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-left" type="button" data-bs-target="#homeNewsCarousel" data-bs-slide="prev" aria-label="Previous news item">
-                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-                        </button>
-                        <button class="carousel-control-next news-carousel-arrow news-carousel-arrow-side news-carousel-arrow-right" type="button" data-bs-target="#homeNewsCarousel" data-bs-slide="next" aria-label="Next news item">
-                            <span class="news-carousel-arrow-icon" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-                        </button>
-                    {% endif %}
+            <div
+                class="coverflow"
+                id="homeNewsCoverflow"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Latest news and events"
+            >
+                <button type="button" class="coverflow-arrow coverflow-arrow-left" data-coverflow-prev aria-label="Previous news item">
+                    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                </button>
+
+                <div class="coverflow-track" id="homeNewsCoverflowTrack">
+                    {% for item in home_news_items|slice:":10" %}
+                        <div class="coverflow-slot" data-slot-index="{{ forloop.counter0 }}">
+                            {% include "website/includes/home_news_tile.html" with item=item index=forloop.counter0 priority_image=forloop.first %}
+                        </div>
+                    {% endfor %}
                 </div>
+
+                <button type="button" class="coverflow-arrow coverflow-arrow-right" data-coverflow-next aria-label="Next news item">
+                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </button>
+
+                <div class="coverflow-dots" id="homeNewsCoverflowDots" role="tablist" aria-label="Choose news item"></div>
             </div>
+
+            <script>
+                (function () {
+                    var root = document.getElementById('homeNewsCoverflow');
+                    if (!root) return;
+                    var track = document.getElementById('homeNewsCoverflowTrack');
+                    var dotsWrap = document.getElementById('homeNewsCoverflowDots');
+                    var slots = Array.prototype.slice.call(track.children);
+                    var total = slots.length;
+                    if (total === 0) return;
+
+                    var current = 0;
+                    var autoplayMs = 5500;
+                    var timer = null;
+                    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                    slots.forEach(function (slot, i) {
+                        var dot = document.createElement('button');
+                        dot.type = 'button';
+                        dot.className = 'coverflow-dot';
+                        dot.setAttribute('role', 'tab');
+                        dot.setAttribute('aria-label', 'Go to news item ' + (i + 1));
+                        dot.addEventListener('click', function () { goTo(i); restart(); });
+                        dotsWrap.appendChild(dot);
+                    });
+                    var dots = Array.prototype.slice.call(dotsWrap.children);
+
+                    function offset(i) {
+                        var diff = i - current;
+                        if (diff > total / 2) diff -= total;
+                        if (diff < -total / 2) diff += total;
+                        return diff;
+                    }
+
+                    function render() {
+                        slots.forEach(function (slot, i) {
+                            var off = offset(i);
+                            var abs = Math.abs(off);
+                            slot.classList.toggle('is-center', off === 0);
+                            slot.classList.toggle('is-far', abs >= 3);
+                            slot.style.setProperty('--cf-offset', off);
+                            slot.style.zIndex = String(100 - abs);
+                            slot.setAttribute('aria-hidden', off === 0 ? 'false' : 'true');
+                            var link = slot.querySelector('.coverflow-card-link');
+                            if (link) link.setAttribute('tabindex', off === 0 ? '0' : '-1');
+                        });
+                        dots.forEach(function (dot, i) {
+                            dot.classList.toggle('is-active', i === current);
+                            dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+                        });
+                    }
+
+                    function goTo(i) {
+                        current = ((i % total) + total) % total;
+                        render();
+                    }
+
+                    function next() { goTo(current + 1); }
+                    function prev() { goTo(current - 1); }
+
+                    function restart() {
+                        if (reduceMotion) return;
+                        clearInterval(timer);
+                        timer = setInterval(next, autoplayMs);
+                    }
+
+                    root.querySelector('[data-coverflow-next]').addEventListener('click', function () { next(); restart(); });
+                    root.querySelector('[data-coverflow-prev]').addEventListener('click', function () { prev(); restart(); });
+
+                    slots.forEach(function (slot, i) {
+                        slot.addEventListener('click', function (e) {
+                            if (offset(i) !== 0) {
+                                e.preventDefault();
+                                goTo(i);
+                                restart();
+                            }
+                        });
+                    });
+
+                    root.addEventListener('keydown', function (e) {
+                        if (e.key === 'ArrowLeft') { prev(); restart(); }
+                        if (e.key === 'ArrowRight') { next(); restart(); }
+                    });
+
+                    root.addEventListener('mouseenter', function () { clearInterval(timer); });
+                    root.addEventListener('mouseleave', restart);
+                    root.addEventListener('focusin', function () { clearInterval(timer); });
+                    root.addEventListener('focusout', restart);
+
+                    render();
+                    restart();
+                })();
+            </script>
         {% else %}
             <div class="notice-band">
                 <strong class="d-block mb-2">No campus updates are published yet.</strong>
