@@ -2034,6 +2034,10 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 }
 
 .news-grid-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 1.5rem 1.6rem 1rem;
 }
 
@@ -2282,6 +2286,34 @@ span.signal-badge.signal-badge-resource {
 
 .news-content-section .news-grid-body p.muted-copy.mb-2 {
   margin-top: -15px;
+}
+
+/* Equal-height news grid cards: text block grows to fill space,
+   long summary/content text is clamped so one tall card can't
+   force the whole row taller; footer row always sticks to the
+   card's bottom edge. */
+.news-grid-card .news-grid-text {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.news-grid-card .news-grid-body p.muted-copy.mb-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-grid-card .news-grid-body p.mb-0 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.news-grid-card .news-grid-footer {
+  margin-top: auto;
+  min-height: 2.25rem;
 }
 
 .academics-content-section .content-card > p.muted-copy {
