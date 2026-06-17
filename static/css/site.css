@@ -1460,6 +1460,44 @@ a.btn.btn-soft.btn-sm.mt-3 {
   background: var(--ccb-green-800);
 }
 
+@media (min-width: 992px) {
+  .coverflow-track {
+    height: 30rem;
+  }
+
+  .coverflow-slot {
+    width: min(26rem, 34vw);
+    transform:
+      translate(-50%, -50%)
+      translateX(calc(var(--cf-offset) * 15.5rem))
+      translateZ(calc(var(--cf-abs) * -9rem))
+      rotateY(calc(var(--cf-offset) * -38deg))
+      scale(calc(1 - (var(--cf-abs) * 0.14)));
+  }
+
+  .coverflow-card-image-wrap {
+    height: 17rem;
+  }
+
+  .coverflow-card-title {
+    font-size: 1.2rem;
+  }
+
+  .coverflow-card-excerpt {
+    font-size: 0.92rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .coverflow-slot {
+    width: min(29rem, 30vw);
+  }
+
+  .coverflow-card-image-wrap {
+    height: 18.5rem;
+  }
+}
+
 @media (max-width: 991.98px) {
   .coverflow-track {
     height: 22rem;
