@@ -1261,33 +1261,34 @@ a.btn.btn-soft.btn-sm.mt-3 {
   box-shadow: var(--ccb-shadow);
 }
 
-/* Two-column grid: image | content */
+/* Two-column grid: image | content — fixed height so neither side can grow */
 .home-news-carousel .home-news-tile-inner {
   display: grid;
   grid-template-columns: minmax(19rem, 0.96fr) minmax(0, 1.04fr);
-  min-height: clamp(22rem, 34vw);
+  height: clamp(22rem, 34vw, 30rem);
   overflow: hidden;
   background: var(--ccb-surface-solid);
 }
 
-/* ── Image wrapper — clips the zoom so it never bleeds outside ── */
+/* ── Image wrapper — fills its grid cell absolutely, clips zoom ── */
 .home-news-carousel .home-news-tile-image-wrap {
   grid-column: 1;
   grid-row: 1;
   position: relative;
-  overflow: hidden;            /* hard clip for the scale effect   */
+  overflow: hidden;
   border-right: 1px solid var(--ccb-border-soft);
   background:
     linear-gradient(135deg, rgba(233, 241, 230, 0.62), rgba(255, 241, 214, 0.45)),
     var(--ccb-surface-muted);
 }
 
-/* ── Cover image — scale only happens on hover of the carousel item ── */
+/* ── Cover image — always fills the wrapper, never distorts ── */
 .home-news-carousel .home-news-tile-image {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: clamp(22rem, 34vw, 28rem);
   object-fit: cover;
   object-position: center center;
   transform: scale(1);
@@ -1306,13 +1307,12 @@ a.btn.btn-soft.btn-sm.mt-3 {
   transform: scale(1);
 }
 
-/* Placeholder (no image) */
+/* Placeholder (no image) — fills its grid cell like the image does */
 .home-news-carousel .home-news-tile-placeholder {
   grid-column: 1;
   grid-row: 1;
   width: 100%;
   height: 100%;
-  min-height: clamp(22rem, 34vw, 28rem);
   border-right: 1px solid var(--ccb-border-soft);
   background:
     linear-gradient(145deg, rgba(23, 53, 29, 0.94), rgba(33, 71, 38, 0.9)),
@@ -1357,7 +1357,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
   text-transform: uppercase;
 }
 
-/* Body area inside content panel */
+/* Body area inside content panel — fixed, never scrolls */
 .home-news-carousel .home-news-tile-slide-content {
   flex: 1 1 auto;
   min-height: 0;
@@ -1366,7 +1366,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
   justify-content: flex-start;
   gap: 0.78rem;
   padding: clamp(1.35rem, 2.45vw, 2.15rem);
-  overflow-y: auto;          /* scroll only if the panel truly can't fit */
+  overflow: hidden;
 }
 
 .home-news-carousel .home-news-tile-slide-meta {
@@ -1403,13 +1403,16 @@ a.btn.btn-soft.btn-sm.mt-3 {
 
 .home-news-carousel .home-news-tile-copy {
   margin: 0;
-  /* overflow visible — expands with content */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .home-news-carousel .home-news-tile-slide-content .news-detail-modal-summary {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  overflow: hidden;
   margin-top: 0.16rem;
   padding-top: 0.95rem;
   border-top: 1px solid var(--ccb-border-soft);
@@ -1422,8 +1425,13 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .home-news-carousel .home-news-tile-slide-content .news-detail-modal-copy {
   color: var(--ccb-stone-700);
   font-size: 0.88rem;
-  line-height: 1.5;
-  /* No line-clamp — text expands freely; the panel scrolls if needed */
+  line-height: 1.6;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 999;
 }
 /* Arrow buttons */
 @media (min-width: 992px) {
@@ -1448,10 +1456,10 @@ a.btn.btn-soft.btn-sm.mt-3 {
     padding: 0;
   }
 
-  /* Stack image on top, content below */
+  /* Stack image on top, content below — height is auto (sum of both rows) */
   .home-news-carousel .home-news-tile-inner {
     grid-template-columns: 1fr;
-    min-height: 0;
+    height: auto;
   }
 
   .home-news-carousel .home-news-tile-image-wrap {
@@ -1463,15 +1471,18 @@ a.btn.btn-soft.btn-sm.mt-3 {
   }
 
   .home-news-carousel .home-news-tile-image {
-    min-height: clamp(14rem, 54vw, 23rem);
+    position: absolute;
+    inset: 0;
+    width: 100%;
     height: 100%;
+    min-height: 0;
   }
 
   .home-news-carousel .home-news-tile-placeholder {
     grid-column: 1;
     grid-row: 1;
     height: clamp(14rem, 54vw, 23rem);
-    min-height: clamp(14rem, 54vw, 23rem);
+    min-height: 0;
     border-right: 0;
     border-bottom: 1px solid var(--ccb-border-soft);
   }
@@ -1479,10 +1490,19 @@ a.btn.btn-soft.btn-sm.mt-3 {
   .home-news-carousel .home-news-tile-slide {
     grid-column: 1;
     grid-row: 2;
+    height: auto;
+    overflow: visible;
   }
 
   .home-news-carousel .home-news-tile-slide-content {
     padding: 1.15rem;
+    overflow: visible;
+  }
+
+  .home-news-carousel .home-news-tile-slide-content .news-detail-modal-copy {
+    height: auto;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
 
   .home-news-carousel .home-news-tile-title {
@@ -3779,28 +3799,12 @@ p.text-dark.fw-semibold.mb-2 {
   margin-top: 1rem !important;
 }
 
-/* Uniform cover image for home news tiles */
-.home-news-tile-image-wrap {
-  width: 100%;
-  height: 0;
-  padding-bottom: 89.25%; /* 16:9 aspect ratio */
-  position: relative;
-  overflow: hidden;
-}
-.home-news-tile-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Stable carousel arrows */
+/* home-news-carousel-stage — arrow positioning anchor */
 .home-news-carousel-stage {
   position: relative;
-  min-height: 480px; /* adjust as needed for tallest tile */
 }
+
+/* Tablet mobile arrow overrides */
 .news-carousel-arrow {
   position: absolute;
   top: 50%;
@@ -3809,15 +3813,3 @@ p.text-dark.fw-semibold.mb-2 {
 }
 .news-carousel-arrow-left { left: 1rem; }
 .news-carousel-arrow-right { right: 1rem; }
-.news-detail-modal-copy {
-  max-height: 8rem; /* adjust to fit roughly 200 words */
-  overflow: hidden;
-}
-
-/* Ensure consistent tile content height */
-.home-news-tile-slide-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
