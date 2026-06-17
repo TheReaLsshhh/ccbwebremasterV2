@@ -255,11 +255,11 @@ def base_context(active_page):
     }
 
 
-HOME_NEWS_CAROUSEL_SIZE = 5
+HOME_NEWS_CAROUSEL_SIZE = 10
 
 
 def _home_news_carousel_items(queryset_fields):
-    """Build up to five homepage news slides for the carousel."""
+    """Build up to ten homepage news slides for the carousel."""
     featured = list(
         NewsEvent.objects.only(*queryset_fields).filter(is_featured=True)[:HOME_NEWS_CAROUSEL_SIZE]
     )
