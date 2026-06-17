@@ -28,7 +28,7 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
-NEWS_PAGE_SIZE = 9
+NEWS_PAGE_SIZE = 6
 CLOUDINARY_DOWNLOAD_TIMEOUT = 4
 
 
