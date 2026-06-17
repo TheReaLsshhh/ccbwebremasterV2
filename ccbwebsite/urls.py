@@ -31,6 +31,14 @@ urlpatterns = [
     path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
     path(settings.ADMIN_URL, admin.site.urls),
     path("", include("website.urls")),
+
+    path(
+        "robots.txt",
+        TemplateView.as_view(
+            template_name="robots.txt",
+            content_type="text/plain"
+        ),
+    ),
 ]
 
 urlpatterns += [
