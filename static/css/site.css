@@ -2092,66 +2092,102 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 }
 
 .portal-pagination {
-  margin-top: 2rem;
+  margin-top: 2.25rem;
 }
 
 .portal-pagination .pagination {
-  gap: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .portal-pagination .page-link {
+  width: 3rem;
+  height: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border-radius: 999px;
-  border: 1px solid var(--ccb-border-soft);
-  background: var(--ccb-surface-solid);
+  border: 1px solid rgba(23, 53, 29, 0.08);
+  background: color-mix(in srgb, var(--ccb-surface-solid) 92%, transparent);
   color: var(--ccb-green-900);
-  padding: 0.65rem 1rem;
-  min-width: 2.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
   text-align: center;
-  box-shadow: none;
+  box-shadow: 0 10px 24px rgba(23, 53, 29, 0.06);
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .portal-pagination .page-link:hover,
 .portal-pagination .page-link:focus {
   color: var(--ccb-green-900);
   background: var(--ccb-orange-100);
-  border-color: rgba(217, 119, 6, 0.18);
+  border-color: rgba(217, 119, 6, 0.2);
+  box-shadow: 0 14px 30px rgba(217, 119, 6, 0.12);
+  transform: translateY(-1px);
+}
+
+.portal-pagination .page-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ccb-orange-500) 72%, transparent);
+  outline-offset: 3px;
 }
 
 .portal-pagination .page-item.active .page-link {
   color: var(--ccb-white);
   background: var(--ccb-green-800);
   border-color: var(--ccb-green-800);
+  box-shadow:
+    0 14px 30px rgba(23, 53, 29, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transform: none;
 }
 
 .portal-pagination .page-item.disabled .page-link {
-  color: var(--ccb-stone-400);
-  background: var(--ccb-surface-muted);
-  border-color: var(--ccb-border-soft);
+  color: color-mix(in srgb, var(--ccb-stone-500) 42%, transparent);
+  background: color-mix(in srgb, var(--ccb-surface-solid) 58%, transparent);
+  border-color: rgba(79, 75, 70, 0.08);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .portal-pagination .page-link i {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1;
 }
 
 .portal-pagination .page-item:first-child .page-link,
 .portal-pagination .page-item:nth-child(2) .page-link,
 .portal-pagination .page-item:last-child .page-link,
 .portal-pagination .page-item:nth-last-child(2) .page-link {
-  min-width: 2.6rem;
-  padding: 0.65rem;
+  width: 2.75rem;
+  height: 2.75rem;
 }
 
 .portal-pagination .page-ellipsis {
   border: 0;
   background: transparent;
+  color: color-mix(in srgb, var(--ccb-stone-500) 72%, transparent);
   box-shadow: none;
   cursor: default;
-  min-width: 1.4rem;
-  padding: 0.65rem 0.2rem;
+  width: 2rem;
+  height: 3rem;
+  font-size: 1.2rem;
+  transform: none;
 }
 
 .portal-pagination .page-item.disabled .page-ellipsis {
   background: transparent;
+  border-color: transparent;
+  cursor: default;
 }
 
 .feature-card h3,
@@ -3020,8 +3056,9 @@ body.captcha-overlay-open {
 
 :root[data-theme="dark"] .portal-pagination .page-link {
   color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
 :root[data-theme="dark"] .portal-pagination .page-link:hover,
@@ -3029,18 +3066,25 @@ body.captcha-overlay-open {
   color: var(--ccb-white);
   background: rgba(245, 158, 11, 0.18);
   border-color: rgba(245, 158, 11, 0.22);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
 }
 
 :root[data-theme="dark"] .portal-pagination .page-item.active .page-link {
-  color: var(--ccb-green-900);
-  background: var(--ccb-orange-500);
-  border-color: var(--ccb-orange-500);
+  color: var(--ccb-white);
+  background: var(--ccb-green-700);
+  border-color: var(--ccb-green-700);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
 }
 
 :root[data-theme="dark"] .portal-pagination .page-item.disabled .page-link {
   color: rgba(255, 255, 255, 0.34);
   background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .portal-pagination .page-ellipsis {
+  color: rgba(255, 255, 255, 0.48);
 }
 
 :root[data-theme="dark"] .signal-badge {
