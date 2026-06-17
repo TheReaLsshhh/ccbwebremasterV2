@@ -2129,6 +2129,31 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
   border-color: var(--ccb-border-soft);
 }
 
+.portal-pagination .page-link i {
+  font-size: 0.85rem;
+}
+
+.portal-pagination .page-item:first-child .page-link,
+.portal-pagination .page-item:nth-child(2) .page-link,
+.portal-pagination .page-item:last-child .page-link,
+.portal-pagination .page-item:nth-last-child(2) .page-link {
+  min-width: 2.6rem;
+  padding: 0.65rem;
+}
+
+.portal-pagination .page-ellipsis {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+  min-width: 1.4rem;
+  padding: 0.65rem 0.2rem;
+}
+
+.portal-pagination .page-item.disabled .page-ellipsis {
+  background: transparent;
+}
+
 .feature-card h3,
 .content-card h3,
 .announcement-card h3,

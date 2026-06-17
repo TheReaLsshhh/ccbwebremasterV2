@@ -30,7 +30,7 @@ College of Bayawan{% endblock %} {% block content %}
     {% if page_obj.object_list %}
     <div class="row g-4">
       {% for item in news_items %}
-      <div class="col-sm-6 col-lg-4 col-xxl-2">
+      <div class="col-md-6 col-lg-4">
         <article
           id="news-{{ item.pk }}"
           class="announcement-card news-grid-card news-grid-card-interactive"
@@ -104,29 +104,67 @@ College of Bayawan{% endblock %} {% block content %}
     {% if page_obj.paginator.num_pages > 1 %}
     <nav class="portal-pagination" aria-label="News pagination">
       <ul class="pagination justify-content-center mb-0">
-        <li
-          class="page-item{% if not page_obj.has_previous %} disabled{% endif %}"
-        >
+        <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+          <a
+            class="page-link"
+            href="{% if page_obj.has_previous %}?page=1{% else %}#{% endif %}"
+            aria-label="First page"
+          >
+            <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+          </a>
+        </li>
+        <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
           <a
             class="page-link"
             href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}"
-            aria-label="Previous"
+            aria-label="Previous page"
           >
-            Previous
+            <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
           </a>
         </li>
-        {% for num in page_obj.paginator.page_range %}
-        <li class="page-item{% if page_obj.number == num %} active{% endif %}">
-          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+
+        {% if page_obj.number > 3 %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">1</a>
         </li>
+        {% if page_obj.number > 4 %}
+        <li class="page-item disabled"><span class="page-link page-ellipsis">&hellip;</span></li>
+        {% endif %}
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+          <li class="page-item{% if page_obj.number == num %} active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+          {% endif %}
         {% endfor %}
+
+        {% if page_obj.number < page_obj.paginator.num_pages|add:"-3" %}
+        {% if page_obj.number < page_obj.paginator.num_pages|add:"-4" %}
+        <li class="page-item disabled"><span class="page-link page-ellipsis">&hellip;</span></li>
+        {% endif %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        </li>
+        {% endif %}
+
         <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
           <a
             class="page-link"
             href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}"
-            aria-label="Next"
+            aria-label="Next page"
           >
-            Next
+            <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
+          </a>
+        </li>
+        <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+          <a
+            class="page-link"
+            href="{% if page_obj.has_next %}?page={{ page_obj.paginator.num_pages }}{% else %}#{% endif %}"
+            aria-label="Last page"
+          >
+            <i class="fa-solid fa-angles-right" aria-hidden="true"></i>
           </a>
         </li>
       </ul>
