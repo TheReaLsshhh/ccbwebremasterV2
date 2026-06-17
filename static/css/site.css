@@ -2103,14 +2103,14 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 }
 
 .portal-pagination .page-link {
-  width: 3rem;
-  height: 3rem;
+  width: 3.05rem;
+  height: 3.05rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(23, 53, 29, 0.08);
+  border-radius: 0.42rem;
+  border: 1px solid rgba(79, 75, 70, 0.16);
   background: color-mix(in srgb, var(--ccb-surface-solid) 92%, transparent);
   color: var(--ccb-green-900);
   font-size: 1rem;
@@ -2168,8 +2168,8 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 .portal-pagination .page-item:nth-child(2) .page-link,
 .portal-pagination .page-item:last-child .page-link,
 .portal-pagination .page-item:nth-last-child(2) .page-link {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.05rem;
+  height: 3.05rem;
 }
 
 .portal-pagination .page-ellipsis {
