@@ -8,6 +8,7 @@ from django.views.static import serve
 from pathlib import Path
 from django.views.generic import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic import TemplateView
 
 from website.admin_security import setup_pin, verify_pin
 
