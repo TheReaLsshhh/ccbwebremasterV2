@@ -2,18 +2,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.admin import __file__ as admin_file
-from django.contrib.sitemaps.views import sitemap
 from django.http import Http404
 from django.urls import include, path
 from django.views.static import serve
 from pathlib import Path
 
 from website.admin_security import setup_pin, verify_pin
-from website.seo import robots_txt
-from website.sitemaps import PublicPageSitemap
+from website.seo import robots_txt, sitemap_xml
 
 admin_static_root = Path(admin_file).resolve().parent / "static" / "admin"
-sitemaps = {"public": PublicPageSitemap}
 
 
 def admin_decoy_not_found(request, path=None):
@@ -30,12 +27,7 @@ urlpatterns = [
     path("admin/", admin_decoy_not_found),
     path("admin/<path:path>", admin_decoy_not_found),
     path("robots.txt", robots_txt),
-    path(
-        "sitemap.xml",
-        sitemap,
-        {"sitemaps": sitemaps},
-        name="django.contrib.sitemaps.views.sitemap",
-    ),
+    path("sitemap.xml", sitemap_xml),
     path(f"{settings.ADMIN_URL}verify-pin/", verify_pin, name="admin_verify_pin"),
     path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
     path(settings.ADMIN_URL, admin.site.urls),

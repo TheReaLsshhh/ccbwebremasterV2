@@ -22,6 +22,8 @@ class SearchIndexingTests(TestCase):
         body = response.content.decode()
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml; charset=utf-8")
+        self.assertTrue(body.startswith('<?xml version="1.0" encoding="UTF-8"?>'))
         self.assertIn("<loc>https://ccbacad.dpdns.org/</loc>", body)
         self.assertIn("<loc>https://ccbacad.dpdns.org/academics/</loc>", body)
         self.assertIn("<loc>https://ccbacad.dpdns.org/news/</loc>", body)
