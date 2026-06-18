@@ -1748,9 +1748,17 @@ p.muted-copy {
   font-weight: 700;
 }
 
+.news-grid-read-more {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ccb-orange-600);
+  font-weight: 700;
+  gap: 0.4rem;
+}
+
 .news-grid-read-more:hover,
 .news-grid-read-more:focus {
-  color: var(--ccb-green-800);
+  color: var(--ccb-green-700);
 }
 
 .news-carousel-card {
