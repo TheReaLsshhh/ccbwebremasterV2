@@ -15,6 +15,7 @@ from .models import (
     ContactInquiry,
     DownloadItem,
     FacultyStaffEntry,
+    FacultyStaffSection,
     NewsEvent,
     PageContent,
     SiteSettings,
@@ -178,13 +179,23 @@ class StudentResourceAdmin(admin.ModelAdmin):
     search_fields = ("title", "description")
 
 
+@admin.register(FacultyStaffSection)
+class FacultyStaffSectionAdmin(admin.ModelAdmin):
+    list_display = ("title", "eyebrow_label", "layout", "sort_order", "published", "updated_at")
+    list_filter = ("layout", "published")
+    search_fields = ("title", "eyebrow_label")
+    list_editable = ("sort_order", "published")
+    ordering = ("sort_order", "title")
+
+
 @admin.register(FacultyStaffEntry)
 class FacultyStaffEntryAdmin(admin.ModelAdmin):
     form = FacultyStaffEntryAdminForm
-    list_display = ("name", "role", "department", "is_leadership", "updated_at")
-    list_filter = ("is_leadership", "department")
+    list_display = ("name", "section", "role", "department", "updated_at")
+    list_filter = ("section", "department")
     search_fields = ("name", "role", "department", "bio")
-    list_editable = ("is_leadership",)
+    list_editable = ("section",)
+    autocomplete_fields = ("section",)
 
 
 @admin.register(ContactInquiry)

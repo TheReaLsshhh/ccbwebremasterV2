@@ -8,6 +8,7 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
+from django.db.models import Prefetch
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, render
 from django.utils.html import escape
@@ -19,6 +20,7 @@ from .models import (
     ContactInquiry,
     DownloadItem,
     FacultyStaffEntry,
+    FacultyStaffSection,
     NewsEvent,
     PageContent,
     SiteSettings,
@@ -388,12 +390,27 @@ def students(request):
 
 
 def faculty(request):
+    faculty_people = FacultyStaffEntry.objects.only(
+        "name",
+        "section",
+        "role",
+        "department",
+        "bio",
+        "email",
+        "profile_image",
+    ).order_by("name")
+    faculty_sections = (
+        FacultyStaffSection.objects.only("title", "eyebrow_label", "layout", "sort_order")
+        .filter(published=True, people__isnull=False)
+        .distinct()
+        .prefetch_related(Prefetch("people", queryset=faculty_people))
+    )
+
     context = base_context("website:faculty")
     context.update(
         {
             "page_content": get_page_content(PageContent.FACULTY),
-            "leaders": FacultyStaffEntry.objects.only("name", "role", "department", "bio", "email", "profile_image").filter(is_leadership=True),
-            "team_members": FacultyStaffEntry.objects.only("name", "role", "department", "email", "profile_image").filter(is_leadership=False),
+            "faculty_sections": faculty_sections,
         }
     )
     return render(request, "website/faculty.html", context)

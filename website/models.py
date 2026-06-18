@@ -334,17 +334,45 @@ class StudentResource(TimeStampedModel):
         return self.title
 
 
+class FacultyStaffSection(TimeStampedModel):
+    LEADERSHIP = "leadership"
+    DIRECTORY = "directory"
+
+    LAYOUT_CHOICES = [
+        (LEADERSHIP, "Leadership cards"),
+        (DIRECTORY, "Directory rows"),
+    ]
+
+    title = models.CharField(max_length=200, unique=True)
+    eyebrow_label = models.CharField(max_length=80, default="Directory")
+    layout = models.CharField(max_length=20, choices=LAYOUT_CHOICES, default=DIRECTORY)
+    sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["sort_order", "title"]
+        verbose_name = "Faculty or staff section"
+        verbose_name_plural = "Faculty and staff sections"
+
+    def __str__(self):
+        return self.title
+
+
 class FacultyStaffEntry(TimeStampedModel):
     name = models.CharField(max_length=200)
+    section = models.ForeignKey(
+        FacultyStaffSection,
+        on_delete=models.PROTECT,
+        related_name="people",
+    )
     role = models.CharField(max_length=200)
     department = models.CharField(max_length=200, blank=True)
     bio = models.TextField(blank=True)
     email = models.EmailField(blank=True)
     profile_image = models.ImageField(upload_to="faculty/", blank=True, null=True)
-    is_leadership = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["section__sort_order", "name"]
         verbose_name = "Faculty or staff entry"
         verbose_name_plural = "Faculty and staff"
 

@@ -17,71 +17,65 @@
 </section>
 <section class="section-block">
     <div class="container">
-        <div class="section-header">
-            <div>
-                <span class="section-eyebrow section-eyebrow-leadership">Leadership</span>
-                <h2 class="section-title mt-3 mb-2">College Leaders</h2>
-                <p class="muted-copy mb-0">A more structured faculty page helps users identify leadership, offices, and personnel more clearly.</p>
+        {% for section in faculty_sections %}
+            <div class="section-header{% if not forloop.first %} mt-5{% endif %}">
+                <div>
+                    <span class="section-eyebrow">{{ section.eyebrow_label }}</span>
+                    <h2 class="section-title mt-3 mb-2">{{ section.title }}</h2>
+                </div>
             </div>
-        </div>
-        <div class="row g-4">
-            {% for person in leaders %}
-                <div class="col-lg-4">
-                    <div class="catalog-card">
-                        <div class="faculty-leader-layout">
-                            <div class="faculty-leader-content">
-                                <span class="signal-badge signal-badge-official">College Official</span>
-                                <h3 class="mt-3 faculty-leader-name">{{ person.name }}</h3>
-                                <p class="text-dark fw-semibold mb-1">{{ person.role }}</p>
-                                {% if person.department %}<p class="muted-copy mb-2">{{ person.department }}</p>{% endif %}
-                                {% if person.email %}
-                                    <p class="mb-2"><a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
-                                {% endif %}
-                                <p class="muted-copy">{{ person.bio }}</p>
-                            </div>
-                            {% if person.profile_image %}
-                                <img src="{{ person.profile_image.url }}" alt="{{ person.name }}" class="faculty-leader-image" width="88" height="88" loading="lazy" decoding="async">
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="notice-band">Add leadership profiles in admin.</div>
-                </div>
-            {% endfor %}
-        </div>
 
-        <div class="section-header mt-5">
-            <div>
-                <span class="section-eyebrow section-eyebrow-directory">Directory</span>
-                <h2 class="section-title mt-3 mb-2">Faculty and Staff</h2>
-            </div>
-        </div>
-        <div class="stack-list">
-            {% for person in team_members %}
-                <div class="directory-row">
-                    <div class="faculty-directory-main">
-                        {% if person.profile_image %}
-                            <img src="{{ person.profile_image.url }}" alt="{{ person.name }}" class="faculty-directory-image" width="64" height="64" loading="lazy" decoding="async">
-                        {% endif %}
-                        <div>
-                            <strong>{{ person.name }}</strong>
-                            <span>{{ person.role }}{% if person.department %} | {{ person.department }}{% endif %}</span>
+            {% if section.layout == "leadership" %}
+                <div class="row g-4">
+                    {% for person in section.people.all %}
+                        <div class="col-lg-4">
+                            <div class="catalog-card">
+                                <div class="faculty-leader-layout">
+                                    <div class="faculty-leader-content">
+                                        <span class="signal-badge signal-badge-official">College Official</span>
+                                        <h3 class="mt-3 faculty-leader-name">{{ person.name }}</h3>
+                                        <p class="text-dark fw-semibold mb-1">{{ person.role }}</p>
+                                        {% if person.department %}<p class="muted-copy mb-2">{{ person.department }}</p>{% endif %}
+                                        {% if person.email %}
+                                            <p class="mb-2"><a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
+                                        {% endif %}
+                                        <p class="muted-copy">{{ person.bio }}</p>
+                                    </div>
+                                    {% if person.profile_image %}
+                                        <img src="{{ person.profile_image.url }}" alt="{{ person.name }}" class="faculty-leader-image" width="88" height="88" loading="lazy" decoding="async">
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        {% if person.email %}
-                            <a href="mailto:{{ person.email }}">{{ person.email }}</a>
-                        {% else %}
-                            <span class="muted-copy">Email Unavailable</span>
-                        {% endif %}
-                    </div>
+                    {% endfor %}
                 </div>
-            {% empty %}
-                <div class="notice-band">Add faculty and staff records in admin.</div>
-            {% endfor %}
-        </div>
+            {% else %}
+                <div class="stack-list">
+                    {% for person in section.people.all %}
+                        <div class="directory-row">
+                            <div class="faculty-directory-main">
+                                {% if person.profile_image %}
+                                    <img src="{{ person.profile_image.url }}" alt="{{ person.name }}" class="faculty-directory-image" width="64" height="64" loading="lazy" decoding="async">
+                                {% endif %}
+                                <div>
+                                    <strong>{{ person.name }}</strong>
+                                    <span>{{ person.role }}{% if person.department %} | {{ person.department }}{% endif %}</span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if person.email %}
+                                    <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+                                {% else %}
+                                    <span class="muted-copy">Email Unavailable</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% empty %}
+            <div class="notice-band">Add faculty and staff sections in admin.</div>
+        {% endfor %}
     </div>
 </section>
 {% endblock %}
