@@ -7,9 +7,9 @@ from django.http import Http404
 from django.urls import include, path
 from django.views.static import serve
 from pathlib import Path
-from django.views.generic import TemplateView
 
 from website.admin_security import setup_pin, verify_pin
+from website.seo import robots_txt
 from website.sitemaps import PublicPageSitemap
 
 admin_static_root = Path(admin_file).resolve().parent / "static" / "admin"
@@ -29,24 +29,17 @@ urlpatterns = [
     ),
     path("admin/", admin_decoy_not_found),
     path("admin/<path:path>", admin_decoy_not_found),
-    path(f"{settings.ADMIN_URL}verify-pin/", verify_pin, name="admin_verify_pin"),
-    path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
-    path(settings.ADMIN_URL, admin.site.urls),
-    path("", include("website.urls")),
-
-    path(
-        "robots.txt",
-        TemplateView.as_view(
-            template_name="robots.txt",
-            content_type="text/plain",
-        ),
-    ),
+    path("robots.txt", robots_txt),
     path(
         "sitemap.xml",
         sitemap,
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
     ),
+    path(f"{settings.ADMIN_URL}verify-pin/", verify_pin, name="admin_verify_pin"),
+    path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
+    path(settings.ADMIN_URL, admin.site.urls),
+    path("", include("website.urls")),
 ]
 
 # Serve media files in all environments.
