@@ -1744,21 +1744,13 @@ p.muted-copy {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--ccb-orange-600);
+  color: var(--ccb-green-800);
   font-weight: 700;
-}
-
-.news-grid-read-more {
-  display: inline-flex;
-  align-items: center;
-  color: var(--ccb-orange-600);
-  font-weight: 700;
-  gap: 0.4rem;
 }
 
 .news-grid-read-more:hover,
 .news-grid-read-more:focus {
-  color: var(--ccb-green-700);
+  color: var(--ccb-orange-600);
 }
 
 .news-carousel-card {
