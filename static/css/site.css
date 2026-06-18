@@ -1753,6 +1753,12 @@ p.muted-copy {
   color: var(--ccb-orange-600);
 }
 
+.news-grid-card-interactive:hover .news-grid-read-more,
+.news-grid-card-interactive:focus-visible .news-grid-read-more,
+.news-grid-card-interactive:focus-within .news-grid-read-more {
+  color: var(--ccb-orange-600);
+}
+
 .news-carousel-card {
   cursor: default;
 }
