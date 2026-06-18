@@ -1,6 +1,13 @@
+import base64
+import binascii
+import os
+from io import BytesIO
+
 from django import forms
 from django.contrib import admin, messages
+from django.core.files.base import ContentFile
 from django.utils import timezone
+from PIL import Image
 
 from .models import (
     AcademicProgram,
@@ -36,6 +43,65 @@ class SiteSettingsAdminForm(forms.ModelForm):
 
     def clean_map_embed_url(self):
         return SiteSettings._extract_url_value(self.cleaned_data.get("map_embed_url"))
+
+
+class FacultyStaffEntryAdminForm(forms.ModelForm):
+    profile_image_cropped_data = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={"class": "faculty-image-crop-data"}),
+    )
+
+    class Meta:
+        model = FacultyStaffEntry
+        fields = "__all__"
+
+    class Media:
+        css = {"all": ("admin/css/faculty-image-crop.css",)}
+        js = ("admin/js/faculty-image-crop.js",)
+
+    def clean_profile_image_cropped_data(self):
+        data_url = (self.cleaned_data.get("profile_image_cropped_data") or "").strip()
+        self._cropped_profile_image_bytes = None
+        if not data_url:
+            return ""
+
+        prefix = "data:image/jpeg;base64,"
+        if not data_url.startswith(prefix):
+            raise forms.ValidationError("The cropped image data is invalid. Please reselect and crop the image.")
+
+        try:
+            image_bytes = base64.b64decode(data_url[len(prefix):], validate=True)
+        except (binascii.Error, ValueError):
+            raise forms.ValidationError("The cropped image could not be decoded. Please reselect and crop the image.")
+
+        if len(image_bytes) > 6 * 1024 * 1024:
+            raise forms.ValidationError("The cropped image is too large. Please choose a smaller image.")
+
+        try:
+            with Image.open(BytesIO(image_bytes)) as image:
+                image.verify()
+        except Exception:
+            raise forms.ValidationError("The cropped image is not a valid image file.")
+
+        self._cropped_profile_image_bytes = image_bytes
+        return data_url
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        cropped_image_bytes = getattr(self, "_cropped_profile_image_bytes", None)
+        uploaded_image = self.files.get("profile_image")
+
+        if cropped_image_bytes and uploaded_image:
+            original_name = os.path.basename(uploaded_image.name or "profile-image.jpg")
+            base_name, _extension = os.path.splitext(original_name)
+            cropped_name = f"{base_name or 'profile-image'}-cropped.jpg"
+            instance.profile_image.save(cropped_name, ContentFile(cropped_image_bytes), save=False)
+
+        if commit:
+            instance.save()
+            self.save_m2m()
+
+        return instance
 
 
 @admin.register(SiteSettings)
@@ -114,6 +180,7 @@ class StudentResourceAdmin(admin.ModelAdmin):
 
 @admin.register(FacultyStaffEntry)
 class FacultyStaffEntryAdmin(admin.ModelAdmin):
+    form = FacultyStaffEntryAdminForm
     list_display = ("name", "role", "department", "is_leadership", "updated_at")
     list_filter = ("is_leadership", "department")
     search_fields = ("name", "role", "department", "bio")

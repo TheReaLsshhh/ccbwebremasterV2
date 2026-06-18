@@ -1,0 +1,107 @@
+.faculty-image-crop {
+  box-sizing: border-box;
+  max-width: 720px;
+  margin: 0 0 1.5rem 170px;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #d8d8d8);
+  border-radius: 8px;
+  background: var(--body-bg, #fff);
+}
+
+.faculty-image-crop.is-hidden {
+  display: none;
+}
+
+.faculty-image-crop__header {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.8rem;
+}
+
+.faculty-image-crop__header strong {
+  color: var(--body-fg, #333);
+  font-size: 0.95rem;
+}
+
+.faculty-image-crop__header span {
+  color: var(--body-quiet-color, #666);
+  font-size: 0.82rem;
+}
+
+.faculty-image-crop__stage {
+  position: relative;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #d8d8d8);
+  border-radius: 8px;
+  background: #111;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.faculty-image-crop__stage.is-dragging {
+  cursor: grabbing;
+}
+
+.faculty-image-crop__image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  pointer-events: none;
+  transform-origin: center center;
+  user-select: none;
+}
+
+.faculty-image-crop__frame {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+}
+
+.faculty-image-crop__controls {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 320px) auto auto;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+}
+
+.faculty-image-crop__controls label {
+  margin: 0;
+  color: var(--body-fg, #333);
+  font-weight: 600;
+}
+
+.faculty-image-crop__controls input[type="range"] {
+  width: 100%;
+}
+
+.faculty-image-crop__preview {
+  display: none;
+  width: 96px;
+  height: 96px;
+  margin-top: 0.85rem;
+  border: 1px solid var(--border-color, #d8d8d8);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.faculty-image-crop__preview.is-visible {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .faculty-image-crop {
+    margin-left: 0;
+  }
+
+  .faculty-image-crop__controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
