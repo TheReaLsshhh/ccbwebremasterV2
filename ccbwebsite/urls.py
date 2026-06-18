@@ -2,17 +2,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.admin import __file__ as admin_file
+from django.contrib.sitemaps.views import sitemap
 from django.http import Http404
 from django.urls import include, path
 from django.views.static import serve
 from pathlib import Path
-from django.views.generic import RedirectView
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic import TemplateView
 
 from website.admin_security import setup_pin, verify_pin
+from website.sitemaps import PublicPageSitemap
 
 admin_static_root = Path(admin_file).resolve().parent / "static" / "admin"
+sitemaps = {"public": PublicPageSitemap}
 
 
 def admin_decoy_not_found(request, path=None):
@@ -37,23 +38,14 @@ urlpatterns = [
         "robots.txt",
         TemplateView.as_view(
             template_name="robots.txt",
-            content_type="text/plain"
+            content_type="text/plain",
         ),
-    ),
-]
-
-urlpatterns += [
-    path(
-        "robots.txt",
-        RedirectView.as_view(
-            url=staticfiles_storage.url("robots.txt")
-        )
     ),
     path(
         "sitemap.xml",
-        RedirectView.as_view(
-            url=staticfiles_storage.url("sitemap.xml")
-        )
+        sitemap,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
     ),
 ]
 

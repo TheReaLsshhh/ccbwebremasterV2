@@ -4,7 +4,7 @@
 <head>
 
     <meta name="description"
-        content="CCB official website. Academics, admissions, faculty, students, downloads, and campus news.">
+        content="{% block meta_description %}CCB official website. Academics, admissions, faculty, students, downloads, and campus news.{% endblock %}">
 
     <meta name="keywords"
         content="CCB, city college of bayawan, college, academics, admissions, faculty, students">
@@ -13,7 +13,7 @@
         content="index, follow">
 
     <link rel="canonical"
-        href="{{ request.build_absolute_uri }}">
+        href="{{ canonical_url }}">
 
     <meta property="og:title"
         content="CCB Official Website">
@@ -22,7 +22,7 @@
         content="Official website of CCB">
     
     <meta property="og:url"
-        content="{{ request.build_absolute_uri }}">
+        content="{{ canonical_url }}">
     
     <meta property="og:type"
         content="website">

@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "website",
 ]
@@ -100,6 +101,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "ccbwebsite.urls"
 ADMIN_URL = os.getenv("ADMIN_URL", "ccb-office").strip("/")
 ADMIN_URL = f"{ADMIN_URL}/" if ADMIN_URL else "ccb-office/"
+PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "https://ccbacad.dpdns.org").rstrip("/")
 ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS", "2"))
 ADMIN_LOGIN_RATE_LIMIT_WINDOW = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_WINDOW", "900"))
 ADMIN_PIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_PIN_RATE_LIMIT_ATTEMPTS", "2"))
@@ -115,6 +117,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "website.context_processors.search_metadata",
             ],
         },
     },
