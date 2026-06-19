@@ -764,11 +764,14 @@ button,
 .mobile-nav-link,
 .mobile-nav-services-toggle,
 .mobile-nav-service-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0.72rem 0.85rem;
   border-radius: 0.45rem;
   color: var(--ccb-stone-700);
   font-weight: 700;
+  line-height: 1.45;
 }
 
 .mobile-nav-services-toggle {
@@ -783,7 +786,7 @@ button,
 
 .mobile-nav-services-toggle::after {
   content: "\f078";
-  float: right;
+  flex: 0 0 auto;
   font-family: "Font Awesome 6 Free";
   font-size: 0.78rem;
   font-weight: 900;
@@ -807,15 +810,22 @@ button,
 }
 
 .mobile-nav-services {
-  margin: 0.25rem 0;
-  padding: 0.55rem;
-  border: 1px solid var(--ccb-border-soft);
-  border-radius: 0.55rem;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
 .mobile-nav-services-list {
-  padding-top: 0.25rem;
-  padding-left: 0.45rem;
+  margin: 0.2rem 0 0.35rem 0.85rem;
+  padding: 0.35rem 0 0.35rem 0.55rem;
+  border-left: 2px solid rgba(45, 90, 45, 0.12);
+}
+
+.mobile-nav-service-link {
+  justify-content: flex-start;
+  padding-top: 0.62rem;
+  padding-bottom: 0.62rem;
 }
 
 .mobile-nav-service-link.is-disabled {
@@ -3463,6 +3473,10 @@ p.text-dark.fw-semibold.mb-2 {
 
 :root[data-theme="dark"] .mobile-nav-service-link {
   background: rgba(255, 255, 255, 0.04);
+}
+
+:root[data-theme="dark"] .mobile-nav-services-list {
+  border-left-color: rgba(245, 158, 11, 0.18);
 }
 
 :root[data-theme="dark"] .mobile-nav-service-link.is-disabled {
