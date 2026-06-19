@@ -20,7 +20,9 @@
         {% for section in faculty_sections %}
             <div class="section-header{% if not forloop.first %} mt-5{% endif %}">
                 <div>
-                    <span class="section-eyebrow">{{ section.eyebrow_label }}</span>
+                    {% ifchanged section.eyebrow_label %}
+                        <span class="section-eyebrow">{{ section.eyebrow_label }}</span>
+                    {% endifchanged %}
                     <h2 class="section-title mt-3 mb-2">{{ section.title }}</h2>
                 </div>
             </div>
