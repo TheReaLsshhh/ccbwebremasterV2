@@ -16,6 +16,7 @@ from .models import (
     DownloadItem,
     FacultyStaffEntry,
     FacultyStaffSection,
+    FrequentlyAskedQuestion,
     NewsEvent,
     PageContent,
     SiteSettings,
@@ -133,6 +134,19 @@ class PageContentAdmin(admin.ModelAdmin):
             "Body section (optional)",
             {"fields": ("body_title", "body_text", "cta_text", "cta_url")},
         ),
+    )
+
+
+@admin.register(FrequentlyAskedQuestion)
+class FrequentlyAskedQuestionAdmin(admin.ModelAdmin):
+    list_display = ("question", "layout", "sort_order", "published", "updated_at")
+    list_filter = ("layout", "published")
+    search_fields = ("question", "answer")
+    list_editable = ("sort_order", "published")
+    ordering = ("layout", "sort_order", "question")
+    fieldsets = (
+        (None, {"fields": ("layout", "published", "sort_order")}),
+        ("FAQ content", {"fields": ("question", "answer")}),
     )
 
 

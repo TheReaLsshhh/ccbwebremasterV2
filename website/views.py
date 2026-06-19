@@ -21,6 +21,7 @@ from .models import (
     DownloadItem,
     FacultyStaffEntry,
     FacultyStaffSection,
+    FrequentlyAskedQuestion,
     NewsEvent,
     PageContent,
     SiteSettings,
@@ -248,12 +249,25 @@ def get_service_dropdown_items():
     ]
 
 
+def get_page_faqs(active_page):
+    page_key = active_page.rsplit(":", 1)[-1]
+    return FrequentlyAskedQuestion.objects.only(
+        "id",
+        "question",
+        "answer",
+        "layout",
+        "sort_order",
+        "published",
+    ).filter(layout=page_key, published=True)
+
+
 def base_context(active_page):
     return {
         "site_settings": get_site_settings(),
         "nav_items": NAV_ITEMS,
         "active_page": active_page,
         "service_menu_items": get_service_dropdown_items(),
+        "page_faqs": get_page_faqs(active_page),
     }
 
 

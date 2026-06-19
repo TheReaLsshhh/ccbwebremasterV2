@@ -1,0 +1,39 @@
+{% if page_faqs %}
+<section class="section-block page-faq-section">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow page-faq-eyebrow">FAQ</span>
+                <h2 class="section-title mt-3 mb-2">Frequently Asked Questions</h2>
+                <p class="muted-copy mb-0">Find quick answers related to this page.</p>
+            </div>
+        </div>
+        <div class="accordion page-faq-accordion" id="pageFaqAccordion">
+            {% for faq in page_faqs %}
+                <div class="accordion-item page-faq-item">
+                    <h3 class="accordion-header page-faq-question" id="pageFaqHeading{{ faq.id }}">
+                        <button
+                            class="accordion-button collapsed page-faq-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#pageFaqAnswer{{ faq.id }}"
+                            aria-expanded="false"
+                            aria-controls="pageFaqAnswer{{ faq.id }}">
+                            {{ faq.question }}
+                        </button>
+                    </h3>
+                    <div
+                        id="pageFaqAnswer{{ faq.id }}"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="pageFaqHeading{{ faq.id }}"
+                        data-bs-parent="#pageFaqAccordion">
+                        <div class="accordion-body page-faq-answer">
+                            {{ faq.answer|linebreaksbr }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

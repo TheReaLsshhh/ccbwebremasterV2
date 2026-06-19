@@ -206,6 +206,27 @@ class PageContent(TimeStampedModel):
         optimize_uploaded_image(self.banner_image)
 
 
+class FrequentlyAskedQuestion(TimeStampedModel):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    layout = models.CharField(
+        "Layout page",
+        max_length=30,
+        choices=PageContent.PAGE_CHOICES,
+        help_text="Choose the public page where this FAQ should appear.",
+    )
+    sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["layout", "sort_order", "question"]
+        verbose_name = "Frequently asked question"
+        verbose_name_plural = "Frequently asked questions"
+
+    def __str__(self):
+        return self.question
+
+
 class AcademicProgram(TimeStampedModel):
     name = models.CharField(max_length=200)
     award = models.CharField(max_length=200, blank=True)
