@@ -2347,8 +2347,8 @@ span.signal-badge.signal-badge-resource {
   gap: 0.4rem;
   padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  background: var(--ccb-green-100);
-  color: var(--ccb-green-800);
+  background: rgba(23, 53, 29, 0.82);
+  color: var(--ccb-white);
   font-size: 0.82rem;
   font-weight: 700;
 }
