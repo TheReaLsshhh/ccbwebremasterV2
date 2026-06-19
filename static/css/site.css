@@ -762,6 +762,7 @@ button,
 }
 
 .mobile-nav-link,
+.mobile-nav-services-toggle,
 .mobile-nav-service-link {
   display: block;
   padding: 0.72rem 0.85rem;
@@ -770,9 +771,35 @@ button,
   font-weight: 700;
 }
 
+.mobile-nav-services-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobile-nav-services-toggle::after {
+  content: "\f078";
+  float: right;
+  font-family: "Font Awesome 6 Free";
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.5;
+  transition: transform 0.18s ease;
+}
+
+.mobile-nav-services-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
 .mobile-nav-link.active,
 .mobile-nav-link:hover,
 .mobile-nav-link:focus,
+.mobile-nav-services-toggle:hover,
+.mobile-nav-services-toggle:focus,
 .mobile-nav-service-link:hover,
 .mobile-nav-service-link:focus {
   color: var(--ccb-green-900);
@@ -786,14 +813,9 @@ button,
   border-radius: 0.55rem;
 }
 
-.mobile-nav-services-title {
-  display: block;
-  margin: 0 0 0.2rem;
-  padding: 0.72rem 0.85rem;
-  color: var(--ccb-stone-700);
-  font-size: inherit;
-  font-weight: 700;
-  line-height: inherit;
+.mobile-nav-services-list {
+  padding-top: 0.25rem;
+  padding-left: 0.45rem;
 }
 
 .mobile-nav-service-link.is-disabled {
@@ -3416,7 +3438,7 @@ p.text-dark.fw-semibold.mb-2 {
 :root[data-theme="dark"] .mobile-nav-title,
 :root[data-theme="dark"] .mobile-nav-link,
 :root[data-theme="dark"] .mobile-nav-service-link,
-:root[data-theme="dark"] .mobile-nav-services-title {
+:root[data-theme="dark"] .mobile-nav-services-toggle {
   color: var(--ccb-white);
 }
 
@@ -3427,6 +3449,8 @@ p.text-dark.fw-semibold.mb-2 {
 :root[data-theme="dark"] .mobile-nav-link.active,
 :root[data-theme="dark"] .mobile-nav-link:hover,
 :root[data-theme="dark"] .mobile-nav-link:focus,
+:root[data-theme="dark"] .mobile-nav-services-toggle:hover,
+:root[data-theme="dark"] .mobile-nav-services-toggle:focus,
 :root[data-theme="dark"] .mobile-nav-service-link:hover,
 :root[data-theme="dark"] .mobile-nav-service-link:focus {
   color: var(--ccb-white);

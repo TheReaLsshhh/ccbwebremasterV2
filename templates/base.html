@@ -321,18 +321,28 @@
                             {% for label, url_name in nav_items %}
                                 {% if url_name == "website:news" %}
                                     <li class="mobile-nav-services">
-                                        <span class="mobile-nav-services-title">Services</span>
-                                        <ul class="mobile-nav-services-list">
-                                            {% for item in service_menu_items %}
-                                                <li>
-                                                    {% if item.is_available %}
-                                                        <a class="mobile-nav-service-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
-                                                    {% else %}
-                                                        <span class="mobile-nav-service-link is-disabled">{{ item.label }}</span>
-                                                    {% endif %}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
+                                        <button
+                                            class="mobile-nav-services-toggle collapsed"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#mobileServicesMenu"
+                                            aria-expanded="false"
+                                            aria-controls="mobileServicesMenu">
+                                            Services
+                                        </button>
+                                        <div class="collapse" id="mobileServicesMenu">
+                                            <ul class="mobile-nav-services-list">
+                                                {% for item in service_menu_items %}
+                                                    <li>
+                                                        {% if item.is_available %}
+                                                            <a class="mobile-nav-service-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
+                                                        {% else %}
+                                                            <span class="mobile-nav-service-link is-disabled">{{ item.label }}</span>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
                                     </li>
                                 {% endif %}
                                 <li>
