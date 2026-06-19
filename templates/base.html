@@ -217,10 +217,10 @@
                         </span>
                     </span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="modal" data-bs-target="#mobileNavModal" aria-controls="mobileNavModal" aria-label="Open navigation menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="mainNav">
+                <div class="collapse navbar-collapse d-none d-xl-flex" id="mainNav">
                     <ul class="navbar-nav ms-auto gap-xl-1 align-items-xl-center">
                         {% for label, url_name in nav_items %}
                             {% if url_name == "website:news" %}
@@ -255,6 +255,54 @@
                 </div>
             </div>
         </nav>
+
+        <div class="modal fade mobile-nav-modal" id="mobileNavModal" tabindex="-1" aria-labelledby="mobileNavModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mobile-nav-dialog">
+                <div class="modal-content mobile-nav-card">
+                    <div class="mobile-nav-header">
+                        <div class="brand-lockup mobile-nav-brand">
+                            <span class="brand-mark">
+                                <img src="{% static 'images/hero-images/ccb-logo.png' %}" alt="City College of Bayawan logo" class="brand-mark-image" width="46" height="46" decoding="async">
+                            </span>
+                            <span class="brand-copy">
+                                <strong id="mobileNavModalLabel"><span class="brand-initial">C</span>ity <span class="brand-initial">C</span>ollege of <span class="brand-initial">B</span>ayawan</strong>
+                            </span>
+                        </div>
+                        <button type="button" class="btn-close mobile-nav-close" data-bs-dismiss="modal" aria-label="Close navigation menu"></button>
+                    </div>
+                    <div class="modal-body mobile-nav-body">
+                        <nav aria-label="Mobile navigation">
+                            <ul class="mobile-nav-list">
+                                {% for label, url_name in nav_items %}
+                                    {% if url_name == "website:news" %}
+                                        <li class="mobile-nav-services">
+                                            <span class="mobile-nav-services-title">
+                                                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                                                Services
+                                            </span>
+                                            <ul class="mobile-nav-services-list">
+                                                {% for item in service_menu_items %}
+                                                    <li>
+                                                        {% if item.is_available %}
+                                                            <a class="mobile-nav-service-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a>
+                                                        {% else %}
+                                                            <span class="mobile-nav-service-link is-disabled">{{ item.label }}</span>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <a class="mobile-nav-link {% if active_page == url_name %}active{% endif %}" href="{% url url_name %}">{{ label }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {% block content %}{% endblock %}
 
@@ -374,6 +422,7 @@
     {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+    <script src="{% static 'js/mobile-nav.js' %}" defer></script>
     <script src="{% static 'js/news-modal.js' %}" defer></script>
     <script defer>
         (function () {
