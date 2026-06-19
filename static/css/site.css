@@ -788,12 +788,12 @@ button,
 
 .mobile-nav-services-title {
   display: block;
-  margin: 0 0 0.25rem;
-  padding: 0 0.3rem;
-  color: var(--ccb-green-900);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  margin: 0 0 0.2rem;
+  padding: 0.72rem 0.85rem;
+  color: var(--ccb-stone-700);
+  font-size: inherit;
+  font-weight: 700;
+  line-height: inherit;
 }
 
 .mobile-nav-service-link.is-disabled {
