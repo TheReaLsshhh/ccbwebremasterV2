@@ -2478,6 +2478,14 @@ span.signal-badge.signal-badge-resource {
   gap: 1rem;
 }
 
+p.text-dark.fw-semibold.mb-1 {
+    color: var(--ccb-green-900) !important;
+}
+
+h3.mt-3.faculty-leader-name {
+    color: var(--ccb-green-900) !important;
+}
+
 .faculty-leader-content {
   flex: 1 1 auto;
   min-width: 0;
