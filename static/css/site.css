@@ -2463,6 +2463,15 @@ span.signal-badge.signal-badge-resource {
   border: 1px solid rgb(128 123 116 / 36%) !important;
 }
 
+.stack-list .directory-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.9fr);
+  align-items: stretch;
+  gap: 1rem;
+  padding: 0;
+  background: transparent;
+}
+
 .directory-row a {
   font-weight: 600;
 }
@@ -2506,6 +2515,22 @@ span.signal-badge.signal-badge-resource {
   display: flex;
   align-items: center;
   gap: 0.9rem;
+}
+
+.faculty-directory-main,
+.faculty-directory-contact {
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  border-radius: calc(var(--ccb-radius-md) - 2px);
+  background: var(--ccb-surface-muted);
+}
+
+.faculty-directory-contact {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .contact-shell {
@@ -3775,8 +3800,22 @@ p.text-dark.fw-semibold.mb-2 {
     align-items: flex-start;
   }
 
+  .stack-list .directory-row {
+    grid-template-columns: 1fr;
+  }
+
   .faculty-directory-main {
     align-items: flex-start;
+  }
+
+  .faculty-directory-main,
+  .faculty-directory-contact {
+    width: 100%;
+  }
+
+  .faculty-directory-contact {
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .faculty-leader-layout {
