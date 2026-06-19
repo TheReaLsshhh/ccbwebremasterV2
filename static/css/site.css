@@ -3167,6 +3167,14 @@ body.captcha-overlay-open {
   margin-bottom: 0.55rem;
 }
 
+.footer-tagline {
+  margin: 0;
+}
+
+.footer-content-row {
+  --bs-gutter-y: 1.1rem;
+}
+
 .footer-link-list {
   display: grid;
   gap: 0.2rem;
