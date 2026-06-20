@@ -4115,6 +4115,14 @@ p.text-dark.fw-semibold.mb-2 {
   margin-bottom: 0.25rem;
 }
 
+.captcha-widget-status {
+  max-width: 19rem;
+  color: var(--ccb-stone-500);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 /* Error */
 .captcha-error-msg {
   color: #dc2626;

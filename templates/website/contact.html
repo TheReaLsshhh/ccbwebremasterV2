@@ -160,7 +160,9 @@
                     <input type="hidden" name="website" value="">
 
                     {# reCAPTCHA widget is injected here by JS after the modal opens #}
-                    <div id="captchaWidgetWrap" class="captcha-widget-wrap"></div>
+                    <div id="captchaWidgetWrap" class="captcha-widget-wrap">
+                        <p id="captchaWidgetStatus" class="captcha-widget-status mb-0">Loading verification...</p>
+                    </div>
 
                     {% if form.captcha.errors %}
                         <p class="captcha-error-msg">{{ form.captcha.errors }}</p>
@@ -267,14 +269,47 @@
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
+    var captchaLoadFailed = false;
+    var captchaFailureTimer = null;
 
     /* reCAPTCHA explicit-render callback */
     window.onCaptchaLoad = function () { /* render happens on modal shown */ };
+    window.onCaptchaScriptError = function () {
+        captchaLoadFailed = true;
+        showCaptchaMessage('Security check could not load. Please allow Google reCAPTCHA or try another browser.');
+    };
+
+    function showCaptchaMessage(message) {
+        var status = document.getElementById('captchaWidgetStatus');
+        if (status) {
+            status.textContent = message;
+            status.classList.remove('d-none');
+        }
+    }
+
+    function hideCaptchaMessage() {
+        var status = document.getElementById('captchaWidgetStatus');
+        if (status) {
+            status.classList.add('d-none');
+        }
+    }
+
+    function startCaptchaFailureTimer() {
+        if (captchaFailureTimer) {
+            clearTimeout(captchaFailureTimer);
+        }
+        captchaFailureTimer = setTimeout(function () {
+            if (!widgetRendered) {
+                showCaptchaMessage('Security check is still loading. If this stays blank, allow Google reCAPTCHA in your browser shields or ad blocker, then reload.');
+            }
+        }, 6500);
+    }
 
     function renderWidget() {
         if (widgetRendered) return;
         var wrap = document.getElementById('captchaWidgetWrap');
         if (!wrap || typeof grecaptcha === 'undefined') return;
+        hideCaptchaMessage();
         widgetId = grecaptcha.render(wrap, {
             sitekey: '{{ recaptcha_public_key }}',
             /* Auto-submit the moment the puzzle is solved */
@@ -333,6 +368,7 @@
                 grecaptcha.reset(widgetId);
             }
 
+            showCaptchaMessage('Loading verification...');
             bootstrap.Modal.getOrCreateInstance(modalEl).show();
         });
     }
@@ -343,6 +379,11 @@
             if (typeof grecaptcha !== 'undefined') {
                 renderWidget();
             } else {
+                if (captchaLoadFailed) {
+                    showCaptchaMessage('Security check could not load. Please allow Google reCAPTCHA or try another browser.');
+                    return;
+                }
+                startCaptchaFailureTimer();
                 var tries = 0;
                 var poll = setInterval(function () {
                     tries++;
@@ -360,6 +401,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit" async defer onerror="window.onCaptchaScriptError && window.onCaptchaScriptError()"></script>
 {% endblock %}
 {% endif %}
