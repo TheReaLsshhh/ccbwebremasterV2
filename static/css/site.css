@@ -931,10 +931,10 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .hero-main {
   padding: 2.75rem;
   background-image:
-    linear-gradient(145deg, rgba(23, 53, 29, 0.96), rgba(33, 71, 38, 0.92)),
+    linear-gradient(145deg, rgb(23 53 29 / 61%), rgba(33, 71, 38, 0.92)),
     linear-gradient(45deg, rgba(245, 158, 11, 0.2), rgba(255, 255, 255, 0)),
     var(--hero-banner-image, none);
-  background-size: cover, cover, contain;
+  background-size: cover, cover, cover;
   background-position: center, center, center;
   background-repeat: no-repeat;
   color: var(--ccb-white);

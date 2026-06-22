@@ -167,7 +167,7 @@ SERVICE_DROPDOWN_ITEMS = [
         "url": "https://www.facebook.com/profile.php?id=61577470075989",
     },
     {
-        "label": "Students Affair & Students Services",
+        "label": "Students Affair & Services",
         "url": "https://www.facebook.com/profile.php?id=61582297621099",
     },
     {
