@@ -320,10 +320,22 @@ def academics(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ACADEMICS),
-            "programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file"),
+            "programs": _academic_programs(),
         }
     )
     return render(request, "website/academics.html", context)
+
+
+def _academic_programs():
+    return AcademicProgram.objects.only("name", "award", "description", "brochure_file")
+
+
+def academics_partial(request):
+    return render(
+        request,
+        "website/partials/academic_programs_grid.html",
+        {"programs": _academic_programs()},
+    )
 
 
 def admissions(request):
@@ -331,10 +343,22 @@ def admissions(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ADMISSIONS),
-            "requirements": AdmissionRequirement.objects.only("title", "description", "document_file", "sort_order"),
+            "requirements": _admission_requirements(),
         }
     )
     return render(request, "website/admissions.html", context)
+
+
+def _admission_requirements():
+    return AdmissionRequirement.objects.only("title", "description", "document_file", "sort_order")
+
+
+def admissions_partial(request):
+    return render(
+        request,
+        "website/partials/admission_requirements_grid.html",
+        {"requirements": _admission_requirements()},
+    )
 
 
 def news(request):
@@ -373,11 +397,7 @@ def news(request):
 
 
 def downloads(request):
-    # Paginate the DownloadItem list (show 12 items per page – adjust as needed for layout)
-    download_queryset = DownloadItem.objects.only("category", "title", "description", "file")
-    paginator = Paginator(download_queryset, 12)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    page_obj = _downloads_page(request)
 
     context = base_context("website:downloads")
     context.update(
@@ -392,15 +412,45 @@ def downloads(request):
     return render(request, "website/downloads.html", context)
 
 
+def _downloads_page(request):
+    download_queryset = DownloadItem.objects.only("category", "title", "description", "file")
+    paginator = Paginator(download_queryset, 12)
+    return paginator.get_page(request.GET.get("page"))
+
+
+def downloads_partial(request):
+    page_obj = _downloads_page(request)
+    return render(
+        request,
+        "website/partials/downloads_grid.html",
+        {
+            "page_obj": page_obj,
+            "downloads": page_obj.object_list,
+        },
+    )
+
+
 def students(request):
     context = base_context("website:students")
     context.update(
         {
             "page_content": get_page_content(PageContent.STUDENTS),
-            "resources": StudentResource.objects.only("title", "description", "link_url", "attachment"),
+            "resources": _student_resources(),
         }
     )
     return render(request, "website/students.html", context)
+
+
+def _student_resources():
+    return StudentResource.objects.only("title", "description", "link_url", "attachment")
+
+
+def students_partial(request):
+    return render(
+        request,
+        "website/partials/student_resources_grid.html",
+        {"resources": _student_resources()},
+    )
 
 
 def faculty(request):

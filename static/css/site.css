@@ -2616,6 +2616,14 @@ span.signal-badge.signal-badge-resource {
   border: 1px solid rgba(217, 119, 6, 0.12);
 }
 
+.ajax-refresh-region {
+  transition: opacity 0.18s ease;
+}
+
+.ajax-refresh-region-updating {
+  opacity: 0.62;
+}
+
 .directory-row {
   align-items: flex-start;
   flex-direction: column;

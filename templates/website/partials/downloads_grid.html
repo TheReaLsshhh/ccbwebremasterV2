@@ -1,0 +1,16 @@
+{% load news_extras %}
+
+{% for item in page_obj.object_list %}
+    <div class="col-lg-4">
+        <div class="content-card">
+            <span class="signal-badge {% if item.category == 'academic' %}signal-badge-download-academic{% elif item.category == 'form' %}signal-badge-download-form{% elif item.category == 'policy' %}signal-badge-download-policy{% elif item.category == 'announcement' %}signal-badge-download-announcement{% endif %}">{{ item.get_category_display }}</span>
+            <h3 class="mt-3">{{ item.title }}</h3>
+            <p class="muted-copy">{{ item.description }}</p>
+            <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ item.file|file_download_url }}">Download File</a>
+        </div>
+    </div>
+{% empty %}
+    <div class="col-12">
+        <div class="notice-band">Upload forms, policies, memoranda, and announcements in admin.</div>
+    </div>
+{% endfor %}

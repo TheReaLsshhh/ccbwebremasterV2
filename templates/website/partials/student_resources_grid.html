@@ -1,0 +1,23 @@
+{% load news_extras %}
+
+{% for resource in resources %}
+    <div class="col-lg-6">
+        <div class="resource-card">
+            <span class="signal-badge signal-badge-resource">Resource</span>
+            <h3>{{ resource.title }}</h3>
+            <p class="muted-copy">{{ resource.description }}</p>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+                {% if resource.link_url %}
+                    <a class="btn btn-brand btn-sm" href="{{ resource.link_url }}">Open Link</a>
+                {% endif %}
+                {% if resource.attachment %}
+                    <a class="btn btn-soft btn-sm btn-download" href="{{ resource.attachment|file_download_url }}">Download File</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <div class="col-12">
+        <div class="notice-band">Add handbooks, portals, scholarship files, and student guides in admin.</div>
+    </div>
+{% endfor %}
