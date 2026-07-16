@@ -2,37 +2,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ seo_title }}</title>
+    <meta name="description" content="{{ seo_description }}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ canonical_url }}">
 
-    <meta name="description"
-        content="{% block meta_description %}CCB official website. Academics, admissions, faculty, students, downloads, and campus news.{% endblock %}">
+    <meta property="og:site_name" content="City College of Bayawan">
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta property="og:description" content="{{ seo_description }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ seo_image_url }}">
+    <meta property="og:image:alt" content="City College of Bayawan official seal">
 
-    <meta name="keywords"
-        content="CCB, city college of bayawan, college, academics, admissions, faculty, students">
-
-    <meta name="robots"
-        content="index, follow">
-
-    <link rel="canonical"
-        href="{{ canonical_url }}">
-
-    <meta property="og:title"
-        content="CCB Official Website">
-  
-    <meta property="og:description"
-        content="Official website of CCB">
-    
-    <meta property="og:url"
-        content="{{ canonical_url }}">
-    
-    <meta property="og:type"
-        content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ seo_title }}">
+    <meta name="twitter:description" content="{{ seo_description }}">
+    <meta name="twitter:image" content="{{ seo_image_url }}">
 
     <meta name="google-site-verification"
         content="HmGTXkcy0WX45VzdIf7hqCc8v03-iGtPBBBUhjzwDlg">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}City College of Bayawan{% endblock %}</title>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollegeOrUniversity",
+            "name": "City College of Bayawan",
+            "alternateName": "CCB",
+            "url": "{{ public_site_url }}/",
+            "logo": "{{ seo_image_url }}",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Bayawan City",
+                "addressRegion": "Negros Oriental",
+                "addressCountry": "PH"
+            }
+        }
+    </script>
     <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo.png' %}">
     <script defer>
         (function () {

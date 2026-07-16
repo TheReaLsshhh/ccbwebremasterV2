@@ -36,11 +36,42 @@ class SearchIndexingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            '<link rel="canonical"\n        href="https://ccbacad.dpdns.org/academics/">',
+            '<link rel="canonical" href="https://ccbacad.dpdns.org/academics/">',
             html=False,
         )
         self.assertNotContains(
             response,
-            '<link rel="canonical"\n        href="https://ccbacad.dpdns.org/">',
+            '<link rel="canonical" href="https://ccbacad.dpdns.org/">',
             html=False,
         )
+
+    def test_public_pages_have_unique_search_metadata(self):
+        expected = {
+            "/": "City College of Bayawan | Official Website",
+            "/about/": "About City College of Bayawan | Mission and Campus",
+            "/academics/": "Academic Programs | City College of Bayawan",
+            "/admissions/": "Admissions | City College of Bayawan",
+            "/faculty/": "Faculty and Staff | City College of Bayawan",
+            "/students/": "Student Resources | City College of Bayawan",
+            "/downloads/": "Forms and Downloads | City College of Bayawan",
+            "/news/": "Campus News and Events | City College of Bayawan",
+            "/contact/": "Contact City College of Bayawan",
+        }
+
+        descriptions = set()
+        for path, title in expected.items():
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertContains(response, f"<title>{title}</title>", html=False)
+                self.assertContains(response, '<meta name="description" content="', html=False)
+                self.assertContains(response, f'<meta property="og:title" content="{title}">', html=False)
+                descriptions.add(response.context["seo_description"])
+
+        self.assertEqual(len(descriptions), len(expected))
+
+    def test_homepage_identifies_the_college_with_structured_data(self):
+        response = self.client.get("/")
+
+        self.assertContains(response, '<script type="application/ld+json">', html=False)
+        self.assertContains(response, '"@type": "CollegeOrUniversity"', html=False)
+        self.assertContains(response, '"name": "City College of Bayawan"', html=False)
