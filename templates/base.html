@@ -41,6 +41,17 @@
             }
         }
     </script>
+    {% if is_public_homepage %}
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "City College of Bayawan",
+            "alternateName": ["CCB", "CCB Bayawan"],
+            "url": "{{ public_site_url }}/"
+        }
+    </script>
+    {% endif %}
     <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo.png' %}">
     <script defer>
         (function () {

@@ -83,6 +83,7 @@ def search_metadata(request):
     return {
         "public_site_url": site_url,
         "canonical_url": f"{site_url}{request.path}",
+        "is_public_homepage": view_name == "website:home",
         "seo_title": metadata["title"],
         "seo_description": metadata["description"],
         "seo_image_url": f"{site_url}{settings.STATIC_URL}images/hero-images/ccb-logo.png",

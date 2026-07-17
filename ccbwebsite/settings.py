@@ -33,6 +33,11 @@ def csrf_trusted_origins_from_hosts(hosts):
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 DEBUG = env_bool("DEBUG", False)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()]
+OLD_PUBLIC_HOSTS = {
+    host.strip().lower()
+    for host in os.getenv("OLD_PUBLIC_HOSTS", "ccbacad.dpdns.org").split(",")
+    if host.strip()
+}
 
 if DEBUG and os.getenv("ALLOWED_HOSTS") is None:
     ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
@@ -86,6 +91,7 @@ CACHES = {
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "website.middleware.CanonicalHostRedirectMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "website.middleware.AdminLoginRateLimitMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -100,7 +106,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "ccbwebsite.urls"
 ADMIN_URL = os.getenv("ADMIN_URL", "ccb-office").strip("/")
 ADMIN_URL = f"{ADMIN_URL}/" if ADMIN_URL else "ccb-office/"
-PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "https://ccbacad.dpdns.org").rstrip("/")
+PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "https://ccbbayawan.dpdns.org").rstrip("/")
 ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS", "2"))
 ADMIN_LOGIN_RATE_LIMIT_WINDOW = int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_WINDOW", "900"))
 ADMIN_PIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("ADMIN_PIN_RATE_LIMIT_ATTEMPTS", "2"))

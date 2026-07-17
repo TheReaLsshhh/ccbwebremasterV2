@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 
@@ -9,6 +9,20 @@ from .admin_security import (
     admin_security_exempt_paths,
     get_staff_security_profile,
 )
+
+
+class CanonicalHostRedirectMiddleware:
+    """Permanently redirect retired public hostnames to the canonical site URL."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request_host = request.get_host().split(":", 1)[0].lower()
+        if request_host in settings.OLD_PUBLIC_HOSTS:
+            destination = f"{settings.PUBLIC_SITE_URL}{request.get_full_path()}"
+            return HttpResponsePermanentRedirect(destination)
+        return self.get_response(request)
 
 
 class AdminLoginRateLimitMiddleware:
