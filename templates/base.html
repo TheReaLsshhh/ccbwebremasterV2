@@ -53,6 +53,8 @@
     </script>
     {% endif %}
     <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo.png' %}">
+    <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+    <meta name="theme-color" content="#17351d">
     <script defer>
         (function () {
             try {
@@ -445,6 +447,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
     <script src="{% static 'js/news-modal.js' %}" defer></script>
     <script src="{% static 'js/ajax-refresh.js' %}" defer></script>
+    <script defer>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/sw.js").catch(function () {});
+            });
+        }
+    </script>
     <script defer>
         (function () {
             const storageKey = "ccb-theme";

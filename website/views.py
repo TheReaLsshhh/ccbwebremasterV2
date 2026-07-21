@@ -9,9 +9,12 @@ from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
-from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, render
+from django.templatetags.static import static
+from django.utils.cache import patch_cache_control
 from django.utils.html import escape
+from django.views.decorators.cache import never_cache
 
 from .forms import ContactInquiryForm
 from .models import (
@@ -33,6 +36,137 @@ logger = logging.getLogger(__name__)
 
 NEWS_PAGE_SIZE = 6
 CLOUDINARY_DOWNLOAD_TIMEOUT = 4
+PUBLIC_PAGE_CACHE_SECONDS = 300
+PUBLIC_PAGE_STALE_SECONDS = 86400
+
+
+def render_public(request, template_name, context):
+    response = render(request, template_name, context)
+    patch_cache_control(
+        response,
+        public=True,
+        max_age=PUBLIC_PAGE_CACHE_SECONDS,
+        stale_while_revalidate=PUBLIC_PAGE_STALE_SECONDS,
+    )
+    return response
+
+
+def service_worker(request):
+    admin_path = f"/{settings.ADMIN_URL}"
+    precache_urls = [
+        "/",
+        "/academics/",
+        "/admissions/",
+        "/news/",
+        "/downloads/",
+        "/students/",
+        "/faculty/",
+        "/about/",
+        static("css/site.css"),
+        static("js/news-modal.js"),
+        static("js/ajax-refresh.js"),
+        static("images/hero-images/ccb-logo.png"),
+    ]
+    precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
+    script = f"""
+const CACHE_VERSION = "ccb-public-v1";
+const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
+const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
+const PRECACHE_URLS = [
+  {precache_list}
+];
+const ADMIN_PATH = {admin_path!r};
+const NEVER_CACHE_PATHS = [
+  ADMIN_PATH,
+  "/admin/",
+  "/contact/",
+  "/download/",
+  "/sw.js"
+];
+
+self.addEventListener("install", (event) => {{
+  event.waitUntil(
+    caches.open(ASSET_CACHE)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
+  );
+}});
+
+self.addEventListener("activate", (event) => {{
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys
+          .filter((key) => ![PAGE_CACHE, ASSET_CACHE].includes(key))
+          .map((key) => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+  );
+}});
+
+function isSafeGetRequest(request) {{
+  return request.method === "GET" && new URL(request.url).origin === self.location.origin;
+}}
+
+function shouldBypassCache(request) {{
+  const url = new URL(request.url);
+  return NEVER_CACHE_PATHS.some((path) => url.pathname.startsWith(path));
+}}
+
+async function cacheFirst(request) {{
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {{
+    return cachedResponse;
+  }}
+  const networkResponse = await fetch(request);
+  if (networkResponse.ok) {{
+    const cache = await caches.open(ASSET_CACHE);
+    cache.put(request, networkResponse.clone());
+  }}
+  return networkResponse;
+}}
+
+async function staleWhileRevalidate(request, event) {{
+  const cache = await caches.open(PAGE_CACHE);
+  const cachedResponse = await cache.match(request);
+  const networkFetch = fetch(request).then((networkResponse) => {{
+    if (networkResponse.ok) {{
+      cache.put(request, networkResponse.clone());
+    }}
+    return networkResponse;
+  }});
+
+  if (cachedResponse) {{
+    event.waitUntil(networkFetch.catch(() => undefined));
+    return cachedResponse;
+  }}
+
+  try {{
+    return await networkFetch;
+  }} catch (error) {{
+    return cache.match("/");
+  }}
+}}
+
+self.addEventListener("fetch", (event) => {{
+  const request = event.request;
+  if (!isSafeGetRequest(request) || shouldBypassCache(request)) {{
+    return;
+  }}
+
+  if (request.destination === "document") {{
+    event.respondWith(staleWhileRevalidate(request, event));
+    return;
+  }}
+
+  if (["style", "script", "image", "font"].includes(request.destination)) {{
+    event.respondWith(cacheFirst(request));
+  }}
+}});
+""".strip()
+    response = HttpResponse(script, content_type="application/javascript; charset=utf-8")
+    patch_cache_control(response, no_cache=True, must_revalidate=True, max_age=0)
+    return response
 
 
 def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
@@ -80,6 +214,7 @@ def _cloudinary_url_is_available(url):
         return False
 
 
+@never_cache
 def cloudinary_download(request):
     signed_url = request.GET.get("u", "")
     try:
@@ -312,7 +447,7 @@ def home(request):
             "home_news_count": len(home_news_items),
         }
     )
-    return render(request, "website/home.html", context)
+    return render_public(request, "website/home.html", context)
 
 
 def academics(request):
@@ -323,7 +458,7 @@ def academics(request):
             "programs": _academic_programs(),
         }
     )
-    return render(request, "website/academics.html", context)
+    return render_public(request, "website/academics.html", context)
 
 
 def _academic_programs():
@@ -331,11 +466,13 @@ def _academic_programs():
 
 
 def academics_partial(request):
-    return render(
+    response = render(
         request,
         "website/partials/academic_programs_grid.html",
         {"programs": _academic_programs()},
     )
+    patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
+    return response
 
 
 def admissions(request):
@@ -346,7 +483,7 @@ def admissions(request):
             "requirements": _admission_requirements(),
         }
     )
-    return render(request, "website/admissions.html", context)
+    return render_public(request, "website/admissions.html", context)
 
 
 def _admission_requirements():
@@ -354,11 +491,13 @@ def _admission_requirements():
 
 
 def admissions_partial(request):
-    return render(
+    response = render(
         request,
         "website/partials/admission_requirements_grid.html",
         {"requirements": _admission_requirements()},
     )
+    patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
+    return response
 
 
 def news(request):
@@ -390,7 +529,7 @@ def news(request):
                 "open_news_id": open_news_id,
             }
         )
-        return render(request, "website/news.html", context)
+        return render_public(request, "website/news.html", context)
     except Exception:
         logger.exception("Unhandled error in news view")
         raise
@@ -409,7 +548,7 @@ def downloads(request):
             "downloads": page_obj.object_list,
         }
     )
-    return render(request, "website/downloads.html", context)
+    return render_public(request, "website/downloads.html", context)
 
 
 def _downloads_page(request):
@@ -420,7 +559,7 @@ def _downloads_page(request):
 
 def downloads_partial(request):
     page_obj = _downloads_page(request)
-    return render(
+    response = render(
         request,
         "website/partials/downloads_grid.html",
         {
@@ -428,6 +567,8 @@ def downloads_partial(request):
             "downloads": page_obj.object_list,
         },
     )
+    patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
+    return response
 
 
 def students(request):
@@ -438,7 +579,7 @@ def students(request):
             "resources": _student_resources(),
         }
     )
-    return render(request, "website/students.html", context)
+    return render_public(request, "website/students.html", context)
 
 
 def _student_resources():
@@ -446,11 +587,13 @@ def _student_resources():
 
 
 def students_partial(request):
-    return render(
+    response = render(
         request,
         "website/partials/student_resources_grid.html",
         {"resources": _student_resources()},
     )
+    patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
+    return response
 
 
 def faculty(request):
@@ -477,7 +620,7 @@ def faculty(request):
             "faculty_sections": faculty_sections,
         }
     )
-    return render(request, "website/faculty.html", context)
+    return render_public(request, "website/faculty.html", context)
 
 
 def about(request):
@@ -489,7 +632,7 @@ def about(request):
             "about_sections": about_sections,
         }
     )
-    return render(request, "website/about.html", context)
+    return render_public(request, "website/about.html", context)
 
 
 CONTACT_RATE_LIMIT_HOUR = 1  # max 1 submission per IP per hour
@@ -505,6 +648,7 @@ def _client_ip(request):
     return request.META.get("REMOTE_ADDR", "unknown")
 
 
+@never_cache
 def contact(request):
     context = base_context("website:contact")
     form = ContactInquiryForm(request.POST or None)

@@ -5,6 +5,7 @@ from . import views
 app_name = "website"
 
 urlpatterns = [
+    path("sw.js", views.service_worker, name="service_worker"),
     path("", views.home, name="home"),
     path("academics/", views.academics, name="academics"),
     path("academics/partial/", views.academics_partial, name="academics_partial"),
