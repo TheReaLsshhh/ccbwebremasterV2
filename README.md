@@ -38,7 +38,7 @@ python manage.py runserver
 
 ## Content Management
 
-Production admin URL (default): `https://ccbbayawan.dpdns.org/ccb-office/`
+Production admin URL (default): `https://ccbacad.dpdns.org/ccb-office/`
 
 The old `/admin/` path returns **404** on purpose. Bookmark the hidden URL above.
 

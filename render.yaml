@@ -12,13 +12,13 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: "ccbbayawan.dpdns.org,ccbacad.dpdns.org,ccbwebremasterv2.onrender.com,.onrender.com"
+        value: "ccbacad.dpdns.org,ccbwebremasterv2.onrender.com,.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://ccbbayawan.dpdns.org,https://ccbacad.dpdns.org,https://ccbwebremasterv2.onrender.com,https://*.onrender.com"
+        value: "https://ccbacad.dpdns.org,https://ccbwebremasterv2.onrender.com,https://*.onrender.com"
       - key: PUBLIC_SITE_URL
-        value: "https://ccbbayawan.dpdns.org"
+        value: "https://ccbacad.dpdns.org"
       - key: OLD_PUBLIC_HOSTS
-        value: "ccbacad.dpdns.org"
+        value: ""
       - key: ADMIN_URL
         value: "ccb-office"
       - key: ADMIN_LOGIN_RATE_LIMIT_ATTEMPTS

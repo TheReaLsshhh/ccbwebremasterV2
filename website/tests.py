@@ -2,9 +2,9 @@ from django.test import TestCase, override_settings
 
 
 @override_settings(
-    ALLOWED_HOSTS=["testserver", "ccbbayawan.dpdns.org", "ccbacad.dpdns.org"],
-    PUBLIC_SITE_URL="https://ccbbayawan.dpdns.org",
-    OLD_PUBLIC_HOSTS={"ccbacad.dpdns.org"},
+    ALLOWED_HOSTS=["testserver", "ccbacad.dpdns.org"],
+    PUBLIC_SITE_URL="https://ccbacad.dpdns.org",
+    OLD_PUBLIC_HOSTS=set(),
     SECURE_SSL_REDIRECT=False,
 )
 class SearchIndexingTests(TestCase):
@@ -16,7 +16,7 @@ class SearchIndexingTests(TestCase):
         self.assertContains(response, "User-agent: *")
         self.assertContains(response, "Allow: /")
         self.assertNotContains(response, "Disallow: /")
-        self.assertContains(response, "Sitemap: https://ccbbayawan.dpdns.org/sitemap.xml")
+        self.assertContains(response, "Sitemap: https://ccbacad.dpdns.org/sitemap.xml")
 
     def test_sitemap_lists_public_pages_with_absolute_urls(self):
         response = self.client.get("/sitemap.xml")
@@ -25,9 +25,9 @@ class SearchIndexingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/xml; charset=utf-8")
         self.assertTrue(body.startswith('<?xml version="1.0" encoding="UTF-8"?>'))
-        self.assertIn("<loc>https://ccbbayawan.dpdns.org/</loc>", body)
-        self.assertIn("<loc>https://ccbbayawan.dpdns.org/academics/</loc>", body)
-        self.assertIn("<loc>https://ccbbayawan.dpdns.org/news/</loc>", body)
+        self.assertIn("<loc>https://ccbacad.dpdns.org/</loc>", body)
+        self.assertIn("<loc>https://ccbacad.dpdns.org/academics/</loc>", body)
+        self.assertIn("<loc>https://ccbacad.dpdns.org/news/</loc>", body)
         self.assertNotIn("admin", body)
         self.assertNotIn("ccb-office", body)
 
@@ -37,12 +37,12 @@ class SearchIndexingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            '<link rel="canonical" href="https://ccbbayawan.dpdns.org/academics/">',
+            '<link rel="canonical" href="https://ccbacad.dpdns.org/academics/">',
             html=False,
         )
         self.assertNotContains(
             response,
-            '<link rel="canonical" href="https://ccbbayawan.dpdns.org/">',
+            '<link rel="canonical" href="https://ccbacad.dpdns.org/">',
             html=False,
         )
 
@@ -79,14 +79,10 @@ class SearchIndexingTests(TestCase):
         self.assertContains(response, '"@type": "WebSite"', html=False)
         self.assertContains(response, '"alternateName": ["CCB", "CCB Bayawan"]', html=False)
 
-    def test_retired_hostname_permanently_redirects_to_canonical_hostname(self):
+    def test_primary_hostname_serves_without_redirect(self):
         response = self.client.get(
             "/academics/?program=education",
             HTTP_HOST="ccbacad.dpdns.org",
         )
 
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(
-            response["Location"],
-            "https://ccbbayawan.dpdns.org/academics/?program=education",
-        )
+        self.assertEqual(response.status_code, 200)
