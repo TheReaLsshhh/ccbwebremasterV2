@@ -54,22 +54,14 @@ def render_public(request, template_name, context):
 def service_worker(request):
     admin_path = f"/{settings.ADMIN_URL}"
     precache_urls = [
-        "/",
-        "/academics/",
-        "/admissions/",
-        "/news/",
-        "/downloads/",
-        "/students/",
-        "/faculty/",
-        "/about/",
         static("css/site.css"),
         static("js/news-modal.js"),
         static("js/ajax-refresh.js"),
-        static("images/hero-images/ccb-logo.png"),
+        static("images/hero-images/ccb-logo-64.png"),
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v2";
+const CACHE_VERSION = "ccb-public-v4";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [

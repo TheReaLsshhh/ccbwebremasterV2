@@ -1,12 +1,16 @@
-{% extends "base.html" %} {% load news_extras %} {% block title %}News | City
-College of Bayawan{% endblock %} {% block content %}
+{% extends "base.html" %}
+{% load news_extras %}
+
+{% block title %}News | City College of Bayawan{% endblock %}
+
+{% block content %}
 <section class="hero-section">
   <div class="container">
     <div class="row g-0">
       <div class="col-xl-8">
         <div
           class="hero-main h-100"
-          {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"{% endif %}
+          {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}
         >
           <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
           <p class="lead mb-0">{{ page_content.hero_text }}</p>
@@ -42,7 +46,8 @@ College of Bayawan{% endblock %} {% block content %}
           {% if item.cover_image %}
           <div class="news-visual-wrap news-grid-visual">
             <img
-              src="{{ item.cover_image.url }}"
+              src="{{ item.cover_image|optimized_image_url:480 }}"
+              srcset="{{ item.cover_image|optimized_image_srcset:'320,480,720,960' }}"
               alt="{{ item.title }}"
               class="news-visual-image news-grid-image"
               width="720"
@@ -196,3 +201,6 @@ College of Bayawan{% endblock %} {% block content %}
 </script>
 {% endif %}
 {% endblock %}
+
+
+

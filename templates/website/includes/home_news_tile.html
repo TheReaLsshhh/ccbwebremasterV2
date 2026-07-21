@@ -8,7 +8,9 @@
         <div class="coverflow-card-image-wrap">
             {% if item.cover_image %}
                 <img
-                    src="{{ item.cover_image.url }}"
+                    src="{{ item.cover_image|optimized_image_url:480 }}"
+                    srcset="{{ item.cover_image|optimized_image_srcset:'320,480,640,960' }}"
+                    sizes="(min-width: 1200px) 34vw, (min-width: 768px) 50vw, 92vw"
                     alt=""
                     class="coverflow-card-image"
                     width="640"
@@ -45,3 +47,5 @@
         </div>
     </a>
 </article>
+
+

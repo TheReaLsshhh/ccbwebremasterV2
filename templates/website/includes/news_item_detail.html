@@ -3,12 +3,16 @@
     {% if item.cover_image %}
         <div class="news-detail-modal-hero">
             <img
-                src="{{ item.cover_image.url }}"
+                src="{{ item.cover_image|optimized_image_url:960 }}"
+                srcset="{{ item.cover_image|optimized_image_srcset:'480,720,960,1280' }}"
+                sizes="(min-width: 992px) 960px, 94vw"
                 alt="{{ item.title }}"
                 class="news-detail-modal-image"
                 width="960"
                 height="540"
-                decoding="async">
+                loading="lazy"
+                decoding="async"
+                fetchpriority="low">
         </div>
     {% endif %}
     <div class="news-detail-modal-main">
@@ -35,3 +39,5 @@
         {% endif %}
     </div>
 </article>
+
+

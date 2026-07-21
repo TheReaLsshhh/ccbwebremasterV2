@@ -12,6 +12,7 @@ IMAGE_EXTENSIONS = frozenset(
 DOCUMENT_EXTENSIONS = frozenset(
     {"pdf", "doc", "docx", "xls", "xlsx", "csv", "txt", "zip", "rar", "ppt", "pptx"}
 )
+IMAGE_TRANSFORM_DEFAULTS = "f_auto,q_auto,c_limit"
 
 
 @register.filter
@@ -66,3 +67,49 @@ def file_download_url(file_field):
             return url
 
     return url
+
+
+def _file_url(file_field):
+    if not file_field:
+        return ""
+
+    try:
+        return file_field.url
+    except Exception:
+        return ""
+
+
+def _cloudinary_transform_url(url, width):
+    if not url or "res.cloudinary.com" not in url or "/image/upload/" not in url:
+        return url
+
+    try:
+        width = int(width)
+    except (TypeError, ValueError):
+        return url
+
+    if width <= 0:
+        return url
+
+    transform = f"{IMAGE_TRANSFORM_DEFAULTS},w_{width}"
+    return url.replace("/image/upload/", f"/image/upload/{transform}/", 1)
+
+
+@register.filter
+def optimized_image_url(file_field, width):
+    return _cloudinary_transform_url(_file_url(file_field), width)
+
+
+@register.filter
+def optimized_image_srcset(file_field, widths):
+    url = _file_url(file_field)
+    if not url:
+        return ""
+
+    srcset = []
+    for width in str(widths).split(","):
+        width = width.strip()
+        if not width:
+            continue
+        srcset.append(f"{_cloudinary_transform_url(url, width)} {width}w")
+    return ", ".join(srcset)

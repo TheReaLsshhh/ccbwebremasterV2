@@ -7,7 +7,7 @@
 <section class="hero-section">
     <div class="container">
         <div class="hero-grid">
-            <div class="hero-main hero-main-wide" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image.url }}');"{% endif %}>
+            <div class="hero-main hero-main-wide" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}>
                 <div class="row g-4 align-items-start">
                     <div class="col-xl-5">
                         <span class="eyebrow">Official CCB Web Portal</span>
@@ -160,9 +160,12 @@
                     if (total === 0) return;
 
                     var current = 0;
+                    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                    var dataSaverEnabled = connection && connection.saveData;
+                    var slowConnection = connection && /(^slow-2g$|^2g$)/.test(connection.effectiveType || '');
                     var autoplayMs = 5500;
                     var timer = null;
-                    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches || dataSaverEnabled || slowConnection;
 
                     slots.forEach(function (slot, i) {
                         var dot = document.createElement('button');
@@ -282,3 +285,4 @@
     </div>
 </section>
 {% endblock %}
+
