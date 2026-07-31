@@ -28,17 +28,17 @@
   --ccb-green-800: #d8ead8;
   --ccb-orange-100: #47331a;
   --ccb-stone-950: #f8f4ee;
-  --ccb-stone-700: #d7d0c8;
-  --ccb-stone-500: #b2a89d;
-  --ccb-stone-200: rgba(255, 255, 255, 0.12);
-  --ccb-stone-100: #1b1f1a;
+  --ccb-stone-700: #ece3d6;
+  --ccb-stone-500: #d7cdbb;
+  --ccb-stone-200: rgba(255, 255, 255, 0.16);
+  --ccb-stone-100: #1f251f;
   --ccb-white: #f8f4ee;
   --ccb-portal: #101511;
-  --ccb-shadow: 0 28px 70px rgba(0, 0, 0, 0.34);
-  --ccb-surface: rgba(20, 28, 22, 0.86);
-  --ccb-surface-solid: #182019;
-  --ccb-surface-muted: rgba(255, 255, 255, 0.05);
-  --ccb-border-soft: rgba(255, 255, 255, 0.08);
+  --ccb-shadow: 0 28px 70px rgba(0, 0, 0, 0.4);
+  --ccb-surface: rgba(24, 32, 25, 0.95);
+  --ccb-surface-solid: #1d241f;
+  --ccb-surface-muted: rgba(255, 255, 255, 0.08);
+  --ccb-border-soft: rgba(255, 255, 255, 0.16);
 }
 
 :root[data-theme="dark"] .site-skeleton-card,
@@ -1762,8 +1762,15 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 :root[data-theme="dark"] .coverflow-arrow {
-  background: var(--ccb-surface-solid);
-  border-color: var(--ccb-border-soft);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--ccb-white);
+}
+
+:root[data-theme="dark"] .coverflow-arrow:hover,
+:root[data-theme="dark"] .coverflow-arrow:focus-visible {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--ccb-stone-950);
 }
 
 /* Disable zoom on reduced-motion — handled globally in the prefers-reduced-motion block below */
@@ -3100,6 +3107,79 @@ body.captcha-overlay-open {
   pointer-events: auto;
 }
 
+/* Dark-mode: make the scroll-to-top button a solid, high-contrast orange
+   instead of a gradient so it visually matches the theme toggle's intent */
+:root[data-theme="dark"] .floating-action-right {
+  background: var(--ccb-orange-500);
+  background-image: none;
+  color: var(--ccb-white);
+  box-shadow: 0 18px 34px rgba(9, 17, 11, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Improve readability for contact page in dark mode */
+:root[data-theme="dark"] .contact-shell,
+:root[data-theme="dark"] .contact-info-card,
+:root[data-theme="dark"] .contact-map-card,
+:root[data-theme="dark"] .contact-map-label strong,
+:root[data-theme="dark"] .contact-tile strong,
+:root[data-theme="dark"] .contact-tile span {
+  color: var(--ccb-white);
+}
+
+:root[data-theme="dark"] .contact-tile {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 0.6rem;
+  padding: 0.9rem;
+}
+
+:root[data-theme="dark"] .contact-map-label {
+  color: var(--ccb-white);
+}
+
+/* Disable transform hover animation for the floating actions (left/right)
+   but preserve opacity/background transitions. Also add a non-animated
+   tooltip for the theme toggle (floating-action-left) that indicates
+   the action (switch to dark/light) depending on current theme. */
+.floating-action-left,
+.floating-action-right {
+  transition: opacity 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.floating-action-left:hover,
+.floating-action-left:focus,
+.floating-action-right:hover,
+.floating-action-right:focus {
+  transform: none;
+}
+
+/* Remove the tooltip pseudo-element for the theme toggle and replace
+  with a simple hover/focus style on the button itself so the
+  background becomes white and the icon turns dark (black) when
+  hovered, regardless of current theme. */
+
+/* Hover-only: theme toggle button (left floating action) */
+#themeToggleButton:hover {
+  background: var(--ccb-white) !important;
+  color: #0b0b0b !important; /* dark icon color on white background */
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Keep focus styles accessible but do not change background/icon color on focus
+   so the button returns to its normal state after click. Keyboard users get
+   a visible ring via focus-visible instead. */
+#themeToggleButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.18rem rgba(245, 158, 11, 0.22);
+}
+
+/* Ensure the icon inherits the button color */
+#themeToggleButton .theme-toggle-icon,
+#themeToggleButton i {
+  color: inherit !important;
+}
+
 .theme-toggle-icon {
   font-size: 1rem;
   font-weight: 800;
@@ -3203,15 +3283,16 @@ body.captcha-overlay-open {
 }
 
 :root[data-theme="dark"] .btn-soft {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
   color: var(--ccb-white);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 :root[data-theme="dark"] .btn-soft:hover,
 :root[data-theme="dark"] .btn-soft:focus {
   color: var(--ccb-white);
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 :root[data-theme="dark"] .navbar-toggler {
@@ -3224,7 +3305,8 @@ body.captcha-overlay-open {
 }
 
 :root[data-theme="dark"] .portal-panel-overlay {
-  background: rgba(22, 30, 24, 0.92);
+  background: rgba(24, 32, 25, 0.96);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 :root[data-theme="dark"] .news-carousel-arrow {
@@ -3340,14 +3422,15 @@ body.captcha-overlay-open {
 }
 
 :root[data-theme="dark"] .signal-badge {
-  background: rgba(122, 180, 122, 0.14);
-  color: #dff1df;
+  background: rgba(122, 180, 122, 0.18);
+  color: #f2f9e5;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 :root[data-theme="dark"] .notice-band {
   color: var(--ccb-white);
-  background: linear-gradient(135deg, rgba(110, 73, 22, 0.62), rgba(28, 36, 30, 0.95));
-  border-color: rgba(245, 158, 11, 0.18);
+  background: linear-gradient(135deg, rgba(110, 73, 22, 0.72), rgba(28, 36, 30, 0.96));
+  border-color: rgba(245, 158, 11, 0.24);
 }
 
 :root[data-theme="dark"] .contact-verification-note {
@@ -3509,26 +3592,204 @@ p.text-dark.fw-semibold.mb-2 {
   box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.24);
 }
 
-:root[data-theme="dark"] .page-faq-item {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: var(--ccb-surface);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+:root[data-theme="dark"] .page-faq-section,
+:root[data-theme="dark"] section.section-block.page-faq-section,
+html[data-theme="dark"] .page-faq-section,
+html[data-theme="dark"] section.section-block.page-faq-section {
+  position: relative !important;
+  z-index: 5 !important;
+  background-color: #101511 !important;
+  background: #101511 !important;
+  background-image: none !important;
 }
 
-:root[data-theme="dark"] .page-faq-button {
-  color: var(--ccb-white);
+:root[data-theme="dark"] .page-faq-section > .container,
+:root[data-theme="dark"] section.section-block.page-faq-section > .container,
+html[data-theme="dark"] .page-faq-section > .container,
+html[data-theme="dark"] section.section-block.page-faq-section > .container {
+  position: relative !important;
+  z-index: 1 !important;
+  background-color: #101511 !important;
+  background: #101511 !important;
+  background-image: none !important;
 }
 
-:root[data-theme="dark"] .page-faq-button:not(.collapsed),
-:root[data-theme="dark"] .page-faq-button:hover,
-:root[data-theme="dark"] .page-faq-button:focus {
-  color: var(--ccb-white);
-  background: rgba(245, 158, 11, 0.16);
+:root[data-theme="dark"] .page-faq-section .section-header,
+html[data-theme="dark"] .page-faq-section .section-header {
+  background-color: #101511 !important;
+  background: #101511 !important;
+  background-image: none !important;
 }
 
-:root[data-theme="dark"] .page-faq-answer {
-  color: var(--ccb-stone-700);
-  border-top-color: rgba(255, 255, 255, 0.08);
+:root[data-theme="dark"] #pageFaqAccordion.page-faq-accordion,
+:root[data-theme="dark"] .accordion.page-faq-accordion,
+html[data-theme="dark"] #pageFaqAccordion.page-faq-accordion,
+html[data-theme="dark"] .accordion.page-faq-accordion {
+  display: grid !important;
+  gap: 0.75rem !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-item,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-item,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-item.page-faq-item,
+html[data-theme="dark"] #pageFaqAccordion .accordion-item,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-item,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-item.page-faq-item {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  background-color: #1d241f !important;
+  background: #1d241f !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+  overflow: hidden !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-item + .accordion-item,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-item + .accordion-item,
+html[data-theme="dark"] #pageFaqAccordion .accordion-item + .accordion-item,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-item + .accordion-item {
+  margin-top: 0 !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button,
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button,
+html[data-theme="dark"] #pageFaqAccordion .accordion-button,
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button {
+  color: #f8f4ee !important;
+  background-color: #1d241f !important;
+  background: #1d241f !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-weight: 800 !important;
+  gap: 1rem !important;
+  padding-top: 1.05rem !important;
+  padding-bottom: 1.05rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed),
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:not(.collapsed),
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:not(.collapsed),
+html[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed),
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:not(.collapsed),
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:not(.collapsed) {
+  color: #f8f4ee !important;
+  background-color: transparent !important;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.18), #1d241f) !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button:hover,
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:hover,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button:focus,
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:focus,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:hover,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:focus,
+html[data-theme="dark"] #pageFaqAccordion .accordion-button:hover,
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:hover,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button:focus,
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:focus,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:hover,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:focus {
+  color: #f8f4ee !important;
+  background-color: rgba(245, 158, 11, 0.14) !important;
+  background: rgba(245, 158, 11, 0.14) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed):hover,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button:not(.collapsed):focus,
+html[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed):hover,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button:not(.collapsed):focus {
+  color: #f8f4ee !important;
+  background-color: transparent !important;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.24), #1d241f) !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button::after,
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button::after,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button::after,
+html[data-theme="dark"] #pageFaqAccordion .accordion-button::after,
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button::after,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button::after {
+  flex-shrink: 0 !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  margin-left: auto !important;
+  content: "" !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f8f4ee'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25rem !important;
+  background-position: center !important;
+  background-color: transparent !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: rotate(0deg) !important;
+  transition: transform 0.2s ease-in-out !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed)::after,
+:root[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:not(.collapsed)::after,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:not(.collapsed)::after,
+html[data-theme="dark"] #pageFaqAccordion .accordion-button:not(.collapsed)::after,
+html[data-theme="dark"] .accordion.page-faq-accordion button.accordion-button:not(.collapsed)::after,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-button.page-faq-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f59e0b'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25rem !important;
+  background-position: center !important;
+  background-color: transparent !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: rotate(180deg) !important;
+  transition: transform 0.2s ease-in-out !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-collapse,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-collapse,
+html[data-theme="dark"] #pageFaqAccordion .accordion-collapse,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-collapse {
+  border-top: 0 !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-body,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body.page-faq-answer,
+html[data-theme="dark"] #pageFaqAccordion .accordion-body,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body.page-faq-answer {
+  color: #ece3d6 !important;
+  background-color: #1d241f !important;
+  background: #1d241f !important;
+  line-height: 1.7 !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1.2rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+:root[data-theme="dark"] #pageFaqAccordion .accordion-body *,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body p,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body br,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body strong,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body a,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body ul,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body ol,
+:root[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li,
+html[data-theme="dark"] #pageFaqAccordion .accordion-body *,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body p,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body br,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body strong,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body a,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body ul,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body ol,
+html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
+  color: inherit !important;
+  background-color: transparent !important;
 }
 
 :root[data-theme="dark"] .footer-shell {
