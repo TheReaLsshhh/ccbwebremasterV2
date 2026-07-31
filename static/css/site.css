@@ -1381,15 +1381,78 @@ a.btn.btn-soft.btn-sm.mt-3 {
 
 .news-content-section .news-grid-card {
   overflow: visible;
-  height: auto;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .news-content-section .news-grid-card .news-grid-text {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.news-content-section .row {
-  align-items: flex-start;
+.news-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.news-grid-wrapper .news-grid-column {
+  min-width: 0;
+  display: flex;
+}
+
+.news-grid-wrapper .news-grid-column .news-grid-card {
+  width: 100%;
+  height: 100%;
+}
+
+.news-content-section .news-grid-visual {
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+  border-radius: calc(var(--ccb-radius-xl) - 1px) calc(var(--ccb-radius-xl) - 1px) 0 0;
+  flex: 0 0 auto;
+}
+
+.news-content-section .news-grid-image {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.news-content-section .news-grid-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-content-section .news-grid-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+@media (max-width: 1199.98px) {
+  .news-grid-wrapper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .news-grid-wrapper {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .news-content-section .news-grid-visual {
+    aspect-ratio: 16 / 11;
+  }
 }
 
 /* ── Homepage Latest News and Events: Coverflow carousel ─────────────── */

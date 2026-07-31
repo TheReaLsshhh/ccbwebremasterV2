@@ -32,9 +32,9 @@
       </div>
     </div>
     {% if page_obj.object_list %}
-    <div class="row g-4">
+    <div class="news-grid-wrapper">
       {% for item in news_items %}
-      <div class="col-md-6 col-lg-4">
+      <div class="news-grid-column">
         <article
           id="news-{{ item.pk }}"
           class="announcement-card news-grid-card news-grid-card-interactive"
