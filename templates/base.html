@@ -52,7 +52,10 @@
         }
     </script>
     {% endif %}
-    <link rel="icon" type="image/png" href="{% static 'images/hero-images/ccb-logo-64.png' %}">
+    <link rel="icon" href="{{ public_site_url }}{% static 'favicon.ico' %}" sizes="48x48">
+    <link rel="icon" type="image/png" href="{{ public_site_url }}{% static 'images/hero-images/ccb-logo-48.png' %}" sizes="48x48">
+    <link rel="icon" type="image/png" href="{{ public_site_url }}{% static 'images/hero-images/ccb-logo-96.png' %}" sizes="96x96">
+    <link rel="apple-touch-icon" href="{{ public_site_url }}{% static 'images/hero-images/ccb-logo-192.png' %}">
     <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
     <meta name="theme-color" content="#17351d">
     <script defer>

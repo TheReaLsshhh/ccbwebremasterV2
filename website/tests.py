@@ -86,3 +86,29 @@ class SearchIndexingTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
+    def test_favicon_is_linked_with_google_compliant_sizes(self):
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            '<link rel="icon" href="https://ccbacad.dpdns.org/static/favicon.ico" sizes="48x48">',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'href="https://ccbacad.dpdns.org/static/images/hero-images/ccb-logo-48.png" sizes="48x48"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'rel="apple-touch-icon" href="https://ccbacad.dpdns.org/static/images/hero-images/ccb-logo-192.png"',
+            html=False,
+        )
+
+    def test_favicon_ico_redirects_to_static_asset(self):
+        response = self.client.get("/favicon.ico")
+
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "/static/favicon.ico")
