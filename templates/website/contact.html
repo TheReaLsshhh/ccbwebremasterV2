@@ -99,16 +99,45 @@
             <div class="col-lg-7 d-flex">
                 <div class="content-card content-card-static contact-map-card h-100 w-100">
                     <div class="contact-map-label">
-                        <span class="section-eyebrow section-eyebrow-map">Campus Map</span>
-                        <strong>City College of Bayawan - Map</strong>
+                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-sm-between align-items-sm-start">
+                            <div>
+                                <span class="section-eyebrow section-eyebrow-map">Campus Map</span>
+                                <strong id="mapViewTitle">City College of Bayawan - Location</strong>
+                            </div>
+                            <div class="contact-map-view-toggle btn-group" role="group" aria-label="Switch map view">
+                                <input type="radio" class="btn-check" name="mapView" id="mapViewLocation" value="location" autocomplete="off" checked>
+                                <label class="btn btn-sm btn-outline-secondary" for="mapViewLocation" title="Show campus location on Google Maps">
+                                    <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i><span>Campus Map</span>
+                                </label>
+                                <input type="radio" class="btn-check" name="mapView" id="mapViewWeather" value="weather" autocomplete="off">
+                                <label class="btn btn-sm btn-outline-secondary" for="mapViewWeather" title="Show weather radar over Bayawan area">
+                                    <i class="fa-solid fa-cloud-sun me-1" aria-hidden="true"></i><span>Weather Radar</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
+                            <small class="muted-copy" id="mapViewHint">View the exact campus location and surrounding landmarks.</small>
+                            <a id="mapViewFullscreenLink"
+                               class="btn btn-ghost btn-sm contact-map-fullscreen-link"
+                               href="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14{% endif %}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                <i class="fa-solid fa-up-right-from-square me-1" aria-hidden="true"></i><span>Open full map</span>
+                            </a>
+                        </div>
                     </div>
-                    <iframe
-                        class="map-frame"
-                        src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allowfullscreen>
-                    </iframe>
+                    <div class="position-relative flex-grow-1">
+                        <iframe
+                            id="campusMapFrame"
+                            class="map-frame"
+                            data-src-location="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
+                            data-src-weather="https://embed.windy.com/embed2.html?lat=9.388&lon=122.789&detailLat=9.388&detailLon=122.789&zoom=12&level=surface&overlay=wind&product=ecmwf&menu=&message=&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
+                            src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -400,9 +429,80 @@
 })();
 </script>
 {% endblock %}
+{% endif %}
 
 {% block extra_js %}
+{% if form.captcha %}
 <script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit" async defer onerror="window.onCaptchaScriptError && window.onCaptchaScriptError()"></script>
-{% endblock %}
 {% endif %}
+<script>
+(function () {
+    'use strict';
+
+    var mapFrame = document.getElementById('campusMapFrame');
+    var titleEl = document.getElementById('mapViewTitle');
+    var hintEl = document.getElementById('mapViewHint');
+    var fullscreenLink = document.getElementById('mapViewFullscreenLink');
+    var radios = document.querySelectorAll('input[name="mapView"]');
+
+    var windyFullUrl = 'https://www.windy.com/9.388/122.789?2026-08-07-09,10.755,124.614,4';
+    var googleFullUrl = '{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14{% endif %}';
+    if (googleFullUrl.indexOf('output=embed') !== -1) {
+        googleFullUrl = googleFullUrl.replace('&output=embed', '').replace('?output=embed', '?').replace('output=embed&', '').replace('output=embed', '');
+    }
+
+    var state = {
+        weatherLoaded: false,
+        weatherIframeSrc: mapFrame ? mapFrame.getAttribute('data-src-weather') : '',
+        locationIframeSrc: mapFrame ? mapFrame.getAttribute('data-src-location') : '',
+    };
+
+    function switchView(viewName) {
+        if (!mapFrame) return;
+        var src = viewName === 'weather' ? state.weatherIframeSrc : state.locationIframeSrc;
+
+        if (viewName === 'weather') {
+            if (src !== mapFrame.src) {
+                mapFrame.src = src;
+            }
+            state.weatherLoaded = true;
+            titleEl.textContent = 'City College of Bayawan - Weather & Radar';
+            hintEl.textContent = 'Live wind, precipitation, and forecast data for the Bayawan campus area and nearby.';
+            fullscreenLink.href = windyFullUrl;
+            fullscreenLink.querySelector('span').textContent = 'Open on Windy.com';
+        } else {
+            if (src !== mapFrame.src) {
+                mapFrame.src = src;
+            }
+            titleEl.textContent = 'City College of Bayawan - Location';
+            hintEl.textContent = 'View the exact campus location and surrounding landmarks.';
+            fullscreenLink.href = googleFullUrl;
+            fullscreenLink.querySelector('span').textContent = 'Open full map';
+        }
+
+        try {
+            var storageKey = 'ccb-contact-map-view';
+            localStorage.setItem(storageKey, viewName);
+        } catch (e) {}
+    }
+
+    for (var i = 0; i < radios.length; i++) {
+        radios[i].addEventListener('change', function (e) {
+            switchView(e.target.value);
+        });
+    }
+
+    try {
+        var saved = localStorage.getItem('ccb-contact-map-view');
+        if (saved === 'weather') {
+            var weatherRadio = document.getElementById('mapViewWeather');
+            if (weatherRadio && !weatherRadio.checked) {
+                weatherRadio.checked = true;
+                switchView('weather');
+            }
+        }
+    } catch (e) {}
+})();
+</script>
+{% endblock %}
 
