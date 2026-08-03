@@ -9,7 +9,7 @@ from django.views.static import serve
 from pathlib import Path
 
 from website.admin_security import setup_pin, verify_pin
-from website.seo import robots_txt, sitemap_xml
+from website.seo import favicon_ico, robots_txt, sitemap_xml
 
 admin_static_root = Path(admin_file).resolve().parent / "static" / "admin"
 
@@ -29,10 +29,7 @@ urlpatterns = [
     path("admin/<path:path>", admin_decoy_not_found),
     path("robots.txt", robots_txt),
     path("sitemap.xml", sitemap_xml),
-    path(
-        "favicon.ico",
-        RedirectView.as_view(url=f"{settings.STATIC_URL}favicon.ico", permanent=True),
-    ),
+    path("favicon.ico", favicon_ico),
     path(f"{settings.ADMIN_URL}verify-pin/", verify_pin, name="admin_verify_pin"),
     path(f"{settings.ADMIN_URL}setup-pin/", setup_pin, name="admin_setup_pin"),
     path(settings.ADMIN_URL, admin.site.urls),

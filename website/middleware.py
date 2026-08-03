@@ -15,8 +15,11 @@ from .admin_security import (
 SEO_CRITICAL_PATHS = {
     "/sitemap.xml",
     "/robots.txt",
+    "/favicon.ico",
     "/static/sitemap.xml",
     "/static/robots.txt",
+    "/static/favicon.ico",
+    "/static/favicon.svg",
 }
 
 

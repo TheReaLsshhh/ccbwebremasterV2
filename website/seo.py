@@ -1,5 +1,7 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.files.base import ContentFile
+from django.http import HttpResponse, Http404
 
 PUBLIC_SITEMAP_PATHS = (
     ("", "weekly", "1.0"),
@@ -60,4 +62,15 @@ def sitemap_xml(request):
     )
     response = HttpResponse(content, content_type="application/xml; charset=utf-8")
     response["Cache-Control"] = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
+    return response
+
+
+def favicon_ico(request):
+    try:
+        with staticfiles_storage.open("favicon.ico", "rb") as f:
+            data = f.read()
+    except (FileNotFoundError, OSError):
+        raise Http404
+    response = HttpResponse(data, content_type="image/x-icon")
+    response["Cache-Control"] = "public, max-age=604800, s-maxage=2592000, stale-while-revalidate=31536000"
     return response
