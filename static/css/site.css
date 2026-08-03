@@ -4570,7 +4570,14 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
   justify-content: center;
   align-items: center;
   min-height: 80px;
+  min-width: 304px;
   margin-bottom: 0.25rem;
+  padding: 0.25rem 0;
+  position: relative;
+}
+
+.captcha-widget-wrap iframe {
+  max-width: 100%;
 }
 
 .captcha-widget-status {
@@ -4579,6 +4586,55 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
   font-size: 0.86rem;
   line-height: 1.45;
   text-align: center;
+  padding: 0.5rem 0.25rem;
+}
+
+/* ── Loading spinner (3-dot bounce) ──────────────────────────────── */
+.captcha-spinner {
+  display: inline-block;
+  position: relative;
+  width: 54px;
+  height: 20px;
+}
+
+.captcha-spinner > div {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ccb-green-700, #15803d);
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  transform: translateY(-50%);
+}
+
+.captcha-spinner > div:nth-child(1) {
+  left: 6px;
+  animation: captchaSpinnerBounce 0.6s infinite;
+}
+
+.captcha-spinner > div:nth-child(2) {
+  left: 22px;
+  animation: captchaSpinnerBounce 0.6s infinite 0.15s;
+}
+
+.captcha-spinner > div:nth-child(3) {
+  left: 38px;
+  animation: captchaSpinnerBounce 0.6s infinite 0.3s;
+}
+
+@keyframes captchaSpinnerBounce {
+  0%   { transform: translateY(-50%) scale(1);   opacity: 1; }
+  100% { transform: translateY(-50%) scale(0.3); opacity: 0.4; }
+}
+
+/* Dark-mode override for spinner */
+[data-theme="dark"] .captcha-spinner > div {
+  background: var(--ccb-green-500, #22c55e);
+}
+
+[data-theme="dark"] .captcha-widget-status {
+  color: var(--ccb-stone-400);
 }
 
 /* Error */

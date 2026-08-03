@@ -191,7 +191,12 @@
 
                     {# reCAPTCHA widget is injected here by JS after the modal opens #}
                     <div id="captchaWidgetWrap" class="captcha-widget-wrap">
-                        <p id="captchaWidgetStatus" class="captcha-widget-status mb-0">Loading verification...</p>
+                        <div id="captchaWidgetStatus" class="captcha-widget-status mb-0 d-flex flex-column align-items-center gap-2">
+                            <div class="captcha-spinner" aria-hidden="true">
+                                <div></div><div></div><div></div>
+                            </div>
+                            <span id="captchaStatusText">Loading security verification…</span>
+                        </div>
                     </div>
 
                     {% if form.captcha.errors %}
@@ -208,11 +213,12 @@
 (function () {
     'use strict';
 
+    var RECAPTCHA_SITEKEY = '{{ recaptcha_public_key|default:"" }}'.trim();
+
     var emailField = document.querySelector('#contactInquiryForm [name="email"]');
     var emailErrorIcon = document.getElementById('emailErrorIcon');
     var emailErrorMsg = document.getElementById('emailErrorMsg');
 
-    /* Validate email format and domain */
     function validateEmail(email) {
         if (!email) return { valid: true, message: '' };
         email = email.trim().toLowerCase();
@@ -254,7 +260,6 @@
             return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
         }
 
-        // Placeholder words blacklist
         var placeholders = ['test', 'admin', 'n/a', 'na', 'demo', 'sample', 'example', 'fake', 'temp', 'nope', 'idk'];
         var cleanPart = localPart.replace(/[._-]/g, '');
         for (var i = 0; i < placeholders.length; i++) {
@@ -266,7 +271,6 @@
         return { valid: true, message: '' };
     }
 
-    /* Update email field styling based on validation */
     function updateEmailUI() {
         var email = emailField.value.trim();
         var result = validateEmail(email);
@@ -290,73 +294,182 @@
         }
     }
 
-    /* Listen to email field changes */
     if (emailField) {
         emailField.addEventListener('blur', updateEmailUI);
         emailField.addEventListener('input', updateEmailUI);
     }
 
+    /* ─────────────── CAPTCHA state ─────────────── */
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
+    var modalIsOpen = false;
+    var captchaReady = false;
     var captchaLoadFailed = false;
-    var captchaFailureTimer = null;
+    var captchaPoll = null;
+    var captchaWarnTimer = null;
+    var captchaFailTimer = null;
 
-    /* reCAPTCHA explicit-render callback */
-    window.onCaptchaLoad = function () { /* render happens on modal shown */ };
-    window.onCaptchaScriptError = function () {
-        captchaLoadFailed = true;
-        showCaptchaMessage('Security check could not load. Please allow Google reCAPTCHA or try another browser.');
+    function getStatusEl() { return document.getElementById('captchaWidgetStatus'); }
+    function getStatusText() { return document.getElementById('captchaStatusText'); }
+    function getWrapEl() { return document.getElementById('captchaWidgetWrap'); }
+
+    function setCaptchaMessage(html, showSpinner) {
+        var status = getStatusEl();
+        var text = getStatusText();
+        if (!status) return;
+        status.classList.remove('d-none');
+        if (text) text.textContent = html;
+        var spinner = status.querySelector('.captcha-spinner');
+        if (spinner) {
+            spinner.style.display = showSpinner ? 'inline-block' : 'none';
+        }
+    }
+
+    function hideCaptchaStatus() {
+        var status = getStatusEl();
+        if (status) status.classList.add('d-none');
+    }
+
+    function clearAllCaptchaTimers() {
+        if (captchaPoll) { clearInterval(captchaPoll); captchaPoll = null; }
+        if (captchaWarnTimer) { clearTimeout(captchaWarnTimer); captchaWarnTimer = null; }
+        if (captchaFailTimer) { clearTimeout(captchaFailTimer); captchaFailTimer = null; }
+    }
+
+    function widgetActuallyRendered() {
+        var wrap = getWrapEl();
+        if (!wrap) return false;
+        return wrap.querySelector('iframe, .g-recaptcha, [data-sitekey]') !== null;
+    }
+
+    /* ─────────────── Google reCAPTCHA lifecycle hooks ─────────────── */
+    window.onCaptchaLoad = function () {
+        captchaReady = true;
+        if (modalIsOpen && !widgetRendered) {
+            clearAllCaptchaTimers();
+            renderWidget();
+        }
     };
 
-    function showCaptchaMessage(message) {
-        var status = document.getElementById('captchaWidgetStatus');
-        if (status) {
-            status.textContent = message;
-            status.classList.remove('d-none');
-        }
-    }
+    window.onCaptchaScriptError = function () {
+        captchaLoadFailed = true;
+        captchaReady = false;
+        clearAllCaptchaTimers();
+        setCaptchaMessage(
+            'Security check could not load. Please disable any ad blocker or privacy shield for this site, then refresh the page.',
+            false
+        );
+    };
 
-    function hideCaptchaMessage() {
-        var status = document.getElementById('captchaWidgetStatus');
-        if (status) {
-            status.classList.add('d-none');
-        }
-    }
-
-    function startCaptchaFailureTimer() {
-        if (captchaFailureTimer) {
-            clearTimeout(captchaFailureTimer);
-        }
-        captchaFailureTimer = setTimeout(function () {
-            if (!widgetRendered) {
-                showCaptchaMessage('Security check is still loading. If this stays blank, allow Google reCAPTCHA in your browser shields or ad blocker, then reload.');
-            }
-        }, 6500);
-    }
-
+    /* ─────────────── Widget render ─────────────── */
     function renderWidget() {
         if (widgetRendered) return;
-        var wrap = document.getElementById('captchaWidgetWrap');
-        if (!wrap || typeof grecaptcha === 'undefined') return;
-        hideCaptchaMessage();
-        widgetId = grecaptcha.render(wrap, {
-            sitekey: '{{ recaptcha_public_key }}',
-            /* Auto-submit the moment the puzzle is solved */
-            callback: function () {
-                document.getElementById('captchaModalForm').submit();
-            },
-            'expired-callback': function () {
-                grecaptcha.reset(widgetId);
-            },
-            'error-callback': function () {
-                grecaptcha.reset(widgetId);
-            }
-        });
-        widgetRendered = true;
+
+        var wrap = getWrapEl();
+        if (!wrap) return;
+
+        if (typeof grecaptcha === 'undefined') return;
+
+        if (!RECAPTCHA_SITEKEY) {
+            setCaptchaMessage(
+                'Server configuration error: reCAPTCHA site key is missing. Please notify the site administrator.',
+                false
+            );
+            return;
+        }
+
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        try {
+            widgetId = grecaptcha.render(wrap, {
+                sitekey: RECAPTCHA_SITEKEY,
+                theme: isDark ? 'dark' : 'light',
+                size: 'normal',
+                callback: function () {
+                    document.getElementById('captchaModalForm').submit();
+                },
+                'expired-callback': function () {
+                    try { grecaptcha.reset(widgetId); } catch (e) {}
+                },
+                'error-callback': function () {
+                    setCaptchaMessage(
+                        'Verification error. Please check your connection and try refreshing the page.',
+                        false
+                    );
+                    try { grecaptcha.reset(widgetId); } catch (e) {}
+                }
+            });
+
+            widgetRendered = true;
+
+            /* Verify render actually produced visible children */
+            var verifyAttempts = 0;
+            var verify = setInterval(function () {
+                verifyAttempts++;
+                if (widgetActuallyRendered()) {
+                    clearInterval(verify);
+                    hideCaptchaStatus();
+                } else if (verifyAttempts > 20) {
+                    clearInterval(verify);
+                    widgetRendered = false;
+                    setCaptchaMessage(
+                        'The security widget failed to appear. Disable ad blockers or privacy shields, then refresh and try again.',
+                        false
+                    );
+                }
+            }, 150);
+
+        } catch (err) {
+            widgetRendered = false;
+            setCaptchaMessage(
+                'Security check failed to initialize. Please refresh the page and try again.',
+                false
+            );
+        }
     }
 
-    /* Validate the main inquiry form fields */
+    /* ─────────────── Polling for grecaptcha readiness ─────────────── */
+    function startCaptchaPolling() {
+        clearAllCaptchaTimers();
+
+        captchaWarnTimer = setTimeout(function () {
+            if (!widgetRendered) {
+                setCaptchaMessage(
+                    'Still loading the security check… ad blockers or slow networks can cause delays. Please wait a moment.',
+                    true
+                );
+            }
+        }, 7000);
+
+        captchaFailTimer = setTimeout(function () {
+            if (!widgetRendered && !captchaLoadFailed) {
+                clearAllCaptchaTimers();
+                setCaptchaMessage(
+                    'Security check timed out. Disable ad blockers or privacy shields, then refresh the page and try again.',
+                    false
+                );
+            }
+        }, 30000);
+
+        var tries = 0;
+        captchaPoll = setInterval(function () {
+            tries++;
+            if (typeof grecaptcha !== 'undefined') {
+                clearInterval(captchaPoll);
+                captchaPoll = null;
+                clearAllCaptchaTimers();
+                renderWidget();
+                return;
+            }
+            if (tries > 150) {
+                clearInterval(captchaPoll);
+                captchaPoll = null;
+            }
+        }, 200);
+    }
+
+    /* ─────────────── Form validation & sync ─────────────── */
     function validateMainForm() {
         var inputs = document.querySelectorAll(
             '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
@@ -368,7 +481,6 @@
             }
         }
 
-        /* Validate email domain */
         var email = emailField.value.trim();
         var emailResult = validateEmail(email);
         if (!emailResult.valid) {
@@ -378,7 +490,6 @@
         return true;
     }
 
-    /* Mirror main-form values into the modal's hidden fields */
     function syncFields() {
         document.getElementById('cm_name').value    = document.querySelector('#contactInquiryForm [name="name"]').value.trim();
         document.getElementById('cm_email').value   = document.querySelector('#contactInquiryForm [name="email"]').value.trim();
@@ -386,44 +497,51 @@
         document.getElementById('cm_message').value = document.querySelector('#contactInquiryForm [name="message"]').value.trim();
     }
 
-    /* "Send Inquiry" click — validate → open modal */
+    /* ─────────────── "Send Inquiry" click ─────────────── */
     var sendBtn = document.getElementById('contactSubmitBtn');
     if (sendBtn) {
         sendBtn.addEventListener('click', function () {
             if (!validateMainForm()) return;
             syncFields();
 
-            /* Reset widget each time modal opens */
-            if (widgetRendered && typeof grecaptcha !== 'undefined') {
-                grecaptcha.reset(widgetId);
+            if (widgetRendered && typeof grecaptcha !== 'undefined' && widgetId !== null) {
+                try { grecaptcha.reset(widgetId); } catch (e) {}
             }
+            widgetRendered = false;
+            widgetId = null;
 
-            showCaptchaMessage('Loading verification...');
+            setCaptchaMessage('Loading security verification…', true);
             bootstrap.Modal.getOrCreateInstance(modalEl).show();
         });
     }
 
-    /* Render widget once the modal is fully visible */
+    /* ─────────────── Bootstrap modal lifecycle hooks ─────────────── */
     if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function () {
+            modalIsOpen = true;
+        });
+
         modalEl.addEventListener('shown.bs.modal', function () {
-            if (typeof grecaptcha !== 'undefined') {
+            if (captchaLoadFailed) {
+                clearAllCaptchaTimers();
+                setCaptchaMessage(
+                    'Security check could not load. Please disable any ad blocker or privacy shield for this site, then refresh the page.',
+                    false
+                );
+                return;
+            }
+
+            if (captchaReady || typeof grecaptcha !== 'undefined') {
+                clearAllCaptchaTimers();
                 renderWidget();
             } else {
-                if (captchaLoadFailed) {
-                    showCaptchaMessage('Security check could not load. Please allow Google reCAPTCHA or try another browser.');
-                    return;
-                }
-                startCaptchaFailureTimer();
-                var tries = 0;
-                var poll = setInterval(function () {
-                    tries++;
-                    if (typeof grecaptcha !== 'undefined') {
-                        clearInterval(poll);
-                        renderWidget();
-                    }
-                    if (tries > 30) clearInterval(poll);
-                }, 200);
+                startCaptchaPolling();
             }
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            modalIsOpen = false;
+            clearAllCaptchaTimers();
         });
     }
 })();
@@ -433,7 +551,9 @@
 
 {% block extra_js %}
 {% if form.captcha %}
-<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit" async defer onerror="window.onCaptchaScriptError && window.onCaptchaScriptError()"></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit"
+        async defer crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade"
+        onerror="if (window.onCaptchaScriptError) { try { window.onCaptchaScriptError(); } catch(e){} }"></script>
 {% endif %}
 <script>
 (function () {
