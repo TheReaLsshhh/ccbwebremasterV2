@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponsePermanentRedirect
@@ -10,6 +12,13 @@ from .admin_security import (
     get_staff_security_profile,
 )
 
+SEO_CRITICAL_PATHS = {
+    "/sitemap.xml",
+    "/robots.txt",
+    "/static/sitemap.xml",
+    "/static/robots.txt",
+}
+
 
 class CanonicalHostRedirectMiddleware:
     """Permanently redirect retired public hostnames to the canonical site URL."""
@@ -18,10 +27,29 @@ class CanonicalHostRedirectMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        request_host = request.get_host().split(":", 1)[0].lower()
+        canonical_host = urlparse(settings.PUBLIC_SITE_URL).hostname.lower()
+        request_path = request.path
+
+        raw_host = request.META.get("HTTP_HOST", "")
+        request_host = raw_host.split(":", 1)[0].lower()
+
         if request_host in settings.OLD_PUBLIC_HOSTS:
             destination = f"{settings.PUBLIC_SITE_URL}{request.get_full_path()}"
             return HttpResponsePermanentRedirect(destination)
+
+        if request_path in SEO_CRITICAL_PATHS and request_host != canonical_host:
+            if request_host and request_host not in {canonical_host}:
+                destination = f"{settings.PUBLIC_SITE_URL}{request.get_full_path()}"
+                return HttpResponsePermanentRedirect(destination)
+
+        try:
+            request.get_host()
+        except Exception:
+            if request_path in SEO_CRITICAL_PATHS:
+                destination = f"{settings.PUBLIC_SITE_URL}{request.get_full_path()}"
+                return HttpResponsePermanentRedirect(destination)
+            raise
+
         return self.get_response(request)
 
 

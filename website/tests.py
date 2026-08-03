@@ -13,6 +13,7 @@ class SearchIndexingTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/plain; charset=utf-8")
+        self.assertContains(response, "User-agent: Googlebot")
         self.assertContains(response, "User-agent: *")
         self.assertContains(response, "Allow: /")
         self.assertNotContains(response, "Disallow: /")

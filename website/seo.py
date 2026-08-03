@@ -18,6 +18,9 @@ def robots_txt(request):
     sitemap_url = f"{settings.PUBLIC_SITE_URL.rstrip('/')}/sitemap.xml"
     content = "\n".join(
         [
+            "User-agent: Googlebot",
+            "Allow: /",
+            "",
             "User-agent: *",
             "Allow: /",
             "",
@@ -26,7 +29,7 @@ def robots_txt(request):
         ]
     )
     response = HttpResponse(content, content_type="text/plain; charset=utf-8")
-    response["Cache-Control"] = "public, max-age=300"
+    response["Cache-Control"] = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
     return response
 
 
@@ -56,5 +59,5 @@ def sitemap_xml(request):
         ]
     )
     response = HttpResponse(content, content_type="application/xml; charset=utf-8")
-    response["Cache-Control"] = "public, max-age=300"
+    response["Cache-Control"] = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
     return response
