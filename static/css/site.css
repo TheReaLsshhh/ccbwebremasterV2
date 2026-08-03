@@ -2842,15 +2842,39 @@ h3.mt-3.faculty-leader-name {
   transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
-.contact-map-view-toggle .btn-check:hover + .btn {
+/* ─ Segmented radii — left pill only on first, right pill only on last ─ */
+.contact-map-view-toggle .btn-check:first-of-type + .btn {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.contact-map-view-toggle .btn-check:last-of-type + .btn {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+/* Hover — trigger on hidden input hover AND the visible label itself (redundant but reliable) */
+.contact-map-view-toggle .btn-check:hover + .btn,
+.contact-map-view-toggle .btn-check + .btn:hover {
   background: color-mix(in srgb, var(--ccb-surface-solid) 90%, transparent);
   color: var(--ccb-green-900);
 }
 
+/* Active / checked state with matching segmented radii */
 .contact-map-view-toggle .btn-check:checked + .btn {
   background: var(--ccb-green-900);
   color: #ffffff;
   box-shadow: 0 1px 3px rgb(23 53 29 / 22%);
+}
+
+.contact-map-view-toggle .btn-check:checked:first-of-type + .btn {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.contact-map-view-toggle .btn-check:checked:last-of-type + .btn {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
 
 .contact-map-view-toggle .btn-check:focus-visible + .btn {
@@ -2890,8 +2914,11 @@ h3.mt-3.faculty-leader-name {
   color: color-mix(in srgb, #ffffff 80%, transparent);
 }
 
+/* Redundant label:hover hook for reliable hover UX in dark mode */
 .root[data-theme="dark"] .contact-map-view-toggle .btn-check:hover + .btn,
-:root[data-theme="dark"] .contact-map-view-toggle .btn-check:hover + .btn {
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check:hover + .btn,
+.root[data-theme="dark"] .contact-map-view-toggle .btn-check + .btn:hover,
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check + .btn:hover {
   background: color-mix(in srgb, var(--ccb-surface-solid) 80%, transparent);
   color: #ffffff;
 }
@@ -2900,6 +2927,28 @@ h3.mt-3.faculty-leader-name {
 :root[data-theme="dark"] .contact-map-view-toggle .btn-check:checked + .btn {
   background: var(--ccb-green-500, #3a8f4c);
   color: #0b170f;
+}
+
+/* Segmented radii also enforced in dark mode (redundant with global !important rules, but explicit) */
+.root[data-theme="dark"] .contact-map-view-toggle .btn-check:first-of-type + .btn,
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check:first-of-type + .btn {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.root[data-theme="dark"] .contact-map-view-toggle .btn-check:last-of-type + .btn,
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check:last-of-type + .btn {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.root[data-theme="dark"] .contact-map-view-toggle .btn-check:checked:first-of-type + .btn,
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check:checked:first-of-type + .btn {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.root[data-theme="dark"] .contact-map-view-toggle .btn-check:checked:last-of-type + .btn,
+:root[data-theme="dark"] .contact-map-view-toggle .btn-check:checked:last-of-type + .btn {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
 
 .root[data-theme="dark"] .contact-map-fullscreen-link,

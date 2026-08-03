@@ -189,7 +189,8 @@
                     <input type="hidden" name="message" id="cm_message">
                     <input type="hidden" name="website" value="">
 
-                    {# reCAPTCHA widget is injected here by JS after the modal opens #}
+                    {# Rendered by django_recaptcha — <div class="g-recaptcha" data-sitekey="..." data-callback="..."> #}
+                    {# The real, authoritative sitekey and callback names live on this element. #}
                     <div id="captchaWidgetWrap" class="captcha-widget-wrap">
                         <div id="captchaWidgetStatus" class="captcha-widget-status mb-0 d-flex flex-column align-items-center gap-2">
                             <div class="captcha-spinner" aria-hidden="true">
@@ -197,6 +198,7 @@
                             </div>
                             <span id="captchaStatusText">Loading security verification…</span>
                         </div>
+                        {{ form.captcha }}
                     </div>
 
                     {% if form.captcha.errors %}
@@ -213,8 +215,7 @@
 (function () {
     'use strict';
 
-    var RECAPTCHA_SITEKEY = '{{ recaptcha_public_key|default:"" }}'.trim();
-
+    /* ─────────── Email validation ─────────── */
     var emailField = document.querySelector('#contactInquiryForm [name="email"]');
     var emailErrorIcon = document.getElementById('emailErrorIcon');
     var emailErrorMsg = document.getElementById('emailErrorMsg');
@@ -299,7 +300,7 @@
         emailField.addEventListener('input', updateEmailUI);
     }
 
-    /* ─────────────── CAPTCHA state ─────────────── */
+    /* ─────────── CAPTCHA state & helpers ─────────── */
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
@@ -310,20 +311,22 @@
     var captchaWarnTimer = null;
     var captchaFailTimer = null;
 
-    function getStatusEl() { return document.getElementById('captchaWidgetStatus'); }
-    function getStatusText() { return document.getElementById('captchaStatusText'); }
-    function getWrapEl() { return document.getElementById('captchaWidgetWrap'); }
+    function getStatusEl()    { return document.getElementById('captchaWidgetStatus'); }
+    function getStatusText()  { return document.getElementById('captchaStatusText'); }
+    function getWrapEl()      { return document.getElementById('captchaWidgetWrap'); }
+    function getRecaptchaEl() {
+        var wrap = getWrapEl();
+        return wrap ? wrap.querySelector('.g-recaptcha') : null;
+    }
 
-    function setCaptchaMessage(html, showSpinner) {
+    function setCaptchaMessage(message, showSpinner) {
         var status = getStatusEl();
         var text = getStatusText();
         if (!status) return;
         status.classList.remove('d-none');
-        if (text) text.textContent = html;
+        if (text) text.textContent = message;
         var spinner = status.querySelector('.captcha-spinner');
-        if (spinner) {
-            spinner.style.display = showSpinner ? 'inline-block' : 'none';
-        }
+        if (spinner) spinner.style.display = showSpinner ? 'inline-block' : 'none';
     }
 
     function hideCaptchaStatus() {
@@ -332,18 +335,18 @@
     }
 
     function clearAllCaptchaTimers() {
-        if (captchaPoll) { clearInterval(captchaPoll); captchaPoll = null; }
-        if (captchaWarnTimer) { clearTimeout(captchaWarnTimer); captchaWarnTimer = null; }
-        if (captchaFailTimer) { clearTimeout(captchaFailTimer); captchaFailTimer = null; }
+        if (captchaPoll)      { clearInterval(captchaPoll);      captchaPoll = null; }
+        if (captchaWarnTimer) { clearTimeout(captchaWarnTimer);  captchaWarnTimer = null; }
+        if (captchaFailTimer) { clearTimeout(captchaFailTimer);  captchaFailTimer = null; }
     }
 
     function widgetActuallyRendered() {
-        var wrap = getWrapEl();
-        if (!wrap) return false;
-        return wrap.querySelector('iframe, .g-recaptcha, [data-sitekey]') !== null;
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) return false;
+        return recaptchaEl.querySelector('iframe') !== null;
     }
 
-    /* ─────────────── Google reCAPTCHA lifecycle hooks ─────────────── */
+    /* ─────────── Global reCAPTCHA script lifecycle hooks ─────────── */
     window.onCaptchaLoad = function () {
         captchaReady = true;
         if (modalIsOpen && !widgetRendered) {
@@ -362,16 +365,49 @@
         );
     };
 
-    /* ─────────────── Widget render ─────────────── */
+    /* ─────────── Global callbacks wired via Django widget data-* attrs ─────────── */
+    window.onCaptchaSolved = function () {
+        document.getElementById('captchaModalForm').submit();
+    };
+
+    window.onCaptchaExpired = function () {
+        if (widgetId !== null && typeof grecaptcha !== 'undefined') {
+            try { grecaptcha.reset(widgetId); } catch (e) {}
+        }
+    };
+
+    window.onCaptchaError = function () {
+        setCaptchaMessage(
+            'Verification error. Please check your connection and refresh the page.',
+            false
+        );
+        if (widgetId !== null && typeof grecaptcha !== 'undefined') {
+            try { grecaptcha.reset(widgetId); } catch (e) {}
+        }
+    };
+
+    /* ─────────── Widget render — authoritative source: .g-recaptcha dataset ─────────── */
     function renderWidget() {
         if (widgetRendered) return;
-
-        var wrap = getWrapEl();
-        if (!wrap) return;
-
         if (typeof grecaptcha === 'undefined') return;
 
-        if (!RECAPTCHA_SITEKEY) {
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) {
+            setCaptchaMessage(
+                'Server configuration error: reCAPTCHA widget markup is missing. Please notify the site administrator.',
+                false
+            );
+            return;
+        }
+
+        /* Read real sitekey + callback names from the Django-rendered <div class="g-recaptcha"> */
+        var ds = recaptchaEl.dataset;
+        var sitekey = (ds.sitekey || '').trim();
+        var cbSolved  = ds.callback        || 'onCaptchaSolved';
+        var cbExpired = ds.expiredCallback || 'onCaptchaExpired';
+        var cbError   = ds.errorCallback   || 'onCaptchaError';
+
+        if (!sitekey) {
             setCaptchaMessage(
                 'Server configuration error: reCAPTCHA site key is missing. Please notify the site administrator.',
                 false
@@ -382,35 +418,25 @@
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
         try {
-            widgetId = grecaptcha.render(wrap, {
-                sitekey: RECAPTCHA_SITEKEY,
-                theme: isDark ? 'dark' : 'light',
-                size: 'normal',
-                callback: function () {
-                    document.getElementById('captchaModalForm').submit();
-                },
-                'expired-callback': function () {
-                    try { grecaptcha.reset(widgetId); } catch (e) {}
-                },
-                'error-callback': function () {
-                    setCaptchaMessage(
-                        'Verification error. Please check your connection and try refreshing the page.',
-                        false
-                    );
-                    try { grecaptcha.reset(widgetId); } catch (e) {}
-                }
+            widgetId = grecaptcha.render(recaptchaEl, {
+                sitekey: sitekey,
+                theme:   isDark ? 'dark' : 'light',
+                size:    'normal',
+                callback:        function () { resolveByName(cbSolved)(); },
+                'expired-callback': function () { resolveByName(cbExpired)(); },
+                'error-callback':   function () { resolveByName(cbError)(); }
             });
 
             widgetRendered = true;
 
-            /* Verify render actually produced visible children */
+            /* Verify that the iframe actually appeared before hiding the spinner */
             var verifyAttempts = 0;
             var verify = setInterval(function () {
                 verifyAttempts++;
                 if (widgetActuallyRendered()) {
                     clearInterval(verify);
                     hideCaptchaStatus();
-                } else if (verifyAttempts > 20) {
+                } else if (verifyAttempts > 25) {
                     clearInterval(verify);
                     widgetRendered = false;
                     setCaptchaMessage(
@@ -422,6 +448,7 @@
 
         } catch (err) {
             widgetRendered = false;
+            widgetId = null;
             setCaptchaMessage(
                 'Security check failed to initialize. Please refresh the page and try again.',
                 false
@@ -429,7 +456,20 @@
         }
     }
 
-    /* ─────────────── Polling for grecaptcha readiness ─────────────── */
+    /* Resolve a global callback name (handles "fnName" or "namespace.fnName" style) */
+    function resolveByName(name) {
+        if (!name) return function () {};
+        if (typeof window[name] === 'function') return window[name];
+        var parts = name.split('.');
+        var obj = window;
+        for (var i = 0; i < parts.length; i++) {
+            if (obj == null) break;
+            obj = obj[parts[i]];
+        }
+        return (typeof obj === 'function') ? obj : function () {};
+    }
+
+    /* ─────────── Polling + progressive timers ─────────── */
     function startCaptchaPolling() {
         clearAllCaptchaTimers();
 
@@ -469,7 +509,7 @@
         }, 200);
     }
 
-    /* ─────────────── Form validation & sync ─────────────── */
+    /* ─────────── Main form validation + sync ─────────── */
     function validateMainForm() {
         var inputs = document.querySelectorAll(
             '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
@@ -497,7 +537,7 @@
         document.getElementById('cm_message').value = document.querySelector('#contactInquiryForm [name="message"]').value.trim();
     }
 
-    /* ─────────────── "Send Inquiry" click ─────────────── */
+    /* ─────────── "Send Inquiry" click handler ─────────── */
     var sendBtn = document.getElementById('contactSubmitBtn');
     if (sendBtn) {
         sendBtn.addEventListener('click', function () {
@@ -515,7 +555,7 @@
         });
     }
 
-    /* ─────────────── Bootstrap modal lifecycle hooks ─────────────── */
+    /* ─────────── Bootstrap modal lifecycle hooks ─────────── */
     if (modalEl) {
         modalEl.addEventListener('show.bs.modal', function () {
             modalIsOpen = true;

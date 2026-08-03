@@ -20,8 +20,23 @@ try:
     from django_recaptcha.fields import ReCaptchaField
     from django_recaptcha.widgets import ReCaptchaV2Checkbox
     _HAS_RECAPTCHA = bool(settings.RECAPTCHA_PUBLIC_KEY and settings.RECAPTCHA_PRIVATE_KEY)
+
+    class ExplicitReCaptchaV2Checkbox(ReCaptchaV2Checkbox):
+        """ReCaptcha V2 checkbox that does NOT auto-inject the api.js script.
+
+        We load the script manually in templates with render=explicit so we can
+        time widget rendering with the Bootstrap modal lifecycle.  All callback
+        names and the sitekey are carried on the rendered <div class="g-recaptcha">
+        element via data-* attributes (single source of truth).
+        """
+
+        @property
+        def media(self):
+            return forms.Media()
+
 except ImportError:
     _HAS_RECAPTCHA = False
+    ExplicitReCaptchaV2Checkbox = None
 
 
 EMAIL_LOCAL_RE = re.compile(r"^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$")
@@ -130,7 +145,15 @@ class ContactInquiryForm(forms.ModelForm):
     website = forms.CharField(required=False, widget=forms.HiddenInput)
 
     if _HAS_RECAPTCHA:
-        captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
+        captcha = ReCaptchaField(
+            widget=ExplicitReCaptchaV2Checkbox(
+                attrs={
+                    "data-callback": "onCaptchaSolved",
+                    "data-expired-callback": "onCaptchaExpired",
+                    "data-error-callback": "onCaptchaError",
+                }
+            )
+        )
 
     class Meta:
         model = ContactInquiry
