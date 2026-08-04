@@ -560,9 +560,17 @@
                     const feedbackCountdownProgressElement = feedbackCountdownElement
                         ? feedbackCountdownElement.querySelector(".feedback-modal-countdown-progress")
                         : null;
+                    const feedbackSuccessIconElement = feedbackModalElement
+                        ? feedbackModalElement.querySelector(".feedback-modal-success-icon")
+                        : null;
 
                     feedbackModalElement.addEventListener("shown.bs.modal", function () {
                         if (!shouldAutoClose) {
+                            if (feedbackSuccessIconElement) {
+                                feedbackSuccessIconElement.classList.remove("is-animated");
+                                void feedbackSuccessIconElement.offsetWidth;
+                                feedbackSuccessIconElement.classList.add("is-animated");
+                            }
                             return;
                         }
 
