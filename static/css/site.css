@@ -3233,14 +3233,14 @@ body.captcha-overlay-open {
   justify-content: center;
   border-radius: 999px;
   font-size: 2.1rem;
-  color: #1d8849;
+  color: var(--ccb-green-800) !important;
   line-height: 1;
   transform: scale(0.6);
   opacity: 0;
 }
 
 .feedback-modal-success-icon i {
-  color: #1d8849 !important;
+  color: var(--ccb-green-800) !important;
 }
 
 .feedback-modal-card.is-success .feedback-modal-success-icon,
@@ -3359,13 +3359,13 @@ body.captcha-overlay-open {
 }
 
 .feedback-modal-title {
-  color: inherit;
+  color: var(--ccb-green-800) !important; 
   font-size: 1.7rem;
 }
 
 .feedback-modal-card.is-success .feedback-modal-title,
 .feedback-modal-card.is-sticky .feedback-modal-title {
-  color: #0f5132;
+  color: var(--ccb-green-800) !important;
   font-weight: 700;
 }
 
