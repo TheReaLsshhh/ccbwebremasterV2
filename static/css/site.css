@@ -3363,6 +3363,12 @@ body.captcha-overlay-open {
   font-size: 1.7rem;
 }
 
+.feedback-modal-card.is-success .feedback-modal-title,
+.feedback-modal-card.is-sticky .feedback-modal-title {
+  color: #0f5132;
+  font-weight: 700;
+}
+
 .feedback-modal-copy {
   color: var(--ccb-stone-700);
   line-height: 1.65;

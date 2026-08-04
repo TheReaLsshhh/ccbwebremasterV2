@@ -393,7 +393,7 @@
     {% if messages or notification_modal %}
         <div class="modal fade feedback-modal" id="siteFeedbackModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% if notification_modal.sticky %} is-sticky{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %} is-sticky{% endif %}{% if 'error' in message.tags %}is-error{% elif 'warning' in message.tags %}is-warning{% elif 'info' in message.tags %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}" {% if messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %}data-sticky="true"{% endif %}{% endif %}{% endfor %}{% elif notification_modal and notification_modal.sticky %}data-sticky="true"{% endif %}>
+                <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% if notification_modal.sticky %} is-sticky{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %} is-sticky{% endif %} {% if 'error' in message.tags %}is-error{% elif 'warning' in message.tags %}is-warning{% elif 'info' in message.tags %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}" {% if messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %}data-sticky="true"{% endif %}{% endif %}{% endfor %}{% elif notification_modal and notification_modal.sticky %}data-sticky="true"{% endif %}>
                     <div class="modal-body">
                         <button type="button" class="btn-close feedback-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="feedback-modal-header">
@@ -563,6 +563,10 @@
                     const feedbackSuccessIconElement = feedbackModalElement
                         ? feedbackModalElement.querySelector(".feedback-modal-success-icon")
                         : null;
+
+                    if (!shouldAutoClose && feedbackCountdownElement && feedbackCountdownElement.parentNode) {
+                        feedbackCountdownElement.parentNode.removeChild(feedbackCountdownElement);
+                    }
 
                     feedbackModalElement.addEventListener("shown.bs.modal", function () {
                         if (!shouldAutoClose) {
