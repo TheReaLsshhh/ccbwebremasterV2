@@ -4616,6 +4616,7 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
 /* Widget centering */
 .captcha-widget-wrap {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 80px;

@@ -346,6 +346,23 @@
         return recaptchaEl.querySelector('iframe') !== null;
     }
 
+    function detectSiteOwnerError() {
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) return null;
+        var text = recaptchaEl.textContent || '';
+        if (text.indexOf('ERROR for site owner') !== -1 || text.indexOf('Invalid domain for site key') !== -1) {
+            var host = window.location.hostname || 'this domain';
+            return (
+                'reCAPTCHA site key is not configured for ' + host + '. ' +
+                'Ask the site administrator to add this domain in the Google reCAPTCHA Admin Console.'
+            );
+        }
+        if (text.indexOf('Invalid site key') !== -1 || text.indexOf('site key') !== -1 && text.indexOf('ERROR') !== -1) {
+            return 'reCAPTCHA key configuration error. Ask the site administrator to verify the RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY environment variables.';
+        }
+        return null;
+    }
+
     /* ─────────── Global reCAPTCHA script lifecycle hooks ─────────── */
     window.onCaptchaLoad = function () {
         captchaReady = true;
@@ -417,6 +434,43 @@
 
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
+        function startRenderVerification() {
+            var verifyAttempts = 0;
+            var verify = setInterval(function () {
+                verifyAttempts++;
+
+                if (widgetActuallyRendered()) {
+                    clearInterval(verify);
+                    hideCaptchaStatus();
+                    widgetRendered = true;
+                    return;
+                }
+
+                var ownerErr = detectSiteOwnerError();
+                if (ownerErr) {
+                    clearInterval(verify);
+                    widgetRendered = false;
+                    clearAllCaptchaTimers();
+                    setCaptchaMessage(ownerErr, false);
+                    return;
+                }
+
+                if (verifyAttempts > 60) {
+                    clearInterval(verify);
+                    widgetRendered = false;
+                    ownerErr = detectSiteOwnerError();
+                    if (ownerErr) {
+                        setCaptchaMessage(ownerErr, false);
+                    } else if (!widgetActuallyRendered()) {
+                        setCaptchaMessage(
+                            'The security widget failed to appear. Disable ad blockers or privacy shields, then refresh and try again.',
+                            false
+                        );
+                    }
+                }
+            }, 150);
+        }
+
         try {
             widgetId = grecaptcha.render(recaptchaEl, {
                 sitekey: sitekey,
@@ -428,23 +482,7 @@
             });
 
             widgetRendered = true;
-
-            /* Verify that the iframe actually appeared before hiding the spinner */
-            var verifyAttempts = 0;
-            var verify = setInterval(function () {
-                verifyAttempts++;
-                if (widgetActuallyRendered()) {
-                    clearInterval(verify);
-                    hideCaptchaStatus();
-                } else if (verifyAttempts > 25) {
-                    clearInterval(verify);
-                    widgetRendered = false;
-                    setCaptchaMessage(
-                        'The security widget failed to appear. Disable ad blockers or privacy shields, then refresh and try again.',
-                        false
-                    );
-                }
-            }, 150);
+            startRenderVerification();
 
         } catch (err) {
             widgetRendered = false;
@@ -453,6 +491,7 @@
                 'Security check failed to initialize. Please refresh the page and try again.',
                 false
             );
+            startRenderVerification();
         }
     }
 

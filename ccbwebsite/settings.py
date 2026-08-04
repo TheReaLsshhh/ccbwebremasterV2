@@ -32,7 +32,11 @@ def csrf_trusted_origins_from_hosts(hosts):
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 DEBUG = env_bool("DEBUG", False)
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()]
+ALLOWED_HOSTS = sorted({
+    host.strip().strip('"').strip("'")
+    for host in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if host and host.strip()
+})
 OLD_PUBLIC_HOSTS = {
     host.strip().lower()
     for host in os.getenv("OLD_PUBLIC_HOSTS", "").split(",")
@@ -186,11 +190,11 @@ if USE_CLOUDINARY and CLOUDINARY_CLOUD_NAME:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
+CSRF_TRUSTED_ORIGINS = sorted({
+    origin.strip().strip('"').strip("'").rstrip("\n").rstrip("\r").strip()
     for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
-]
+    if origin and origin.strip()
+})
 
 LOGGING = {
     "version": 1,
