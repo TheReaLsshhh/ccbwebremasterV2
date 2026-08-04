@@ -1,4 +1,5 @@
 import logging
+import re
 from urllib.parse import urlparse
 
 import requests
@@ -14,6 +15,7 @@ from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.utils.cache import patch_cache_control
 from django.utils.html import escape
+from django.utils.html import format_html
 from django.views.decorators.cache import never_cache
 
 from .forms import ContactInquiryForm
@@ -226,6 +228,14 @@ def cloudinary_download(request):
     return HttpResponseNotFound(
         "This download file is unavailable. Please reupload it in the admin dashboard."
     )
+
+
+def get_contact_recipient_display_name():
+    default_from = getattr(settings, "DEFAULT_FROM_EMAIL", "") or ""
+    match = re.match(r'\s*"?\s*(.+?)\s*"?\s*<[^>]+>\s*$', default_from)
+    if match:
+        return match.group(1).strip()
+    return "City College of Bayawan"
 
 
 def send_contact_notification_email(inquiry):
@@ -667,9 +677,15 @@ def contact(request):
             inquiry = form.save()
             email_sent = send_contact_notification_email(inquiry)
             if email_sent:
+                display_name = get_contact_recipient_display_name()
+                safe_display = escape(display_name)
                 messages.success(
                     request,
-                    f"Your inquiry has been sent to {settings.CONTACT_INQUIRY_RECIPIENT}. Thank you for reaching out.",
+                    format_html(
+                        "Your inquiry has been sent to <span class='feedback-recipient-name'>{}</span>. Thank you for reaching out.",
+                        safe_display,
+                    ),
+                    extra_tags="sticky",
                 )
             else:
                 messages.warning(

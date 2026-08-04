@@ -393,7 +393,7 @@
     {% if messages or notification_modal %}
         <div class="modal fade feedback-modal" id="siteFeedbackModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if message.tags == 'error' %}is-error{% elif message.tags == 'warning' %}is-warning{% elif message.tags == 'info' %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}">
+                <div class="modal-content feedback-modal-card {% if notification_modal %}{% if notification_modal.type == 'error' %}is-error{% elif notification_modal.type == 'retry' or notification_modal.type == 'warning' %}is-warning{% elif notification_modal.type == 'info' %}is-info{% else %}is-success{% endif %}{% if notification_modal.sticky %} is-sticky{% endif %}{% elif messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %} is-sticky{% endif %}{% if 'error' in message.tags %}is-error{% elif 'warning' in message.tags %}is-warning{% elif 'info' in message.tags %}is-info{% else %}is-success{% endif %}{% endif %}{% endfor %}{% endif %}" {% if messages %}{% for message in messages %}{% if forloop.first %}{% if 'sticky' in message.tags %}data-sticky="true"{% endif %}{% endif %}{% endfor %}{% elif notification_modal and notification_modal.sticky %}data-sticky="true"{% endif %}>
                     <div class="modal-body">
                         <button type="button" class="btn-close feedback-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="feedback-modal-header">
@@ -407,6 +407,9 @@
                                             </svg>
                                         </span>
                                         <span class="feedback-modal-countdown-value">5</span>
+                                    </span>
+                                    <span class="feedback-modal-success-icon" aria-hidden="true">
+                                        <i class="fa-solid fa-circle-check"></i>
                                     </span>
                                     <h3 class="feedback-modal-title mb-0">
                                         {% if notification_modal %}
@@ -424,11 +427,11 @@
                                         {% else %}
                                             {% for message in messages %}
                                                 {% if forloop.first %}
-                                                    {% if message.tags == 'error' %}
+                                                    {% if 'error' in message.tags %}
                                                         Failed
-                                                    {% elif message.tags == 'warning' %}
+                                                    {% elif 'warning' in message.tags %}
                                                         Retry
-                                                    {% elif message.tags == 'info' %}
+                                                    {% elif 'info' in message.tags %}
                                                         Notice
                                                     {% else %}
                                                         Success
@@ -539,6 +542,11 @@
                     const isSuccessFeedback = feedbackModalCardElement
                         ? feedbackModalCardElement.classList.contains("is-success")
                         : false;
+                    const isStickyFeedback = feedbackModalCardElement
+                        ? (feedbackModalCardElement.classList.contains("is-sticky") ||
+                           feedbackModalCardElement.getAttribute("data-sticky") === "true")
+                        : false;
+                    const shouldAutoClose = !(isSuccessFeedback || isStickyFeedback);
                     let feedbackAutoCloseTimer = null;
                     let feedbackCountdownTimer = null;
                     let feedbackProgressTimer = null;
@@ -554,7 +562,7 @@
                         : null;
 
                     feedbackModalElement.addEventListener("shown.bs.modal", function () {
-                        if (isSuccessFeedback) {
+                        if (!shouldAutoClose) {
                             return;
                         }
 
