@@ -539,13 +539,30 @@
                     if (!window.bootstrap || !window.bootstrap.Modal) return;
                     const feedbackModal = new window.bootstrap.Modal(feedbackModalElement);
                     const feedbackModalCardElement = feedbackModalElement.querySelector(".feedback-modal-card");
-                    const isSuccessFeedback = feedbackModalCardElement
-                        ? feedbackModalCardElement.classList.contains("is-success")
+                    const feedbackModalTitleElement = feedbackModalElement.querySelector(".feedback-modal-title");
+                    const titleText = feedbackModalTitleElement
+                        ? (feedbackModalTitleElement.textContent || "").trim().toLowerCase()
+                        : "";
+                    const hasStickyFlag = feedbackModalCardElement
+                        ? (feedbackModalCardElement.getAttribute("data-sticky") === "true")
                         : false;
-                    const isStickyFeedback = feedbackModalCardElement
-                        ? (feedbackModalCardElement.classList.contains("is-sticky") ||
-                           feedbackModalCardElement.getAttribute("data-sticky") === "true")
-                        : false;
+                    const classesOnCard = feedbackModalCardElement
+                        ? feedbackModalCardElement.className
+                        : "";
+                    const isErrorByClass = classesOnCard.indexOf("is-error") !== -1;
+                    const isWarningByClass = classesOnCard.indexOf("is-warning") !== -1;
+                    const isInfoByClass = classesOnCard.indexOf("is-info") !== -1;
+                    const isStickyByClass = classesOnCard.indexOf("is-sticky") !== -1;
+                    const looksLikeSuccess = titleText === "success" || titleText.indexOf("thank you") !== -1;
+                    const isNonSuccessType = isErrorByClass || isWarningByClass || isInfoByClass;
+                    if (feedbackModalCardElement && !isNonSuccessType) {
+                        feedbackModalCardElement.classList.add("is-success");
+                        if (hasStickyFlag || looksLikeSuccess) {
+                            feedbackModalCardElement.classList.add("is-sticky");
+                        }
+                    }
+                    const isSuccessFeedback = !isNonSuccessType;
+                    const isStickyFeedback = !isNonSuccessType && (hasStickyFlag || isStickyByClass || looksLikeSuccess);
                     const shouldAutoClose = !(isSuccessFeedback || isStickyFeedback);
                     let feedbackAutoCloseTimer = null;
                     let feedbackCountdownTimer = null;
