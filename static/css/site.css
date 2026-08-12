@@ -1597,7 +1597,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 /* Tablet & below */
-@media (max-width: 1199) {
+@media (max-width: 991.98px) {
   .home-news-carousel-stage {
     padding: 0;
   }
@@ -2059,7 +2059,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
   }
 }
 
-@media (max-width: 1199) {
+@media (max-width: 991.98px) {
   .coverflow-track {
     height: 22rem;
   }
@@ -4442,7 +4442,7 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
     #09110b;
 }
 
-@media (max-width: 1199) {
+@media (max-width: 1199.99) {
   .site-skeleton-hero-home {
     grid-template-columns: 1fr;
     min-height: 34rem;
@@ -4487,6 +4487,8 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
   /* Hide CTA buttons and stats on the hero at ≤1199px — portal panel is sufficient */
   .hero-main-wide .d-flex.flex-wrap.gap-3.mt-4,
   .hero-stats.hero-stats-wide {
+    display: none !important;
+  }hero-main-wide .hero-stats {
     display: none !important;
   }
 
