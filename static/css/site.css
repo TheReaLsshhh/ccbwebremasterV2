@@ -4485,10 +4485,8 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
   }
 
   /* Hide CTA buttons and stats on the hero at ≤1199px — portal panel is sufficient */
-  .hero-main-wide .btn-brand.btn-portal,
-  .hero-main-wide .btn-soft.btn-portal,
   .hero-main-wide .d-flex.flex-wrap.gap-3.mt-4,
-  .hero-main-wide .hero-stats {
+  .hero-stats.hero-stats-wide {
     display: none !important;
   }
 
