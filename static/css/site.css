@@ -4484,6 +4484,14 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
     padding: 1.75rem;
   }
 
+  /* Hide CTA buttons and stats on the hero at ≤1199px — portal panel is sufficient */
+  .hero-main-wide .btn-brand.btn-portal,
+  .hero-main-wide .btn-soft.btn-portal,
+  .hero-main-wide .d-flex.flex-wrap.gap-3.mt-4,
+  .hero-main-wide .hero-stats {
+    display: none !important;
+  }
+
   .section-block {
     padding-bottom: 3rem;
   }
