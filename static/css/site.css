@@ -655,6 +655,8 @@ button,
   border-radius: 999px;
   color: var(--ccb-stone-700) !important;
   font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .nav-link.active,
@@ -4565,6 +4567,17 @@ html[data-theme="dark"] .accordion.page-faq-accordion .accordion-body li {
 
   .navbar-nav.ms-auto {
     margin-left: auto !important;
+  }
+
+  /* Tighten nav-link padding so all 10 items fit without overflow */
+  .site-navbar .nav-link {
+    padding: 0.55rem 0.65rem !important;
+    font-size: 0.9rem;
+  }
+
+  /* Remove the Bootstrap gap utility and use a tighter gap */
+  .site-navbar .navbar-nav {
+    gap: 0 !important;
   }
 
   .services-dropdown-menu {
