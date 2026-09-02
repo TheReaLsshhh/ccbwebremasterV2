@@ -650,6 +650,12 @@ button,
   color: var(--ccb-orange-600);
 }
 
+@media (min-width: 992px) and (max-width: 1200px) {
+  .nav-link {
+    padding: 0.65rem 0.7rem !important;
+  }
+}
+
 .nav-link {
   padding: 0.65rem 0.9rem !important;
   border-radius: 999px;
