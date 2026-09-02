@@ -651,8 +651,9 @@ button,
 }
 
 @media (min-width: 992px) and (max-width: 1200px) {
-  .nav-link {
-    padding: 0.65rem 0.7rem !important;
+  .site-navbar .nav-link {
+    padding: 0.5rem 0.6rem !important;
+    font-size: 0.85rem;
   }
 }
 
