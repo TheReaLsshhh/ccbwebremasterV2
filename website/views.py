@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.core.cache import cache
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.utils.html import format_html
 
 from .forms import ContactInquiryForm
@@ -13,8 +15,9 @@ from .models import (
     NewsEvent,
     PageContent,
     StudentResource,
+    SiteSettings,
 )
-from .utils import base_context, get_page_content, send_contact_notification_email
+from .context_processors import search_metadata
 
 # Rate limiting constants
 CONTACT_RATE_LIMIT_HOUR = 1
@@ -22,21 +25,41 @@ CONTACT_RATE_WINDOW_HOUR = 3600
 CONTACT_RATE_LIMIT_DAY = 5
 CONTACT_RATE_WINDOW_DAY = 86400
 
+def _send_contact_notification_email(inquiry):
+    """Send an email notification to the admin about a new contact inquiry."""
+    try:
+        settings = SiteSettings.objects.first()
+        if not settings or not settings.primary_email:
+            return
+
+        subject = f"New Contact Inquiry: {inquiry.subject}"
+        context = {"inquiry": inquiry, "settings": settings}
+        text_content = render_to_string("website/email/contact_notification.txt", context)
+        html_content = render_to_string("website/email/contact_notification.html", context)
+
+        send_mail(
+            subject,
+            text_content,
+            settings.primary_email,
+            [settings.primary_email],
+            html_message=html_content,
+            fail_silently=False,
+        )
+    except Exception:
+        # Silently fail to avoid crashing the user-facing view
+        pass
+
 def service_worker(request):
-    # This view is required by your urls.py but its content is not available.
-    # Returning an empty response to allow the server to start.
     return HttpResponse("")
 
 def cloudinary_download(request):
-    # This view is required by your urls.py but its content is not available.
-    # Returning an empty response to allow the server to start.
     return HttpResponse("")
 
 def home(request):
-    context = base_context("website:home")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.HOME),
+            "page_content": PageContent.objects.filter(page=PageContent.HOME).first(),
             "news": NewsEvent.objects.filter(is_featured=True).order_by(
                 "-published_at"
             )[:3],
@@ -45,65 +68,75 @@ def home(request):
     return render(request, "website/index.html", context)
 
 def about(request):
-    context = base_context("website:about")
-    context.update({"page_content": get_page_content(PageContent.ABOUT)})
+    context = search_metadata(request)
+    context.update(
+        {"page_content": PageContent.objects.filter(page=PageContent.ABOUT).first()}
+    )
     return render(request, "website/about.html", context)
 
 def academics(request):
-    context = base_context("website:academics")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.ACADEMICS),
+            "page_content": PageContent.objects.filter(
+                page=PageContent.ACADEMICS
+            ).first(),
             "programs": AcademicProgram.objects.all(),
         }
     )
     return render(request, "website/academics.html", context)
 
 def admissions(request):
-    context = base_context("website:admissions")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.ADMISSIONS),
+            "page_content": PageContent.objects.filter(
+                page=PageContent.ADMISSIONS
+            ).first(),
             "requirements": AdmissionRequirement.objects.order_by("sort_order"),
         }
     )
     return render(request, "website/admissions.html", context)
 
 def news(request):
-    context = base_context("website:news")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.NEWS),
+            "page_content": PageContent.objects.filter(page=PageContent.NEWS).first(),
             "news_items": NewsEvent.objects.order_by("-published_at"),
         }
     )
     return render(request, "website/news.html", context)
 
 def downloads(request):
-    context = base_context("website:downloads")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.DOWNLOADS),
+            "page_content": PageContent.objects.filter(
+                page=PageContent.DOWNLOADS
+            ).first(),
             "downloads": DownloadItem.objects.order_by("category", "title"),
         }
     )
     return render(request, "website/downloads.html", context)
 
 def students(request):
-    context = base_context("website:students")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.STUDENTS),
+            "page_content": PageContent.objects.filter(
+                page=PageContent.STUDENTS
+            ).first(),
             "resources": StudentResource.objects.order_by("title"),
         }
     )
     return render(request, "website/students.html", context)
 
 def faculty(request):
-    context = base_context("website:faculty")
+    context = search_metadata(request)
     context.update(
         {
-            "page_content": get_page_content(PageContent.FACULTY),
+            "page_content": PageContent.objects.filter(page=PageContent.FACULTY).first(),
             "sections": FacultyStaffSection.objects.filter(
                 published=True
             ).prefetch_related("people"),
@@ -133,7 +166,7 @@ def contact(request):
         form = ContactInquiryForm(request.POST)
         if form.is_valid():
             inquiry = form.save()
-            send_contact_notification_email(inquiry)
+            _send_contact_notification_email(inquiry)
             messages.success(
                 request,
                 format_html(
@@ -152,14 +185,16 @@ def contact(request):
     else:
         form = ContactInquiryForm()
 
-    context = base_context("website:contact")
+    context = search_metadata(request)
     context.update(
-        {"page_content": get_page_content(PageContent.CONTACT), "form": form}
+        {
+            "page_content": PageContent.objects.filter(page=PageContent.CONTACT).first(),
+            "form": form,
+        }
     )
     return render(request, "website/contact.html", context)
 
-# Partial views - these are required by your urls.py
-# They are stubbed to call the main view to prevent crashes.
+# Partial views
 def academics_partial(request):
     return academics(request)
 
