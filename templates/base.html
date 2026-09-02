@@ -237,7 +237,7 @@
             </div>
         </div>
 
-        <nav class="navbar navbar-expand-xl site-navbar">
+        <nav class="navbar navbar-expand-lg site-navbar">
             <div class="container py-3">
                 <a class="navbar-brand me-4" href="{% url 'website:home' %}">
                     <span class="brand-lockup">
@@ -266,7 +266,7 @@
                                         aria-expanded="false">
                                         Services
                                     </a>
-                                    <ul class="dropdown-menu services-dropdown-menu" aria-labelledby="servicesDropdown">
+                                    <ul class="navbar-nav ms-auto align-items-lg-center flex-nowrap">
                                         {% for item in service_menu_items %}
                                             <li>
                                                 {% if item.is_available %}
