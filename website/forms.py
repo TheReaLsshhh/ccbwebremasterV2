@@ -69,12 +69,3 @@ class ContactInquiryForm(forms.ModelForm):
         if self.cleaned_data.get("comment"):
             raise forms.ValidationError("Invalid submission.")
         return ""
-
-class PageContentForm(forms.ModelForm):
-    class Meta:
-        model = PageContent
-        fields = ["title", "content"]
-        widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control"}),
-            "content": forms.Textarea(attrs={"class": "form-control", "rows": 10}),
-        }
