@@ -1,132 +1,707 @@
 {% extends "base.html" %}
-{% load static %}
+{% load news_extras %}
 
-{% block title %}Contact Us | {{ CcbWebsite.name }}{% endblock %}
+{% block title %}Contact | City College of Bayawan{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm">
-                <div class="card-body p-4 p-md-5">
-                    <div class="row">
-                        <div class="col-md-5 border-end pe-md-5">
-                            <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2 mb-3">
-                                <i class="fa-solid fa-phone me-2"></i>CONTACT DESK
-                            </span>
-                            <h1 class="display-5 fw-bold text-dark-emphasis">Reach The Campus</h1>
-                            <p class="lead text-muted mb-4">{{ page_content.content|safe }}</p>
-                            <div class="d-grid gap-3">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-dark-emphasis">Email</h5>
-                                        <p class="card-text text-muted">{{ CcbWebsite.email }}</p>
-                                    </div>
-                                </div>
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-dark-emphasis">Phone</h5>
-                                        <p class="card-text text-muted">{{ CcbWebsite.phone }}</p>
-                                    </div>
-                                </div>
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-dark-emphasis">Address</h5>
-                                        <p class="card-text text-muted">{{ CcbWebsite.address }}</p>
-                                    </div>
-                                </div>
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-dark-emphasis">Office Hours</h5>
-                                        <p class="card-text text-muted">{{ CcbWebsite.office_hours }}</p>
-                                    </div>
-                                </div>
+<section class="hero-section">
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-xl-8">
+                <div class="hero-main h-100" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}>
+                    <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
+                    <p class="lead mb-0">{{ page_content.hero_text }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-block contact-content-section">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <span class="section-eyebrow section-eyebrow-inquiry">Direct Inquiry</span>
+                <h2 class="section-title mt-3 mb-2">Reach The Campus Easily</h2>
+                <p class="muted-copy mb-0">A more structured contact page helps students, families, and visitors quickly find the right office, location, and contact channel.</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="content-card content-card-static contact-info-card h-100">
+                    <div class="contact-shell">
+                        <div>
+                            <span class="section-eyebrow section-eyebrow-contact">Contact Desk</span>
+                            <h2 class="section-title mt-3">Reach The Campus</h2>
+                            <p class="muted-copy mb-0">{{ page_content.body_text|default:"Send a question, request information, or direct students and parents to the proper office." }}</p>
+                        </div>
+                        <div class="contact-detail-grid">
+                            <div class="contact-tile">
+                                <strong>Email</strong>
+                                <span>{{ site_settings.primary_email|default:"info@ccb.edu.ph" }}</span>
                             </div>
-                            <div class="d-grid mt-4">
-                                <a href="{{ CcbWebsite.facebook_url }}" target="_blank" class="btn btn-outline-primary">
-                                    <i class="fa-brands fa-facebook me-2"></i>Visit Our Facebook Page
+                            <div class="contact-tile">
+                                <strong>Phone</strong>
+                                <span>{{ site_settings.phone|default:"+63 000 000 0000" }}</span>
+                            </div>
+                            <div class="contact-tile">
+                                <strong>Address</strong>
+                                <span>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</span>
+                            </div>
+                            <div class="contact-tile">
+                                <strong>Office Hours</strong>
+                                <span>{{ site_settings.office_hours|default:"Set office hours in Site Settings" }}</span>
+                            </div>
+                        </div>
+                        {% if site_settings.facebook_url %}
+                            <div class="contact-links-row">
+                                <a
+                                    class="btn btn-soft btn-portal contact-social-link"
+                                    href="{{ site_settings.normalized_facebook_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+                                    <span>Visit Our Facebook Page</span>
                                 </a>
                             </div>
-                        </div>
-                        <div class="col-md-7 ps-md-5 mt-4 mt-md-0">
-                            <form id="contactInquiryForm" method="post" class="vstack gap-3" novalidate>
-                                {% csrf_token %}
-                                {{ form.comment }}
-                                {{ form.name }}
+                        {% endif %}
+
+                        {# ── Main inquiry form — NO captcha field here ── #}
+                        <form id="contactInquiryForm" method="post" class="vstack gap-3" novalidate>
+                            {% csrf_token %}
+                            {{ form.website }}
+                            {{ form.name }}
+                            {{ form.name.errors }}
+
+                            {# Email field with real-time validation #}
+                            <div class="position-relative">
                                 {{ form.email }}
-                                {{ form.subject }}
-                                {{ form.message }}
-                                <button type="button" id="submitBtn" class="btn btn-primary btn-lg">
-                                    <i class="fa-solid fa-paper-plane me-2"></i>Send Inquiry
-                                </button>
-                            </form>
+                                <span id="emailErrorIcon" class="email-error-icon d-none" title="Invalid email format">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </span>
+                            </div>
+                            {{ form.email.errors }}
+                            <small id="emailErrorMsg" class="text-danger d-none"></small>
+
+                            {{ form.subject }}
+                            {{ form.subject.errors }}
+                            {{ form.message }}
+                            {{ form.message.errors }}
+                            <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
+                                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
+                                <span>Send Inquiry</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 d-flex">
+                <div class="content-card content-card-static contact-map-card h-100 w-100">
+                    <div class="contact-map-label">
+                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-sm-between align-items-sm-start">
+                            <div>
+                                <span class="section-eyebrow section-eyebrow-map">Campus Map</span>
+                                <strong id="mapViewTitle">City College of Bayawan - Location</strong>
+                            </div>
+                            <div class="contact-map-view-toggle btn-group" role="group" aria-label="Switch map view">
+                                <input type="radio" class="btn-check" name="mapView" id="mapViewLocation" value="location" autocomplete="off" checked>
+                                <label class="btn btn-sm btn-outline-secondary" for="mapViewLocation" title="Show campus location on Google Maps">
+                                    <i class="fa-solid fa-location-dot me-1" aria-hidden="true"></i><span>Campus Map</span>
+                                </label>
+                                <input type="radio" class="btn-check" name="mapView" id="mapViewWeather" value="weather" autocomplete="off">
+                                <label class="btn btn-sm btn-outline-secondary" for="mapViewWeather" title="Show weather radar over Bayawan area">
+                                    <i class="fa-solid fa-cloud-sun me-1" aria-hidden="true"></i><span>Weather Radar</span>
+                                </label>
+                            </div>
                         </div>
+                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
+                            <small class="muted-copy" id="mapViewHint">View the exact campus location and surrounding landmarks.</small>
+                            <a id="mapViewFullscreenLink"
+                               class="btn btn-ghost btn-sm contact-map-fullscreen-link"
+                               href="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14{% endif %}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                <i class="fa-solid fa-up-right-from-square me-1" aria-hidden="true"></i><span>Open full map</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="position-relative flex-grow-1">
+                        <iframe
+                            id="campusMapFrame"
+                            class="map-frame"
+                            data-src-location="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
+                            data-src-weather="https://embed.windy.com/embed2.html?lat=9.388&lon=122.789&detailLat=9.388&detailLon=122.789&zoom=12&level=surface&overlay=wind&product=ecmwf&menu=&message=&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
+                            src="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14&output=embed{% endif %}"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen>
+                        </iframe>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
 
-<!-- CAPTCHA Modal -->
-<div class="modal fade" id="captchaModal" tabindex="-1" aria-labelledby="captchaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="captchaModalLabel">Please verify you are not a robot</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{# ── CAPTCHA modal — rendered outside the page flow, at body level ── #}
+{% if form.captcha %}
+{% block page_modals %}
+{{ block.super }}
+
+<div class="modal fade captcha-modal-overlay"
+     id="captchaModal"
+     tabindex="-1"
+     aria-labelledby="captchaModalLabel"
+     aria-modal="true"
+     role="dialog"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered captcha-modal-dialog">
+        <div class="modal-content captcha-modal-card">
+
+            {# Header #}
+            <div class="captcha-modal-header">
+                <span class="captcha-modal-icon" aria-hidden="true">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <div class="captcha-modal-titles">
+                    <h5 class="captcha-modal-title" id="captchaModalLabel">Security Check</h5>
+                    <p class="captcha-modal-sub">Please verify you're not a robot before sending.</p>
+                </div>
+                <button type="button"
+                        class="captcha-modal-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <form id="captchaForm" method="post">
+
+            {# Body #}
+            <div class="captcha-modal-body">
+                {# This form carries all field values + the reCAPTCHA token to the server #}
+                <form id="captchaModalForm" method="post" action="{% url 'website:contact' %}">
                     {% csrf_token %}
-                    <input type="hidden" name="name" id="cm_name">
-                    <input type="hidden" name="email" id="cm_email">
+                    <input type="hidden" name="name"    id="cm_name">
+                    <input type="hidden" name="email"   id="cm_email">
                     <input type="hidden" name="subject" id="cm_subject">
                     <input type="hidden" name="message" id="cm_message">
-                    <input type="hidden" name="comment" value="">
-                    <div class="d-flex justify-content-center mb-3">
+                    <input type="hidden" name="website" value="">
+
+                    {# Rendered by django_recaptcha — <div class="g-recaptcha" data-sitekey="..." data-callback="..."> #}
+                    {# The real, authoritative sitekey and callback names live on this element. #}
+                    <div id="captchaWidgetWrap" class="captcha-widget-wrap">
+                        <div id="captchaWidgetStatus" class="captcha-widget-status mb-0 d-flex flex-column align-items-center gap-2">
+                            <div class="captcha-spinner" aria-hidden="true">
+                                <div></div><div></div><div></div>
+                            </div>
+                            <span id="captchaStatusText">Loading security verification…</span>
+                        </div>
                         {{ form.captcha }}
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" id="captchaSubmitBtn" class="btn btn-primary" disabled>Confirm & Send</button>
-                    </div>
+
+                    {% if form.captcha.errors %}
+                        <p class="captcha-error-msg">{{ form.captcha.errors }}</p>
+                    {% endif %}
                 </form>
             </div>
+
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-    // reCAPTCHA callback functions
-    function onCaptchaSolved() {
-        document.getElementById('captchaSubmitBtn').disabled = false;
+(function () {
+    'use strict';
+
+    /* ─────────── Email validation ─────────── */
+    var emailField = document.querySelector('#contactInquiryForm [name="email"]');
+    var emailErrorIcon = document.getElementById('emailErrorIcon');
+    var emailErrorMsg = document.getElementById('emailErrorMsg');
+
+    function validateEmail(email) {
+        if (!email) return { valid: true, message: '' };
+        email = email.trim().toLowerCase();
+
+        if ((email.match(/@/g) || []).length !== 1) {
+            return { valid: false, message: 'Enter a valid email address' };
+        }
+        if (/[^\x00-\x7F]/.test(email)) {
+            return { valid: false, message: 'Email cannot contain emojis or non-English symbols' };
+        }
+        if (email.indexOf('..') !== -1) {
+            return { valid: false, message: 'Email cannot contain consecutive dots' };
+        }
+
+        var parts = email.split('@');
+        var localPart = parts[0];
+        var domain = parts[1];
+        var domainPattern = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
+
+        if (!localPart || !domain || !domainPattern.test(domain)) {
+            return { valid: false, message: 'Enter a valid email domain' };
+        }
+
+        if (domain === 'gmail.com') {
+            if (localPart.length < 6) {
+                return { valid: false, message: 'Gmail addresses must have at least 6 characters before @gmail.com' };
+            }
+            if (!/^[a-z0-9](?:[a-z0-9.]*[a-z0-9])?$/.test(localPart)) {
+                return { valid: false, message: 'Gmail addresses can only use letters, numbers, and dots' };
+            }
+        } else if (domain.endsWith('.edu.ph')) {
+            if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/.test(localPart)) {
+                return { valid: false, message: 'Email contains invalid characters. Only letters, numbers, dots, hyphens, and underscores allowed' };
+            }
+            if (/[._-]{2,}/.test(localPart)) {
+                return { valid: false, message: 'Email cannot contain repeated special characters' };
+            }
+        } else {
+            return { valid: false, message: 'Only Gmail or .edu.ph emails are allowed' };
+        }
+
+        var placeholders = ['test', 'admin', 'n/a', 'na', 'demo', 'sample', 'example', 'fake', 'temp', 'nope', 'idk'];
+        var cleanPart = localPart.replace(/[._-]/g, '');
+        for (var i = 0; i < placeholders.length; i++) {
+            if (cleanPart === placeholders[i] || cleanPart.indexOf(placeholders[i]) === 0) {
+                return { valid: false, message: 'Placeholder email addresses are not accepted' };
+            }
+        }
+
+        return { valid: true, message: '' };
     }
 
-    function onCaptchaExpired() {
-        document.getElementById('captchaSubmitBtn').disabled = true;
+    function updateEmailUI() {
+        var email = emailField.value.trim();
+        var result = validateEmail(email);
+
+        if (!email) {
+            emailField.classList.remove('is-invalid');
+            emailErrorIcon.classList.add('d-none');
+            emailErrorMsg.classList.add('d-none');
+            return;
+        }
+
+        if (!result.valid) {
+            emailField.classList.add('is-invalid');
+            emailErrorIcon.classList.remove('d-none');
+            emailErrorMsg.textContent = result.message;
+            emailErrorMsg.classList.remove('d-none');
+        } else {
+            emailField.classList.remove('is-invalid');
+            emailErrorIcon.classList.add('d-none');
+            emailErrorMsg.classList.add('d-none');
+        }
     }
 
-    function onCaptchaError() {
-        // You might want to show an error message to the user
-        console.error("reCAPTCHA error. Please try again.");
+    if (emailField) {
+        emailField.addEventListener('blur', updateEmailUI);
+        emailField.addEventListener('input', updateEmailUI);
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitBtn = document.getElementById('submitBtn');
-        const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
-        const form = document.getElementById('contactInquiryForm');
+    /* ─────────── CAPTCHA state & helpers ─────────── */
+    var widgetRendered = false;
+    var widgetId = null;
+    var modalEl = document.getElementById('captchaModal');
+    var modalIsOpen = false;
+    var captchaReady = false;
+    var captchaLoadFailed = false;
+    var captchaPoll = null;
+    var captchaWarnTimer = null;
+    var captchaFailTimer = null;
 
-        submitBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            // Populate hidden fields in modal form
-            document.getElementById('cm_name').value = form.elements.name.value;
-            document.getElementById('cm_email').value = form.elements.email.value;
-            document.getElementById('cm_subject').value = form.elements.subject.value;
-            document.getElementById('cm_message').value = form.elements.message.value;
-            captchaModal.show();
+    function getStatusEl()    { return document.getElementById('captchaWidgetStatus'); }
+    function getStatusText()  { return document.getElementById('captchaStatusText'); }
+    function getWrapEl()      { return document.getElementById('captchaWidgetWrap'); }
+    function getRecaptchaEl() {
+        var wrap = getWrapEl();
+        return wrap ? wrap.querySelector('.g-recaptcha') : null;
+    }
+
+    function setCaptchaMessage(message, showSpinner) {
+        var status = getStatusEl();
+        var text = getStatusText();
+        if (!status) return;
+        status.classList.remove('d-none');
+        if (text) text.textContent = message;
+        var spinner = status.querySelector('.captcha-spinner');
+        if (spinner) spinner.style.display = showSpinner ? 'inline-block' : 'none';
+    }
+
+    function hideCaptchaStatus() {
+        var status = getStatusEl();
+        if (status) status.classList.add('d-none');
+    }
+
+    function clearAllCaptchaTimers() {
+        if (captchaPoll)      { clearInterval(captchaPoll);      captchaPoll = null; }
+        if (captchaWarnTimer) { clearTimeout(captchaWarnTimer);  captchaWarnTimer = null; }
+        if (captchaFailTimer) { clearTimeout(captchaFailTimer);  captchaFailTimer = null; }
+    }
+
+    function widgetActuallyRendered() {
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) return false;
+        return recaptchaEl.querySelector('iframe') !== null;
+    }
+
+    function detectSiteOwnerError() {
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) return null;
+        var text = recaptchaEl.textContent || '';
+        if (text.indexOf('ERROR for site owner') !== -1 || text.indexOf('Invalid domain for site key') !== -1) {
+            var host = window.location.hostname || 'this domain';
+            return (
+                'reCAPTCHA site key is not configured for ' + host + '. ' +
+                'Ask the site administrator to add this domain in the Google reCAPTCHA Admin Console.'
+            );
+        }
+        if (text.indexOf('Invalid site key') !== -1 || text.indexOf('site key') !== -1 && text.indexOf('ERROR') !== -1) {
+            return 'reCAPTCHA key configuration error. Ask the site administrator to verify the RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY environment variables.';
+        }
+        return null;
+    }
+
+    /* ─────────── Global reCAPTCHA script lifecycle hooks ─────────── */
+    window.onCaptchaLoad = function () {
+        captchaReady = true;
+        if (modalIsOpen && !widgetRendered) {
+            clearAllCaptchaTimers();
+            renderWidget();
+        }
+    };
+
+    window.onCaptchaScriptError = function () {
+        captchaLoadFailed = true;
+        captchaReady = false;
+        clearAllCaptchaTimers();
+        setCaptchaMessage(
+            'Security check could not load. Please disable any ad blocker or privacy shield for this site, then refresh the page.',
+            false
+        );
+    };
+
+    /* ─────────── Global callbacks wired via Django widget data-* attrs ─────────── */
+    window.onCaptchaSolved = function () {
+        document.getElementById('captchaModalForm').submit();
+    };
+
+    window.onCaptchaExpired = function () {
+        if (widgetId !== null && typeof grecaptcha !== 'undefined') {
+            try { grecaptcha.reset(widgetId); } catch (e) {}
+        }
+    };
+
+    window.onCaptchaError = function () {
+        setCaptchaMessage(
+            'Verification error. Please check your connection and refresh the page.',
+            false
+        );
+        if (widgetId !== null && typeof grecaptcha !== 'undefined') {
+            try { grecaptcha.reset(widgetId); } catch (e) {}
+        }
+    };
+
+    /* ─────────── Widget render — authoritative source: .g-recaptcha dataset ─────────── */
+    function renderWidget() {
+        if (widgetRendered) return;
+        if (typeof grecaptcha === 'undefined') return;
+
+        var recaptchaEl = getRecaptchaEl();
+        if (!recaptchaEl) {
+            setCaptchaMessage(
+                'Server configuration error: reCAPTCHA widget markup is missing. Please notify the site administrator.',
+                false
+            );
+            return;
+        }
+
+        /* Read real sitekey + callback names from the Django-rendered <div class="g-recaptcha"> */
+        var ds = recaptchaEl.dataset;
+        var sitekey = (ds.sitekey || '').trim();
+        var cbSolved  = ds.callback        || 'onCaptchaSolved';
+        var cbExpired = ds.expiredCallback || 'onCaptchaExpired';
+        var cbError   = ds.errorCallback   || 'onCaptchaError';
+
+        if (!sitekey) {
+            setCaptchaMessage(
+                'Server configuration error: reCAPTCHA site key is missing. Please notify the site administrator.',
+                false
+            );
+            return;
+        }
+
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        function startRenderVerification() {
+            var verifyAttempts = 0;
+            var verify = setInterval(function () {
+                verifyAttempts++;
+
+                if (widgetActuallyRendered()) {
+                    clearInterval(verify);
+                    hideCaptchaStatus();
+                    widgetRendered = true;
+                    return;
+                }
+
+                var ownerErr = detectSiteOwnerError();
+                if (ownerErr) {
+                    clearInterval(verify);
+                    widgetRendered = false;
+                    clearAllCaptchaTimers();
+                    setCaptchaMessage(ownerErr, false);
+                    return;
+                }
+
+                if (verifyAttempts > 60) {
+                    clearInterval(verify);
+                    widgetRendered = false;
+                    ownerErr = detectSiteOwnerError();
+                    if (ownerErr) {
+                        setCaptchaMessage(ownerErr, false);
+                    } else if (!widgetActuallyRendered()) {
+                        setCaptchaMessage(
+                            'The security widget failed to appear. Disable ad blockers or privacy shields, then refresh and try again.',
+                            false
+                        );
+                    }
+                }
+            }, 150);
+        }
+
+        try {
+            widgetId = grecaptcha.render(recaptchaEl, {
+                sitekey: sitekey,
+                theme:   isDark ? 'dark' : 'light',
+                size:    'normal',
+                callback:        function () { resolveByName(cbSolved)(); },
+                'expired-callback': function () { resolveByName(cbExpired)(); },
+                'error-callback':   function () { resolveByName(cbError)(); }
+            });
+
+            widgetRendered = true;
+            startRenderVerification();
+
+        } catch (err) {
+            widgetRendered = false;
+            widgetId = null;
+            setCaptchaMessage(
+                'Security check failed to initialize. Please refresh the page and try again.',
+                false
+            );
+            startRenderVerification();
+        }
+    }
+
+    /* Resolve a global callback name (handles "fnName" or "namespace.fnName" style) */
+    function resolveByName(name) {
+        if (!name) return function () {};
+        if (typeof window[name] === 'function') return window[name];
+        var parts = name.split('.');
+        var obj = window;
+        for (var i = 0; i < parts.length; i++) {
+            if (obj == null) break;
+            obj = obj[parts[i]];
+        }
+        return (typeof obj === 'function') ? obj : function () {};
+    }
+
+    /* ─────────── Polling + progressive timers ─────────── */
+    function startCaptchaPolling() {
+        clearAllCaptchaTimers();
+
+        captchaWarnTimer = setTimeout(function () {
+            if (!widgetRendered) {
+                setCaptchaMessage(
+                    'Still loading the security check… ad blockers or slow networks can cause delays. Please wait a moment.',
+                    true
+                );
+            }
+        }, 7000);
+
+        captchaFailTimer = setTimeout(function () {
+            if (!widgetRendered && !captchaLoadFailed) {
+                clearAllCaptchaTimers();
+                setCaptchaMessage(
+                    'Security check timed out. Disable ad blockers or privacy shields, then refresh the page and try again.',
+                    false
+                );
+            }
+        }, 30000);
+
+        var tries = 0;
+        captchaPoll = setInterval(function () {
+            tries++;
+            if (typeof grecaptcha !== 'undefined') {
+                clearInterval(captchaPoll);
+                captchaPoll = null;
+                clearAllCaptchaTimers();
+                renderWidget();
+                return;
+            }
+            if (tries > 150) {
+                clearInterval(captchaPoll);
+                captchaPoll = null;
+            }
+        }, 200);
+    }
+
+    /* ─────────── Main form validation + sync ─────────── */
+    function validateMainForm() {
+        var inputs = document.querySelectorAll(
+            '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
+        );
+        for (var i = 0; i < inputs.length; i++) {
+            if (!inputs[i].checkValidity()) {
+                inputs[i].reportValidity();
+                return false;
+            }
+        }
+
+        var email = emailField.value.trim();
+        var emailResult = validateEmail(email);
+        if (!emailResult.valid) {
+            emailField.focus();
+            return false;
+        }
+        return true;
+    }
+
+    function syncFields() {
+        document.getElementById('cm_name').value    = document.querySelector('#contactInquiryForm [name="name"]').value.trim();
+        document.getElementById('cm_email').value   = document.querySelector('#contactInquiryForm [name="email"]').value.trim();
+        document.getElementById('cm_subject').value = document.querySelector('#contactInquiryForm [name="subject"]').value.trim();
+        document.getElementById('cm_message').value = document.querySelector('#contactInquiryForm [name="message"]').value.trim();
+    }
+
+    /* ─────────── "Send Inquiry" click handler ─────────── */
+    var sendBtn = document.getElementById('contactSubmitBtn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', function () {
+            if (!validateMainForm()) return;
+            syncFields();
+
+            if (widgetRendered && typeof grecaptcha !== 'undefined' && widgetId !== null) {
+                try { grecaptcha.reset(widgetId); } catch (e) {}
+            }
+            widgetRendered = false;
+            widgetId = null;
+
+            setCaptchaMessage('Loading security verification…', true);
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
         });
-    });
+    }
+
+    /* ─────────── Bootstrap modal lifecycle hooks ─────────── */
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function () {
+            modalIsOpen = true;
+        });
+
+        modalEl.addEventListener('shown.bs.modal', function () {
+            if (captchaLoadFailed) {
+                clearAllCaptchaTimers();
+                setCaptchaMessage(
+                    'Security check could not load. Please disable any ad blocker or privacy shield for this site, then refresh the page.',
+                    false
+                );
+                return;
+            }
+
+            if (captchaReady || typeof grecaptcha !== 'undefined') {
+                clearAllCaptchaTimers();
+                renderWidget();
+            } else {
+                startCaptchaPolling();
+            }
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            modalIsOpen = false;
+            clearAllCaptchaTimers();
+        });
+    }
+})();
 </script>
 {% endblock %}
+{% endif %}
+
+{% block extra_js %}
+{% if form.captcha %}
+<script src="https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit"
+        async defer crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade"
+        onerror="if (window.onCaptchaScriptError) { try { window.onCaptchaScriptError(); } catch(e){} }"></script>
+{% endif %}
+<script>
+(function () {
+    'use strict';
+
+    var mapFrame = document.getElementById('campusMapFrame');
+    var titleEl = document.getElementById('mapViewTitle');
+    var hintEl = document.getElementById('mapViewHint');
+    var fullscreenLink = document.getElementById('mapViewFullscreenLink');
+    var radios = document.querySelectorAll('input[name="mapView"]');
+
+    var windyFullUrl = 'https://www.windy.com/9.388/122.789?2026-08-07-09,10.755,124.614,4';
+    var googleFullUrl = '{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14{% endif %}';
+    if (googleFullUrl.indexOf('output=embed') !== -1) {
+        googleFullUrl = googleFullUrl.replace('&output=embed', '').replace('?output=embed', '?').replace('output=embed&', '').replace('output=embed', '');
+    }
+
+    var state = {
+        weatherLoaded: false,
+        weatherIframeSrc: mapFrame ? mapFrame.getAttribute('data-src-weather') : '',
+        locationIframeSrc: mapFrame ? mapFrame.getAttribute('data-src-location') : '',
+    };
+
+    function switchView(viewName) {
+        if (!mapFrame) return;
+        var src = viewName === 'weather' ? state.weatherIframeSrc : state.locationIframeSrc;
+
+        if (viewName === 'weather') {
+            if (src !== mapFrame.src) {
+                mapFrame.src = src;
+            }
+            state.weatherLoaded = true;
+            titleEl.textContent = 'City College of Bayawan - Weather & Radar';
+            hintEl.textContent = 'Live wind, precipitation, and forecast data for the Bayawan campus area and nearby.';
+            fullscreenLink.href = windyFullUrl;
+            fullscreenLink.querySelector('span').textContent = 'Open on Windy.com';
+        } else {
+            if (src !== mapFrame.src) {
+                mapFrame.src = src;
+            }
+            titleEl.textContent = 'City College of Bayawan - Location';
+            hintEl.textContent = 'View the exact campus location and surrounding landmarks.';
+            fullscreenLink.href = googleFullUrl;
+            fullscreenLink.querySelector('span').textContent = 'Open full map';
+        }
+
+        try {
+            var storageKey = 'ccb-contact-map-view';
+            localStorage.setItem(storageKey, viewName);
+        } catch (e) {}
+    }
+
+    for (var i = 0; i < radios.length; i++) {
+        radios[i].addEventListener('change', function (e) {
+            switchView(e.target.value);
+        });
+    }
+
+    try {
+        var saved = localStorage.getItem('ccb-contact-map-view');
+        if (saved === 'weather') {
+            var weatherRadio = document.getElementById('mapViewWeather');
+            if (weatherRadio && !weatherRadio.checked) {
+                weatherRadio.checked = true;
+                switchView('weather');
+            }
+        }
+    } catch (e) {}
+})();
+</script>
+{% endblock %}
+
