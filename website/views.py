@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.utils.html import format_html
 
-from .models import PageContent, Program, News, Event, Gallery, CcbWebsite
+from .models import PageContent, News, Event, Gallery, CcbWebsite
 from .forms import ContactInquiryForm
 from .utils import base_context, send_contact_notification_email, get_page_content
 
@@ -30,22 +30,6 @@ def about(request):
     context = base_context("website:about")
     context.update({"page_content": get_page_content(PageContent.ABOUT)})
     return render(request, "website/about.html", context)
-
-def programs(request):
-    context = base_context("website:programs")
-    context.update(
-        {
-            "page_content": get_page_content(PageContent.PROGRAMS),
-            "programs": Program.objects.all(),
-        }
-    )
-    return render(request, "website/programs.html", context)
-
-def program_detail(request, slug):
-    program = Program.objects.get(slug=slug)
-    context = base_context("website:programs")
-    context.update({"program": program})
-    return render(request, "website/program_detail.html", context)
 
 def news(request):
     context = base_context("website:news")
