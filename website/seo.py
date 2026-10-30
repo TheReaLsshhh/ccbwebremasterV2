@@ -2,6 +2,9 @@ from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404
+from django.urls import reverse
+from django.utils import timezone
+from .models import AcademicProgram, NewsEvent
 
 PUBLIC_SITEMAP_PATHS = (
     ("", "weekly", "1.0"),
@@ -50,6 +53,13 @@ def sitemap_xml(request):
                 ]
             )
         )
+
+    for route, queryset in [
+        ("website:program_detail", AcademicProgram.objects.filter(published=True)),
+        ("website:news_detail", NewsEvent.objects.filter(published=True, published_at__lte=timezone.now())),
+    ]:
+        for pk in queryset.values_list("pk", flat=True):
+            url_entries.append(f"  <url><loc>{site_url}{reverse(route, args=[pk])}</loc></url>")
 
     content = "\n".join(
         [

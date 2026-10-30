@@ -4,31 +4,21 @@
 {% block title %}Students | City College of Bayawan{% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    <div class="container">
-        <div class="row g-0">
-            <div class="col-xl-8">
-                <div class="hero-main h-100" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}>
-                    <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
-                    <p class="lead mb-0">{{ page_content.hero_text }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+{% include "website/includes/page_header.html" %}
+<div class="container">{% include "website/includes/content_search.html" with search_label="students" %}</div>
 <section class="section-block">
     <div class="container">
         <div class="section-header">
             <div>
                 <span class="section-eyebrow section-eyebrow-student">Student Hub</span>
                 <h2 class="section-title mt-3 mb-2">Resources and Support Tools</h2>
-                <p class="muted-copy mb-0">A more structured students page helps learners quickly find resources, files, and support information in one place.</p>
+                <p class="muted-copy mb-0">Find helpful resources, official documents, and support for your college journey.</p>
             </div>
         </div>
-        <div class="row g-4 ajax-refresh-region" data-refresh-url="{% url 'website:students_partial' %}" data-refresh-interval="15000">
+        <div class="row g-4">
             {% include "website/partials/student_resources_grid.html" %}
         </div>
     </div>
 </section>
-{% endblock %}
+<section class="college-section college-section-tinted"><div class="container"><div class="section-header"><div><span class="section-eyebrow">Stay connected</span><h2 class="section-title">Campus services.</h2></div></div><div class="service-links">{% for service in service_menu_items %}<a class="service-link" href="{{ service.url }}" target="_blank" rel="noopener noreferrer"><h3>{{ service.label }} &nearr;</h3>{% if service.description %}<p>{{ service.description }}</p>{% endif %}<span class="editorial-link">Visit service website</span></a>{% empty %}<p>Contact the college for campus service information.</p>{% endfor %}</div></div></section>{% endblock %}
 

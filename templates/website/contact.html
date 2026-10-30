@@ -4,18 +4,9 @@
 {% block title %}Contact | City College of Bayawan{% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    <div class="container">
-        <div class="row g-0">
-            <div class="col-xl-8">
-                <div class="hero-main h-100" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}>
-                    <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
-                    <p class="lead mb-0">{{ page_content.hero_text }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+{% include "website/includes/page_header.html" %}
+<section class="college-section"><div class="container"><span class="section-eyebrow">The right people, within reach</span><h2 class="section-title">Office directory.</h2><div class="office-search">{% include "website/includes/content_search.html" with search_label="offices" %}</div><div class="office-grid">{% for office in offices %}<article class="content-card"><h3>{{ office.name }}</h3><p>{{ office.description }}</p>{% if office.email %}<a href="mailto:{{ office.email }}">{{ office.email }}</a>{% endif %}{% if office.phone %}<a href="tel:{{ office.phone }}">{{ office.phone }}</a>{% endif %}{% if office.location %}<p class="mt-3 mb-1">{{ office.location }}</p>{% endif %}{% if office.office_hours %}<p>{{ office.office_hours }}</p>{% endif %}</article>{% empty %}<p class="muted-copy">{% if request.GET.q %}No offices match your search. {% endif %}Use the contact details or inquiry form below to reach the college.</p>{% endfor %}</div></div></section>
+
 
 <section class="section-block contact-content-section">
     <div class="container">
@@ -23,7 +14,7 @@
             <div>
                 <span class="section-eyebrow section-eyebrow-inquiry">Direct Inquiry</span>
                 <h2 class="section-title mt-3 mb-2">Reach The Campus Easily</h2>
-                <p class="muted-copy mb-0">A more structured contact page helps students, families, and visitors quickly find the right office, location, and contact channel.</p>
+                <p class="muted-copy mb-0">Send a question, connect with our offices, or find your way to campus.</p>
             </div>
         </div>
         <div class="row g-4">
@@ -38,11 +29,11 @@
                         <div class="contact-detail-grid">
                             <div class="contact-tile">
                                 <strong>Email</strong>
-                                <span>{{ site_settings.primary_email|default:"info@ccb.edu.ph" }}</span>
+                                <span>{{ site_settings.primary_email|default:"Contact the college for email information." }}</span>
                             </div>
                             <div class="contact-tile">
                                 <strong>Phone</strong>
-                                <span>{{ site_settings.phone|default:"+63 000 000 0000" }}</span>
+                                <span>{{ site_settings.phone|default:"Contact the college for phone information." }}</span>
                             </div>
                             <div class="contact-tile">
                                 <strong>Address</strong>
@@ -50,7 +41,7 @@
                             </div>
                             <div class="contact-tile">
                                 <strong>Office Hours</strong>
-                                <span>{{ site_settings.office_hours|default:"Set office hours in Site Settings" }}</span>
+                                <span>{{ site_settings.office_hours|default:"Please contact the office for current hours." }}</span>
                             </div>
                         </div>
                         {% if site_settings.facebook_url %}
@@ -66,16 +57,18 @@
                             </div>
                         {% endif %}
 
-                        {# ── Main inquiry form — NO captcha field here ── #}
+                        {# â”€â”€ Main inquiry form â€” NO captcha field here â”€â”€ #}
                         <form id="contactInquiryForm" method="post" class="vstack gap-3" novalidate>
                             {% csrf_token %}
                             {{ form.website }}
+                            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
                             {{ form.name }}
                             {{ form.name.errors }}
 
                             {# Email field with real-time validation #}
                             <div class="position-relative">
-                                {{ form.email }}
+                                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                            {{ form.email }}
                                 <span id="emailErrorIcon" class="email-error-icon d-none" title="Invalid email format">
                                     <i class="fa-solid fa-circle-xmark"></i>
                                 </span>
@@ -83,8 +76,10 @@
                             {{ form.email.errors }}
                             <small id="emailErrorMsg" class="text-danger d-none"></small>
 
+                            <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
                             {{ form.subject }}
                             {{ form.subject.errors }}
+                            <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
                             {{ form.message }}
                             {{ form.message.errors }}
                             <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
@@ -145,7 +140,7 @@
 </section>
 {% endblock %}
 
-{# ── CAPTCHA modal — rendered outside the page flow, at body level ── #}
+{# â”€â”€ CAPTCHA modal â€” rendered outside the page flow, at body level â”€â”€ #}
 {% if form.captcha %}
 {% block page_modals %}
 {{ block.super }}
@@ -189,14 +184,14 @@
                     <input type="hidden" name="message" id="cm_message">
                     <input type="hidden" name="website" value="">
 
-                    {# Rendered by django_recaptcha — <div class="g-recaptcha" data-sitekey="..." data-callback="..."> #}
+                    {# Rendered by django_recaptcha â€” <div class="g-recaptcha" data-sitekey="..." data-callback="..."> #}
                     {# The real, authoritative sitekey and callback names live on this element. #}
                     <div id="captchaWidgetWrap" class="captcha-widget-wrap">
                         <div id="captchaWidgetStatus" class="captcha-widget-status mb-0 d-flex flex-column align-items-center gap-2">
                             <div class="captcha-spinner" aria-hidden="true">
                                 <div></div><div></div><div></div>
                             </div>
-                            <span id="captchaStatusText">Loading security verification…</span>
+                            <span id="captchaStatusText">Loading security verificationâ€¦</span>
                         </div>
                         {{ form.captcha }}
                     </div>
@@ -215,7 +210,7 @@
 (function () {
     'use strict';
 
-    /* ─────────── Email validation ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Email validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     var emailField = document.querySelector('#contactInquiryForm [name="email"]');
     var emailErrorIcon = document.getElementById('emailErrorIcon');
     var emailErrorMsg = document.getElementById('emailErrorMsg');
@@ -300,7 +295,7 @@
         emailField.addEventListener('input', updateEmailUI);
     }
 
-    /* ─────────── CAPTCHA state & helpers ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CAPTCHA state & helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     var widgetRendered = false;
     var widgetId = null;
     var modalEl = document.getElementById('captchaModal');
@@ -363,7 +358,7 @@
         return null;
     }
 
-    /* ─────────── Global reCAPTCHA script lifecycle hooks ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Global reCAPTCHA script lifecycle hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     window.onCaptchaLoad = function () {
         captchaReady = true;
         if (modalIsOpen && !widgetRendered) {
@@ -382,7 +377,7 @@
         );
     };
 
-    /* ─────────── Global callbacks wired via Django widget data-* attrs ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Global callbacks wired via Django widget data-* attrs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     window.onCaptchaSolved = function () {
         document.getElementById('captchaModalForm').submit();
     };
@@ -403,7 +398,7 @@
         }
     };
 
-    /* ─────────── Widget render — authoritative source: .g-recaptcha dataset ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Widget render â€” authoritative source: .g-recaptcha dataset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function renderWidget() {
         if (widgetRendered) return;
         if (typeof grecaptcha === 'undefined') return;
@@ -508,14 +503,14 @@
         return (typeof obj === 'function') ? obj : function () {};
     }
 
-    /* ─────────── Polling + progressive timers ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Polling + progressive timers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function startCaptchaPolling() {
         clearAllCaptchaTimers();
 
         captchaWarnTimer = setTimeout(function () {
             if (!widgetRendered) {
                 setCaptchaMessage(
-                    'Still loading the security check… ad blockers or slow networks can cause delays. Please wait a moment.',
+                    'Still loading the security checkâ€¦ ad blockers or slow networks can cause delays. Please wait a moment.',
                     true
                 );
             }
@@ -548,7 +543,7 @@
         }, 200);
     }
 
-    /* ─────────── Main form validation + sync ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Main form validation + sync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function validateMainForm() {
         var inputs = document.querySelectorAll(
             '#contactInquiryForm input:not([type=hidden]), #contactInquiryForm textarea'
@@ -576,7 +571,7 @@
         document.getElementById('cm_message').value = document.querySelector('#contactInquiryForm [name="message"]').value.trim();
     }
 
-    /* ─────────── "Send Inquiry" click handler ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ "Send Inquiry" click handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     var sendBtn = document.getElementById('contactSubmitBtn');
     if (sendBtn) {
         sendBtn.addEventListener('click', function () {
@@ -589,12 +584,12 @@
             widgetRendered = false;
             widgetId = null;
 
-            setCaptchaMessage('Loading security verification…', true);
+            setCaptchaMessage('Loading security verificationâ€¦', true);
             bootstrap.Modal.getOrCreateInstance(modalEl).show();
         });
     }
 
-    /* ─────────── Bootstrap modal lifecycle hooks ─────────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Bootstrap modal lifecycle hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     if (modalEl) {
         modalEl.addEventListener('show.bs.modal', function () {
             modalIsOpen = true;

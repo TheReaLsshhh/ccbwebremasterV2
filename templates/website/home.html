@@ -1,288 +1,141 @@
 {% extends "base.html" %}
-{% load news_extras %}
-
-{% block title %}Home | City College of Bayawan{% endblock %}
-
+{% load static news_extras %}
 {% block content %}
-<section class="hero-section">
-    <div class="container">
-        <div class="hero-grid">
-            <div class="hero-main hero-main-wide" {% if page_content.banner_image %}style="--hero-banner-image: url('{{ page_content.banner_image|optimized_image_url:1200 }}');"{% endif %}>
-                <div class="row g-4 align-items-start">
-                    <div class="col-xl-5">
-                        <span class="eyebrow">Official CCB Web Portal</span>
-                        <h1 class="mt-3 mb-3">{{ page_content.hero_title|default:"Welcome to the City College of Bayawan portal." }}</h1>
-                        <p class="lead mb-0">{{ page_content.hero_text|default:"Find official announcements, academic information, admission requirements, downloadable forms, and campus updates in one place." }}</p>
-                        <div class="d-flex flex-wrap gap-3 mt-4">
-                            <a class="btn btn-brand btn-portal" href="{% url 'website:news' %}">View News & Events</a>
-                            <a class="btn btn-soft btn-portal" href="{% url 'website:admissions' %}">Check Admissions</a>
-                        </div>
-                        <div class="hero-stats hero-stats-wide">
-                            <div class="stat-block">
-                                <strong>Announcements</strong>
-                                <span>Official campus news and event updates</span>
-                            </div>
-                            <div class="stat-block">
-                                <strong>Downloads</strong>
-                                <span>Access forms, files, and campus notices</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-7">
-                        <div class="portal-panel portal-panel-overlay h-100">
-                            <div class="portal-panel-header">
-                                <div>
-                                    <span class="section-eyebrow">Today at CCB</span>
-                                    <h3 class="portal-title start-here-title mt-3 mb-1">Start Here <span class="start-here-pointer" aria-hidden="true"><i class="fa-solid fa-hand-pointer"></i></span></h3>
-                                </div>
-                            </div>
-                            <p class="muted-copy">Use these quick links to go directly to the most visited parts of the portal.</p>
-                            <div class="quick-link-grid mt-4">
-                                <a class="quick-link-item" href="{% url 'website:admissions' %}">
-                                    <div>
-                                        <strong>Admissions and Enrollment</strong>
-                                        <span>Read the admissions process, required documents, and enrollment guidance.</span>
-                                    </div>
-                                </a>
-                                <a class="quick-link-item" href="{% url 'website:downloads' %}">
-                                    <div>
-                                        <strong>Downloads and Forms</strong>
-                                        <span>Get forms, memoranda, policies, and other official downloadable files.</span>
-                                    </div>
-                                </a>
-                                <a class="quick-link-item" href="{% url 'website:news' %}">
-                                    <div>
-                                        <strong>News and Campus Events</strong>
-                                        <span>Follow school announcements, public notices, and upcoming activities.</span>
-                                    </div>
-                                </a>
-                                <a class="quick-link-item" href="{% url 'website:contact' %}">
-                                    <div>
-                                        <strong>Contact and Office Information</strong>
-                                        <span>Find office details, contact channels, and campus location information.</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<section class="college-home-hero" data-hero-slideshow aria-label="Welcome to City College of Bayawan">
+<div class="hero-slideshow" aria-hidden="true">
+    {% for slide in hero_slides %}
+    <img class="hero-slide{% if forloop.first %} is-active{% endif %}"
+         src="{% if slide.image %}{{ slide.image|optimized_image_url:1600 }}{% else %}{{ slide.url }}{% endif %}"
+         alt="" decoding="async" {% if forloop.first %}fetchpriority="high"{% endif %}>
+    {% endfor %}
+</div>
+<div class="container home-hero-inner">
+<span class="hero-kicker">Rooted in community. Driven by possibility.</span>
+<h1>{{ page_content.hero_title|default:"A brighter future begins here." }}</h1>
+<p>{{ page_content.hero_text }}</p>
+<div class="hero-actions">
+<a class="btn btn-brand" href="{% url 'website:admissions' %}">Begin your CCB journey <span aria-hidden="true">&nearr;</span>
+</a>
+<a class="hero-text-link" href="{% url 'website:academics' %}">Explore our programs <span aria-hidden="true">&nearr;</span>
+</a>
+</div>
+<div class="hero-caption">
+<span class="caption-line">
+</span>City College of Bayawan &middot; Negros Oriental</div>
+<div class="hero-slideshow-controls" hidden>
+    <button type="button" data-slide-previous aria-label="Previous background image">&larr;</button>
+    <span class="hero-slide-count" data-slide-count aria-live="off">1 / {{ hero_slides|length }}</span>
+    <button type="button" data-slide-next aria-label="Next background image">&rarr;</button>
+    <button type="button" data-slide-pause aria-pressed="false">Pause slideshow</button>
+</div>
+</div>
 </section>
-
-<section class="section-block">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <span class="section-eyebrow section-eyebrow-popular">Popular Sections</span>
-                <h2 class="section-title mt-3 mb-2">What Visitors Usually Look For First</h2>
-                <p class="muted-copy mb-0">These sections help students, parents, and visitors find the information they need without searching through multiple pages.</p>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="feature-card">
-                    <span class="signal-badge">Academics</span>
-                    <div class="accent-bar"></div>
-                    <h3>Programs and academic information</h3>
-                    <p class="muted-copy">Learn about academic offerings, program descriptions, and downloadable brochures.</p>
-                    <a href="{% url 'website:academics' %}" class="btn btn-soft btn-sm mt-3">Go to Academics</a>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="feature-card">
-                    <span class="signal-badge">Admissions</span>
-                    <div class="accent-bar"></div>
-                    <h3>Application steps and requirements</h3>
-                    <p class="muted-copy">Review admission requirements, required forms, and important enrollment information.</p>
-                    <a href="{% url 'website:admissions' %}" class="btn btn-soft btn-sm mt-3">Open Admissions</a>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="feature-card">
-                    <span class="signal-badge">Student Resources</span>
-                    <div class="accent-bar"></div>
-                    <h3>Student support and helpful resources</h3>
-                    <p class="muted-copy">Access student-facing resources, support information, and helpful campus links.</p>
-                    <a href="{% url 'website:students' %}" class="btn btn-soft btn-sm mt-3">Open Student Resources</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<section class="journey-links" aria-label="Quick links">
+<div class="container journey-grid">
+<a href="{% url 'website:academics' %}">
+<span>01 / DISCOVER</span>
+<strong>Find your program</strong>
+<span class="journey-arrow" aria-hidden="true">&nearr;</span>
+</a>
+<a href="{% url 'website:admissions' %}">
+<span>02 / BEGIN</span>
+<strong>Plan your admission</strong>
+<span class="journey-arrow" aria-hidden="true">&nearr;</span>
+</a>
+<a href="{% url 'website:students' %}">
+<span>03 / CONNECT</span>
+<strong>Make the most of CCB</strong>
+<span class="journey-arrow" aria-hidden="true">&nearr;</span>
+</a>
+</div>
 </section>
-
-<section class="section-block pt-0 home-news-section">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <span class="section-eyebrow">Campus Updates</span>
-                <h2 class="section-title mt-3 mb-2">Latest News and Events</h2>
-                <p class="muted-copy mb-0">Stay updated with official campus announcements, public notices, and upcoming school activities.</p>
-            </div>
-            <a href="{% url 'website:news' %}" class="btn btn-soft btn-sm">View All</a>
-        </div>
-        {% if home_news_items %}
-            <div
-                class="coverflow"
-                id="homeNewsCoverflow"
-                role="region"
-                aria-roledescription="carousel"
-                aria-label="Latest news and events"
-            >
-                <button type="button" class="coverflow-arrow coverflow-arrow-left" data-coverflow-prev aria-label="Previous news item">
-                    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-                </button>
-
-                <div class="coverflow-track" id="homeNewsCoverflowTrack">
-                    {% for item in home_news_items|slice:":10" %}
-                        <div class="coverflow-slot" data-slot-index="{{ forloop.counter0 }}">
-                            {% include "website/includes/home_news_tile.html" with item=item index=forloop.counter0 priority_image=forloop.first %}
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <button type="button" class="coverflow-arrow coverflow-arrow-right" data-coverflow-next aria-label="Next news item">
-                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-                </button>
-
-                <div class="coverflow-dots" id="homeNewsCoverflowDots" role="tablist" aria-label="Choose news item"></div>
-            </div>
-
-            <script>
-                (function () {
-                    var root = document.getElementById('homeNewsCoverflow');
-                    if (!root) return;
-                    var track = document.getElementById('homeNewsCoverflowTrack');
-                    var dotsWrap = document.getElementById('homeNewsCoverflowDots');
-                    var slots = Array.prototype.slice.call(track.children);
-                    var total = slots.length;
-                    if (total === 0) return;
-
-                    var current = 0;
-                    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                    var dataSaverEnabled = connection && connection.saveData;
-                    var slowConnection = connection && /(^slow-2g$|^2g$)/.test(connection.effectiveType || '');
-                    var autoplayMs = 5500;
-                    var timer = null;
-                    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches || dataSaverEnabled || slowConnection;
-
-                    slots.forEach(function (slot, i) {
-                        var dot = document.createElement('button');
-                        dot.type = 'button';
-                        dot.className = 'coverflow-dot';
-                        dot.setAttribute('role', 'tab');
-                        dot.setAttribute('aria-label', 'Go to news item ' + (i + 1));
-                        dot.addEventListener('click', function () { goTo(i); restart(); });
-                        dotsWrap.appendChild(dot);
-                    });
-                    var dots = Array.prototype.slice.call(dotsWrap.children);
-
-                    function offset(i) {
-                        var diff = i - current;
-                        if (diff > total / 2) diff -= total;
-                        if (diff < -total / 2) diff += total;
-                        return diff;
-                    }
-
-                    function render() {
-                        slots.forEach(function (slot, i) {
-                            var off = offset(i);
-                            var abs = Math.abs(off);
-                            slot.classList.toggle('is-center', off === 0);
-                            slot.classList.toggle('is-far', abs >= 3);
-                            slot.style.setProperty('--cf-offset', off);
-                            slot.style.zIndex = String(100 - abs);
-                            slot.setAttribute('aria-hidden', off === 0 ? 'false' : 'true');
-                            var link = slot.querySelector('.coverflow-card-link');
-                            if (link) link.setAttribute('tabindex', off === 0 ? '0' : '-1');
-                        });
-                        dots.forEach(function (dot, i) {
-                            dot.classList.toggle('is-active', i === current);
-                            dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
-                        });
-                    }
-
-                    function goTo(i) {
-                        current = ((i % total) + total) % total;
-                        render();
-                    }
-
-                    function next() { goTo(current + 1); }
-                    function prev() { goTo(current - 1); }
-
-                    function restart() {
-                        if (reduceMotion) return;
-                        clearInterval(timer);
-                        timer = setInterval(next, autoplayMs);
-                    }
-
-                    root.querySelector('[data-coverflow-next]').addEventListener('click', function () { next(); restart(); });
-                    root.querySelector('[data-coverflow-prev]').addEventListener('click', function () { prev(); restart(); });
-
-                    slots.forEach(function (slot, i) {
-                        slot.addEventListener('click', function (e) {
-                            if (offset(i) !== 0) {
-                                e.preventDefault();
-                                goTo(i);
-                                restart();
-                            }
-                        });
-                    });
-
-                    root.addEventListener('keydown', function (e) {
-                        if (e.key === 'ArrowLeft') { prev(); restart(); }
-                        if (e.key === 'ArrowRight') { next(); restart(); }
-                    });
-
-                    root.addEventListener('mouseenter', function () { clearInterval(timer); });
-                    root.addEventListener('mouseleave', restart);
-                    root.addEventListener('focusin', function () { clearInterval(timer); });
-                    root.addEventListener('focusout', restart);
-
-                    render();
-                    restart();
-                })();
-            </script>
-        {% else %}
-            <div class="notice-band">
-                <strong class="d-block mb-2">No campus updates are published yet.</strong>
-                Add news or event entries in the admin dashboard to display the latest announcements here.
-            </div>
-        {% endif %}
-    </div>
+<section class="college-section">
+<div class="container editorial-intro">
+<div>
+<span class="section-eyebrow">An education. A community. A future.</span>
+<h2>A place to learn.<br>A place to belong.</h2>
+</div>
+<div>
+<p class="intro-copy">Your ambitions have a home in Bayawan. Explore academic opportunities, connect with our college community, and take the next step toward your future.</p>
+<a class="editorial-link" href="{% url 'website:about' %}">Get to know CCB <span aria-hidden="true">&nearr;</span>
+</a>
+</div>
+</div>
 </section>
-
-<section class="section-block pt-0">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <span class="section-eyebrow section-eyebrow-featured-programs">Featured Programs</span>
-                <h2 class="section-title mt-3 mb-2">Featured Academic Programs</h2>
-                <p class="muted-copy mb-0">Explore selected academic offerings currently highlighted by the college.</p>
-            </div>
-            <a href="{% url 'website:academics' %}" class="btn btn-soft btn-sm">Browse Academics</a>
-        </div>
-        <div class="row g-4">
-            {% for program in featured_programs %}
-                <div class="col-md-6 col-xl-4">
-                    <div class="catalog-card">
-                        <span class="signal-badge signal-badge-program">Program</span>
-                        <h3 class="mt-3">{{ program.name }}</h3>
-                        {% if program.award %}<p class="text-dark fw-semibold mb-2">{{ program.award }}</p>{% endif %}
-                        <p class="muted-copy">{{ program.description|truncatewords:28 }}</p>
-                        {% if program.brochure_file %}
-                            <a href="{{ program.brochure_file|file_download_url }}" class="btn btn-soft btn-sm mt-3 btn-download">Download Brochure</a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="notice-band">Mark academic programs as featured in admin so they appear on the homepage.</div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+<section class="college-section college-section-tinted">
+<div class="container">
+<div class="section-header">
+<div>
+<span class="section-eyebrow">From our community</span>
+<h2 class="section-title">The latest at CCB.</h2>
+</div>
+<a class="editorial-link" href="{% url 'website:news' %}">All news & events &nearr;</a>
+</div>
+<div class="story-grid">
+{% for item in home_news_items|slice:':3' %}
+<article class="college-story">
+<a href="{% url 'website:news_detail' item.pk %}">
+<div class="story-image">
+{% if item.cover_image %}
+<img src="{{ item.cover_image|optimized_image_url:720 }}" alt="{{ item.title }}" loading="lazy" width="720" height="480">
+{% else %}
+<img src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" loading="lazy" width="720" height="480">
+{% endif %}
+</div>
+<div class="story-body">
+<time datetime="{{ item.published_at|date:'Y-m-d' }}">{{ item.published_at|date:'F j, Y' }}</time>
+<h3>{{ item.title }}</h3>
+<p>{{ item.summary|truncatewords:24 }}</p>
+<span class="editorial-link">Read story &nearr;</span>
+</div>
+</a>
+</article>
+{% empty %}
+<div class="notice-band">Campus stories and announcements will appear here when available. <a href="{% url 'website:contact' %}">Contact the college</a> for current information.</div>
+{% endfor %}
+</div>
+</div>
+</section>
+<section class="college-section">
+<div class="container">
+<div class="section-header">
+<div>
+<span class="section-eyebrow">Learn with purpose</span>
+<h2 class="section-title">Discover your direction.</h2>
+</div>
+<a class="editorial-link" href="{% url 'website:academics' %}">All academic programs &nearr;</a>
+</div>
+<div class="program-feature-grid">
+{% for program in featured_programs %}
+<a class="program-feature" href="{% url 'website:program_detail' program.pk %}">
+<span class="section-eyebrow">{{ program.award|default:'Academic program' }}</span>
+<h3>{{ program.name }}</h3>
+<p>{{ program.description|truncatewords:26 }}</p>
+<span class="editorial-link">Explore program &nearr;</span>
+</a>
+{% empty %}
+<div class="program-feature">
+<h3>Explore your academic options.</h3>
+<p>Find program information and official brochures to help plan your next step.</p>
+<a class="editorial-link" href="{% url 'website:academics' %}">Visit academics &nearr;</a>
+</div>
+{% endfor %}
+</div>
+</div>
+</section>
+<section class="campus-feature">
+<div class="container campus-feature-grid">
+<div class="campus-feature-image">
+<img src="{% static 'images/ccb.jpg' %}" alt="The City College of Bayawan campus building" loading="lazy" width="1200" height="600">
+</div>
+<div class="campus-feature-copy">
+<span class="section-eyebrow">Here for you</span>
+<h2>Connected to campus.<br>Ready for what's next.</h2>
+<p>Find student support, access official forms, and connect with the people who can help.</p>
+<a class="editorial-link" href="{% url 'website:students' %}">Explore student resources &nearr;</a>
+<a class="editorial-link" href="{% url 'website:downloads' %}">Forms & downloads &nearr;</a>
+<a class="editorial-link" href="{% url 'website:contact' %}">Plan your visit &nearr;</a>
+</div>
+</div>
 </section>
 {% endblock %}
-

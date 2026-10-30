@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% block content %}
+<header class="college-page-hero">
+<div class="container">
+<span class="section-eyebrow">Find your way</span>
+<h1>Search CCB.</h1>
+<p>Find academic programs, campus news, resources, and people.</p>
+</div>
+</header>
+<section class="college-section">
+<div class="container">
+{% include "website/includes/content_search.html" with search_label="the website" %}{% if query %}
+<p class="result-count">{{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }} for &ldquo;{{ query }}&rdquo;</p>
+<div class="search-results">
+{% for result in page_obj %}
+<a class="search-result" href="{{ result.url }}">
+<span class="section-eyebrow">{{ result.label }}</span>
+<h2>{{ result.title }} <span aria-hidden="true">&nearr;</span>
+</h2>
+<p>{{ result.description|truncatewords:35 }}</p>
+</a>
+{% empty %}
+<div class="notice-band">No matching results. Try another keyword or <a href="{% url 'website:contact' %}">contact the college</a> for help.</div>
+{% endfor %}
+</div>
+{% include "website/includes/pagination.html" %}{% else %}
+<p>Enter a program, document, office, or person's name to begin.</p>
+{% endif %}
+</div>
+</section>
+{% endblock %}

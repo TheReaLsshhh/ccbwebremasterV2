@@ -1,6 +1,6 @@
 import logging
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlencode
 
 import requests
 from django.conf import settings
@@ -9,17 +9,22 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.templatetags.static import static
 from django.utils.cache import patch_cache_control
+from django.utils import timezone
+from django.urls import reverse
 from django.utils.html import escape
 from django.utils.html import format_html
 from django.views.decorators.cache import never_cache
 
 from .forms import ContactInquiryForm
 from .models import (
+    AdmissionStep,
+    CampusService,
+    CampusOffice,
     AcademicProgram,
     AdmissionRequirement,
     ContactInquiry,
@@ -39,7 +44,7 @@ logger = logging.getLogger(__name__)
 NEWS_PAGE_SIZE = 6
 CLOUDINARY_DOWNLOAD_TIMEOUT = 4
 PUBLIC_PAGE_CACHE_SECONDS = 300
-PUBLIC_PAGE_STALE_SECONDS = 86400
+PUBLIC_PAGE_STALE_SECONDS = 0
 
 
 def render_public(request, template_name, context):
@@ -57,13 +62,15 @@ def service_worker(request):
     admin_path = f"/{settings.ADMIN_URL}"
     precache_urls = [
         static("css/site.css"),
+        static("css/institutional.css"),
+        static("js/college-motion.js"),
         static("js/news-modal.js"),
         static("js/ajax-refresh.js"),
         static("images/hero-images/ccb-logo-64.png"),
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v4";
+const CACHE_VERSION = "ccb-public-v6";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -120,25 +127,15 @@ async function cacheFirst(request) {{
   return networkResponse;
 }}
 
-async function staleWhileRevalidate(request, event) {{
+async function networkFirst(request) {{
   const cache = await caches.open(PAGE_CACHE);
-  const cachedResponse = await cache.match(request);
-  const networkFetch = fetch(request).then((networkResponse) => {{
-    if (networkResponse.ok) {{
-      cache.put(request, networkResponse.clone());
-    }}
-    return networkResponse;
-  }});
-
-  if (cachedResponse) {{
-    event.waitUntil(networkFetch.catch(() => undefined));
-    return cachedResponse;
-  }}
-
   try {{
-    return await networkFetch;
+    const response = await fetch(request);
+    if (response.ok) await cache.put(request, response.clone());
+    else await cache.delete(request);
+    return response;
   }} catch (error) {{
-    return cache.match("/");
+    return (await cache.match(request)) || new Response("You are offline. Please reconnect to view this page.", {{ status: 503, headers: {{ "Content-Type": "text/plain" }} }});
   }}
 }}
 
@@ -149,7 +146,7 @@ self.addEventListener("fetch", (event) => {{
   }}
 
   if (request.destination === "document") {{
-    event.respondWith(staleWhileRevalidate(request, event));
+    event.respondWith(networkFirst(request));
     return;
   }}
 
@@ -164,13 +161,10 @@ self.addEventListener("fetch", (event) => {{
 
 
 def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
-    cache_key = f"news_page_by_id_{per_page}"
-    data = cache.get(cache_key)
-    if data is None:
-        news_ids = list(NewsEvent.objects.order_by("-published_at").values_list("pk", flat=True))
-        data = {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
-        cache.set(cache_key, data, 3600)  # cache for 1 hour
-    return data
+    # Compute from the visible records so publishing and scheduled releases cannot
+    # leave deep links pointing at a page from an outdated cached index.
+    news_ids = NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).order_by("-published_at", "-pk").values_list("pk", flat=True)
+    return {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
 
 
 def _cloudinary_download_candidates(url):
@@ -315,37 +309,37 @@ SERVICE_DROPDOWN_ITEMS = [
 
 DEFAULT_PAGE_CONTENT = {
     PageContent.HOME: {
-        "hero_title": "Welcome to the City College of Bayawan portal.",
-        "hero_text": "Find official announcements, academic information, admission requirements, downloadable forms, and campus updates in one place.",
+        "hero_title": "A brighter future begins here.",
+        "hero_text": "Discover opportunities to learn, grow, and contribute to your community at City College of Bayawan.",
         "body_title": "Welcome to CCB",
         "body_text": "Stay informed through one clear and accessible public portal.",
     },
     PageContent.ACADEMICS: {
         "hero_title": "Academics",
-        "hero_text": "Present degree programs, college offerings, and downloadable brochures in one clear place.",
+        "hero_text": "Find your path. Explore our academic programs and discover where a CCB education can take you.",
     },
     PageContent.ADMISSIONS: {
         "hero_title": "Admissions",
-        "hero_text": "Guide applicants through requirements, forms, and enrollment steps.",
+        "hero_text": "Your next chapter starts here. Find the requirements and guidance to begin your CCB journey.",
     },
     PageContent.STUDENTS: {
         "hero_title": "Student Resources",
-        "hero_text": "Share handbooks, forms, links, and campus support information for students.",
+        "hero_text": "Find the resources, services, and support to make the most of life at CCB.",
     },
     PageContent.FACULTY: {
         "hero_title": "Faculty & Staff",
-        "hero_text": "Present leadership, instructors, offices, and campus personnel in a searchable way.",
+        "hero_text": "Meet the educators, leaders, and staff who support our college community.",
     },
     PageContent.ABOUT: {
         "hero_title": "About City College of Bayawan",
-        "hero_text": "Tell the story, mission, and direction of the institution.",
+        "hero_text": "Rooted in Bayawan. Discover our college, our community, and our commitment to learning.",
         "body_title": "Institutional Profile",
-        "body_text": "Use this space to describe the college mission, vision, history, and strategic goals.",
+        "body_text": "City College of Bayawan brings learners, educators, and the community together through education.",
     },
     PageContent.CONTACT: {
         "hero_title": "Contact Us",
         "hero_text": "Help students, families, and community partners reach the right office quickly.",
-        "body_text": "You can change the contact details and map embed from the Site Settings section in admin.",
+        "body_text": "Have a question about the college? Send us an inquiry or find the contact information you need below.",
     },
     PageContent.NEWS: {
         "hero_title": "News & Events",
@@ -376,14 +370,10 @@ def get_page_contents(page_key):
 
 
 def get_service_dropdown_items():
-    return [
-        {
-            "label": item["label"],
-            "url": item["url"],
-            "is_available": True,
-        }
-        for item in SERVICE_DROPDOWN_ITEMS
-    ]
+    if CampusService.objects.exists():
+        return [{"label": item.title, "description": item.description, "url": item.url, "is_available": True}
+                for item in CampusService.objects.filter(published=True)]
+    return [{**item, "is_available": True} for item in SERVICE_DROPDOWN_ITEMS]
 
 
 def get_page_faqs(active_page):
@@ -395,7 +385,7 @@ def get_page_faqs(active_page):
         "layout",
         "sort_order",
         "published",
-    ).filter(layout=page_key, published=True)
+    ).filter(layout=page_key, published=True).exclude(answer__icontains="lorem ipsum")
 
 
 def base_context(active_page):
@@ -414,12 +404,12 @@ HOME_NEWS_CAROUSEL_SIZE = 10
 def _home_news_carousel_items(queryset_fields):
     """Build up to ten homepage news slides for the carousel."""
     featured = list(
-        NewsEvent.objects.only(*queryset_fields).filter(is_featured=True)[:HOME_NEWS_CAROUSEL_SIZE]
+        NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).only(*queryset_fields).filter(is_featured=True)[:HOME_NEWS_CAROUSEL_SIZE]
     )
     if len(featured) < HOME_NEWS_CAROUSEL_SIZE:
         existing_ids = {item.pk for item in featured}
         extras = list(
-            NewsEvent.objects.only(*queryset_fields)
+            NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).only(*queryset_fields)
             .exclude(pk__in=existing_ids)
             .order_by("-published_at")[: HOME_NEWS_CAROUSEL_SIZE - len(featured)]
         )
@@ -440,13 +430,25 @@ def home(request):
     news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
     home_news_items = _home_news_carousel_items(news_fields)
 
+    hero_slides = [
+        {"image": page.banner_image}
+        for page in PageContent.objects.filter(page=PageContent.HOME, published=True)
+        .exclude(banner_image="").exclude(banner_image__isnull=True)[:6]
+    ]
+    # Existing images provide an immediate slideshow before staff upload banners.
+    for filename in ("ccb.jpg", "bg2.jpg"):
+        if len(hero_slides) >= 2:
+            break
+        hero_slides.append({"url": static(f"images/{filename}")})
+
     context = base_context("website:home")
     context.update(
         {
             "page_content": get_page_content(PageContent.HOME),
-            "featured_programs": AcademicProgram.objects.only("name", "award", "description", "brochure_file").filter(is_featured=True)[:3],
+            "featured_programs": AcademicProgram.objects.filter(published=True).order_by("-is_featured", "name")[:3],
             "home_news_items": home_news_items,
             "home_news_count": len(home_news_items),
+            "hero_slides": hero_slides,
         }
     )
     return render_public(request, "website/home.html", context)
@@ -457,21 +459,21 @@ def academics(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ACADEMICS),
-            "programs": _academic_programs(),
+            "programs": search_queryset(_academic_programs(), request, ("name", "award", "description", "department")),
         }
     )
     return render_public(request, "website/academics.html", context)
 
 
 def _academic_programs():
-    return AcademicProgram.objects.only("name", "award", "description", "brochure_file")
+    return AcademicProgram.objects.filter(published=True).only("name", "award", "description", "brochure_file", "department", "duration")
 
 
 def academics_partial(request):
     response = render(
         request,
         "website/partials/academic_programs_grid.html",
-        {"programs": _academic_programs()},
+        {"programs": search_queryset(_academic_programs(), request, ("name", "award", "description", "department"))},
     )
     patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
     return response
@@ -483,13 +485,14 @@ def admissions(request):
         {
             "page_content": get_page_content(PageContent.ADMISSIONS),
             "requirements": _admission_requirements(),
+            "admission_steps": AdmissionStep.objects.filter(published=True),
         }
     )
     return render_public(request, "website/admissions.html", context)
 
 
 def _admission_requirements():
-    return AdmissionRequirement.objects.only("title", "description", "document_file", "sort_order")
+    return AdmissionRequirement.objects.filter(published=True).only("title", "description", "document_file", "sort_order")
 
 
 def admissions_partial(request):
@@ -504,9 +507,11 @@ def admissions_partial(request):
 
 def news(request):
     try:
-        news_queryset = NewsEvent.objects.only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
+        news_queryset = NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
+        news_queryset = news_queryset.order_by("-published_at", "-pk")
+        news_queryset = search_queryset(news_queryset, request, ("title", "summary", "content", "location"))
         paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
-        news_page_by_id = _news_page_by_id()
+        news_page_by_id = {pk: (index // NEWS_PAGE_SIZE) + 1 for index, pk in enumerate(news_queryset.values_list("pk", flat=True))}
 
         page_number = request.GET.get("page")
         open_news_id = None
@@ -548,13 +553,18 @@ def downloads(request):
             "page_obj": page_obj,
             # Pass the items for the current page
             "downloads": page_obj.object_list,
+            "categories": DownloadItem.CATEGORY_CHOICES,
         }
     )
     return render_public(request, "website/downloads.html", context)
 
 
 def _downloads_page(request):
-    download_queryset = DownloadItem.objects.only("category", "title", "description", "file")
+    download_queryset = DownloadItem.objects.filter(published=True).only("category", "title", "description", "file")
+    download_queryset = search_queryset(download_queryset, request, ("title", "description"))
+    category = request.GET.get("category", "")
+    if category in dict(DownloadItem.CATEGORY_CHOICES):
+        download_queryset = download_queryset.filter(category=category)
     paginator = Paginator(download_queryset, 12)
     return paginator.get_page(request.GET.get("page"))
 
@@ -567,6 +577,7 @@ def downloads_partial(request):
         {
             "page_obj": page_obj,
             "downloads": page_obj.object_list,
+            "categories": DownloadItem.CATEGORY_CHOICES,
         },
     )
     patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
@@ -578,28 +589,28 @@ def students(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.STUDENTS),
-            "resources": _student_resources(),
+            "resources": search_queryset(_student_resources(), request, ("title", "description")),
         }
     )
     return render_public(request, "website/students.html", context)
 
 
 def _student_resources():
-    return StudentResource.objects.only("title", "description", "link_url", "attachment")
+    return StudentResource.objects.filter(published=True).only("title", "description", "link_url", "attachment")
 
 
 def students_partial(request):
     response = render(
         request,
         "website/partials/student_resources_grid.html",
-        {"resources": _student_resources()},
+        {"resources": search_queryset(_student_resources(), request, ("title", "description"))},
     )
     patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
     return response
 
 
 def faculty(request):
-    faculty_people = FacultyStaffEntry.objects.only(
+    faculty_people = FacultyStaffEntry.objects.filter(published=True).only(
         "name",
         "section",
         "role",
@@ -608,9 +619,13 @@ def faculty(request):
         "email",
         "profile_image",
     ).order_by("name")
+    faculty_people = search_queryset(faculty_people, request, ("name", "role", "department", "bio"))
+    department = request.GET.get("department", "").strip()
+    if department:
+        faculty_people = faculty_people.filter(department=department)
     faculty_sections = (
         FacultyStaffSection.objects.only("title", "eyebrow_label", "layout", "sort_order")
-        .filter(published=True, people__isnull=False)
+        .filter(published=True, people__in=faculty_people)
         .distinct()
         .prefetch_related(Prefetch("people", queryset=faculty_people))
     )
@@ -620,6 +635,7 @@ def faculty(request):
         {
             "page_content": get_page_content(PageContent.FACULTY),
             "faculty_sections": faculty_sections,
+            "departments": FacultyStaffEntry.objects.filter(published=True, section__published=True).exclude(department="").values_list("department", flat=True).distinct().order_by("department"),
         }
     )
     return render_public(request, "website/faculty.html", context)
@@ -719,6 +735,58 @@ def contact(request):
     context.update({
         "page_content": get_page_content(PageContent.CONTACT),
         "form": form,
+        "offices": search_queryset(CampusOffice.objects.filter(published=True), request, ("name", "description", "location")),
         "recaptcha_public_key": getattr(settings, "RECAPTCHA_PUBLIC_KEY", ""),
     })
     return render(request, "website/contact.html", context)
+
+
+def search_queryset(queryset, request, fields):
+    query = request.GET.get("q", "").strip()[:200]
+    if query:
+        condition = Q()
+        for field in fields:
+            condition |= Q(**{f"{field}__icontains": query})
+        queryset = queryset.filter(condition)
+    return queryset
+
+
+def program_detail(request, pk):
+    program = get_object_or_404(AcademicProgram, pk=pk, published=True)
+    context = base_context("website:academics")
+    context.update({"program": program, "seo_title": f"{program.name} | City College of Bayawan",
+                    "seo_description": program.description[:160]})
+    return render_public(request, "website/program_detail.html", context)
+
+
+def search(request):
+    context = base_context("website:search")
+    query = request.GET.get("q", "").strip()[:200]
+    results = []
+    if query:
+        sources = [
+            (AcademicProgram.objects.filter(published=True), ("name", "award", "description", "department"), "Program", "name", "description", "website:program_detail"),
+            (NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()), ("title", "summary", "content"), "News", "title", "summary", "website:news_detail"),
+            (DownloadItem.objects.filter(published=True), ("title", "description"), "Download", "title", "description", "website:downloads"),
+            (StudentResource.objects.filter(published=True), ("title", "description"), "Student resource", "title", "description", "website:students"),
+            (FacultyStaffEntry.objects.filter(published=True, section__published=True), ("name", "role", "department"), "Faculty & staff", "name", "role", "website:faculty"),
+            (CampusOffice.objects.filter(published=True), ("name", "description", "location"), "Office", "name", "description", "website:contact"),
+        ]
+        for queryset, fields, label, title_field, description_field, route in sources:
+            for obj in search_queryset(queryset.only(title_field, description_field), request, fields):
+                if route in {"website:program_detail", "website:news_detail"}:
+                    url = reverse(route, args=[obj.pk])
+                else:
+                    url = reverse(route) + "?" + urlencode({"q": getattr(obj, title_field)})
+                results.append({"title": getattr(obj, title_field), "description": getattr(obj, description_field), "label": label, "url": url})
+    context.update({"query": query, "page_obj": Paginator(results, 12).get_page(request.GET.get("page")),
+                    "seo_title": "Search | City College of Bayawan", "seo_description": "Search CCB academic programs, news, forms, student resources, and campus contacts.", "noindex": True})
+    return render_public(request, "website/search.html", context)
+
+
+def news_detail(request, pk):
+    item = get_object_or_404(NewsEvent, pk=pk, published=True, published_at__lte=timezone.now())
+    context = base_context("website:news")
+    context.update({"item": item, "seo_title": f"{item.title} | City College of Bayawan",
+                    "seo_description": item.summary[:160]})
+    return render_public(request, "website/news_detail.html", context)

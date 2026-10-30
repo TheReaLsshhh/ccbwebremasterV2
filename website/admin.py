@@ -10,6 +10,9 @@ from django.utils import timezone
 from PIL import Image
 
 from .models import (
+    AdmissionStep,
+    CampusService,
+    CampusOffice,
     AcademicProgram,
     AdmissionRequirement,
     ContactInquiry,
@@ -117,12 +120,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(PageContent)
 class PageContentAdmin(admin.ModelAdmin):
-    list_display = ("page", "hero_title", "published", "updated_at")
+    list_display = ("page", "hero_title", "published", "sort_order", "updated_at")
     list_filter = ("published", "page")
     search_fields = ("hero_title", "body_title", "body_text")
-    list_editable = ("published",)
+    list_editable = ("published", "sort_order")
     fieldsets = (
-        (None, {"fields": ("page", "published")}),
+        (None, {"fields": ("page", "published", "sort_order")}),
         (
             "Hero section",
             {
@@ -152,28 +155,29 @@ class FrequentlyAskedQuestionAdmin(admin.ModelAdmin):
 
 @admin.register(AcademicProgram)
 class AcademicProgramAdmin(admin.ModelAdmin):
-    list_display = ("name", "award", "is_featured", "updated_at")
-    list_filter = ("is_featured",)
+    list_display = ("name", "award", "is_featured", "updated_at", "published")
+    list_filter = ("is_featured", "published")
     search_fields = ("name", "award", "description")
-    list_editable = ("is_featured",)
+    list_editable = ("is_featured", "published")
 
 
 @admin.register(AdmissionRequirement)
 class AdmissionRequirementAdmin(admin.ModelAdmin):
-    list_display = ("title", "sort_order", "updated_at")
-    list_editable = ("sort_order",)
+    list_filter = ("published",)
+    list_display = ("title", "sort_order", "updated_at", "published")
+    list_editable = ("sort_order", "published")
     ordering = ("sort_order", "title")
 
 
 @admin.register(NewsEvent)
 class NewsEventAdmin(admin.ModelAdmin):
-    list_display = ("title", "event_date", "location", "is_featured", "published_at")
-    list_filter = ("is_featured", "event_date")
+    list_display = ("title", "event_date", "location", "is_featured", "published_at", "published")
+    list_filter = ("is_featured", "event_date", "published")
     search_fields = ("title", "summary", "content", "location")
-    list_editable = ("is_featured",)
+    list_editable = ("is_featured", "published")
     date_hierarchy = "event_date"
     fieldsets = (
-        (None, {"fields": ("title", "summary", "content", "is_featured", "published_at")}),
+        (None, {"fields": ("title", "summary", "content", "is_featured", "published_at", "published")}),
         ("Schedule & place", {"fields": ("event_date", "location")}),
         ("Media", {"fields": ("cover_image", "attachment")}),
     )
@@ -181,15 +185,17 @@ class NewsEventAdmin(admin.ModelAdmin):
 
 @admin.register(DownloadItem)
 class DownloadItemAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "is_featured", "updated_at")
-    list_filter = ("category", "is_featured")
+    list_display = ("title", "category", "is_featured", "updated_at", "published")
+    list_filter = ("category", "is_featured", "published")
     search_fields = ("title", "description")
-    list_editable = ("is_featured",)
+    list_editable = ("is_featured", "published")
 
 
 @admin.register(StudentResource)
 class StudentResourceAdmin(admin.ModelAdmin):
-    list_display = ("title", "updated_at")
+    list_filter = ("published",)
+    list_editable = ("published",)
+    list_display = ("title", "updated_at", "published")
     search_fields = ("title", "description")
 
 
@@ -205,10 +211,10 @@ class FacultyStaffSectionAdmin(admin.ModelAdmin):
 @admin.register(FacultyStaffEntry)
 class FacultyStaffEntryAdmin(admin.ModelAdmin):
     form = FacultyStaffEntryAdminForm
-    list_display = ("name", "section", "role", "department", "updated_at")
-    list_filter = ("section", "department")
+    list_display = ("name", "section", "role", "department", "updated_at", "published")
+    list_filter = ("section", "department", "published")
     search_fields = ("name", "role", "department", "bio")
-    list_editable = ("section",)
+    list_editable = ("section", "published")
     autocomplete_fields = ("section",)
 
 
@@ -247,3 +253,28 @@ class ContactInquiryAdmin(admin.ModelAdmin):
     def mark_unresolved(self, request, queryset):
         updated = queryset.update(is_resolved=False, updated_at=timezone.now())
         self.message_user(request, f"{updated} inquiry(s) marked as unresolved.", messages.SUCCESS)
+
+
+
+@admin.register(AdmissionStep)
+class AdmissionStepAdmin(admin.ModelAdmin):
+    list_display = ("title", "sort_order", "published", "updated_at")
+    list_editable = ("sort_order", "published")
+    search_fields = ("title", "description")
+    list_filter = ("published",)
+
+
+@admin.register(CampusService)
+class CampusServiceAdmin(admin.ModelAdmin):
+    list_display = ("title", "sort_order", "published", "updated_at")
+    list_editable = ("sort_order", "published")
+    search_fields = ("title", "description")
+    list_filter = ("published",)
+
+
+@admin.register(CampusOffice)
+class CampusOfficeAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "phone", "published")
+    list_editable = ("published",)
+    search_fields = ("name", "description", "location")
+    list_filter = ("published",)

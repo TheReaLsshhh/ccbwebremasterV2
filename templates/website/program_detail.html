@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% load news_extras %}{% block content %}
+<header class="college-page-hero">
+<div class="container">
+<nav class="college-breadcrumb" aria-label="Breadcrumb">
+<a href="{% url 'website:home' %}">Home</a>
+<span>/</span>
+<a href="{% url 'website:academics' %}">Academics</a>
+</nav>
+<span class="section-eyebrow">{{ program.award|default:'Academic program' }}</span>
+<h1>{{ program.name }}</h1>
+{% if program.department %}
+<p>{{ program.department }}</p>
+{% endif %}
+</div>
+</header>
+<section class="college-section">
+<div class="container detail-layout">
+<article class="detail-copy">
+<span class="section-eyebrow">Your path forward</span>
+<h2>About the program</h2>
+<div>{{ program.description|linebreaks }}</div>
+{% if program.career_paths %}
+<h2>Career pathways</h2>{{ program.career_paths|linebreaks }}{% endif %}
+</article>
+<aside class="content-card program-aside">
+<h2>Take the next step</h2>
+{% if program.duration %}
+<p>
+<strong>Duration</strong>
+<br>{{ program.duration }}</p>
+{% endif %}{% if program.brochure_file %}
+<a class="btn btn-soft" href="{{ program.brochure_file|file_download_url }}">Download brochure</a>
+{% endif %}
+<a class="btn btn-brand" href="{% url 'website:admissions' %}">View admissions</a>
+<a class="editorial-link" href="{% url 'website:contact' %}">Ask about this program &nearr;</a>
+</aside>
+</div>
+</section>
+{% endblock %}

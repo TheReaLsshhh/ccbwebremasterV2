@@ -1,11 +1,4 @@
-<section class="page-banner">
-    <div class="container">
-        <h1 class="mt-3 mb-3">{{ page_content.hero_title }}</h1>
-        <p class="lead mb-0">{{ page_content.hero_text }}</p>
-        <div class="page-banner-meta">
-            <span class="meta-chip">Student-ready information</span>
-            <span class="meta-chip">Admin-managed updates</span>
-            <span class="meta-chip">Mobile-friendly access</span>
-        </div>
-    </div>
-</section>
+{% load static news_extras %}
+<header class="college-page-hero" {% if page_content.banner_image %}style="--page-image:url('{{ page_content.banner_image|optimized_image_url:1600 }}')"{% endif %}>
+<div class="container"><nav class="college-breadcrumb" aria-label="Breadcrumb"><a href="{% url 'website:home' %}">Home</a><span aria-hidden="true">/</span><span>{{ page_content.hero_title }}</span></nav><span class="section-eyebrow">City College of Bayawan</span><h1>{{ page_content.hero_title }}</h1><p>{{ page_content.hero_text }}</p></div>
+</header>

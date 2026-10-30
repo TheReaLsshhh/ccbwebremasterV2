@@ -36,11 +36,8 @@ urlpatterns = [
     path("", include("website.urls")),
 ]
 
-# Serve media files in all environments.
-# With Cloudinary active, Django admin redirects to Cloudinary CDN URLs automatically.
-# Without Cloudinary, this serves local files (Render ephemeral disk within session).
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT, insecure=True)
+# Local development media. Production uploads are served by Cloudinary.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# Production fallback for environments where collected static files are present
-# but not served correctly by the platform-level static setup.
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT, insecure=True)
+# Local development static fallback. Production static files use WhiteNoise.
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

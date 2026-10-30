@@ -27,6 +27,11 @@ except Exception:
     _raw_storage = FileSystemStorage()
 
 
+def document_storage():
+    """Resolve document storage from the current deployment configuration."""
+    return _raw_storage
+
+
 def _delete_old_file_on_change(sender, instance, **kwargs):
     """Delete old file from storage when a file field is changed."""
     if not instance.pk:
@@ -53,6 +58,21 @@ def _generate_unique_filename(instance, filename):
     unique_name = f"{uuid.uuid4().hex[:12]}{ext}"
     return unique_name
 
+
+def academics_upload_path(instance, filename):
+    return f"academics/{_generate_unique_filename(instance, filename)}"
+
+def admissions_upload_path(instance, filename):
+    return f"admissions/{_generate_unique_filename(instance, filename)}"
+
+def downloads_upload_path(instance, filename):
+    return f"downloads/{_generate_unique_filename(instance, filename)}"
+
+def news_upload_path(instance, filename):
+    return f"news/{_generate_unique_filename(instance, filename)}"
+
+def students_upload_path(instance, filename):
+    return f"students/{_generate_unique_filename(instance, filename)}"
 
 
 MAX_IMAGE_SIZE = (1600, 1600)
@@ -163,6 +183,7 @@ class SiteSettings(TimeStampedModel):
 
 
 class PageContent(TimeStampedModel):
+    sort_order = models.PositiveIntegerField(default=0)
     HOME = "home"
     ACADEMICS = "academics"
     ADMISSIONS = "admissions"
@@ -196,7 +217,7 @@ class PageContent(TimeStampedModel):
     published = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ["page", "created_at", "id"]
+        ordering = ["page", "sort_order", "created_at", "id"]
 
     def __str__(self):
         return self.get_page_display()
@@ -228,14 +249,18 @@ class FrequentlyAskedQuestion(TimeStampedModel):
 
 
 class AcademicProgram(TimeStampedModel):
+    department = models.CharField(max_length=200, blank=True)
+    duration = models.CharField(max_length=100, blank=True)
+    career_paths = models.TextField(blank=True)
+    published = models.BooleanField(default=True)
     name = models.CharField(max_length=200)
     award = models.CharField(max_length=200, blank=True)
     description = models.TextField()
     brochure_file = models.FileField(
-        upload_to=lambda instance, filename: f"academics/{_generate_unique_filename(instance, filename)}",
+        upload_to=academics_upload_path,
         blank=True,
         null=True,
-        storage=_raw_storage,
+        storage=document_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -249,13 +274,14 @@ class AcademicProgram(TimeStampedModel):
 
 
 class AdmissionRequirement(TimeStampedModel):
+    published = models.BooleanField(default=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     document_file = models.FileField(
-        upload_to=lambda instance, filename: f"admissions/{_generate_unique_filename(instance, filename)}",
+        upload_to=admissions_upload_path,
         blank=True,
         null=True,
-        storage=_raw_storage,
+        storage=document_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -269,6 +295,7 @@ class AdmissionRequirement(TimeStampedModel):
 
 
 class NewsEvent(TimeStampedModel):
+    published = models.BooleanField(default=True)
     title = models.CharField(max_length=200)
     summary = models.TextField()
     content = models.TextField(blank=True)
@@ -276,10 +303,10 @@ class NewsEvent(TimeStampedModel):
     location = models.CharField(max_length=200, blank=True)
     cover_image = models.ImageField(upload_to="news/", blank=True, null=True)
     attachment = models.FileField(
-        upload_to=lambda instance, filename: f"news/{_generate_unique_filename(instance, filename)}",
+        upload_to=news_upload_path,
         blank=True,
         null=True,
-        storage=_raw_storage,
+        storage=document_storage,
     )
     is_featured = models.BooleanField(default=False)
     published_at = models.DateTimeField(default=timezone.now)
@@ -305,6 +332,7 @@ class NewsEvent(TimeStampedModel):
 
 
 class DownloadItem(TimeStampedModel):
+    published = models.BooleanField(default=True)
     ACADEMIC = "academic"
     FORM = "form"
     POLICY = "policy"
@@ -321,8 +349,8 @@ class DownloadItem(TimeStampedModel):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     file = models.FileField(
-        upload_to=lambda instance, filename: f"downloads/{_generate_unique_filename(instance, filename)}",
-        storage=_raw_storage,
+        upload_to=downloads_upload_path,
+        storage=document_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -336,14 +364,15 @@ class DownloadItem(TimeStampedModel):
 
 
 class StudentResource(TimeStampedModel):
+    published = models.BooleanField(default=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     link_url = models.URLField(blank=True)
     attachment = models.FileField(
-        upload_to=lambda instance, filename: f"students/{_generate_unique_filename(instance, filename)}",
+        upload_to=students_upload_path,
         blank=True,
         null=True,
-        storage=_raw_storage,
+        storage=document_storage,
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
@@ -380,6 +409,7 @@ class FacultyStaffSection(TimeStampedModel):
 
 
 class FacultyStaffEntry(TimeStampedModel):
+    published = models.BooleanField(default=True)
     name = models.CharField(max_length=200)
     section = models.ForeignKey(
         FacultyStaffSection,
@@ -498,3 +528,49 @@ pre_save.connect(_delete_old_file_on_change, sender=AdmissionRequirement)
 pre_save.connect(_delete_old_file_on_change, sender=NewsEvent)
 pre_save.connect(_delete_old_file_on_change, sender=DownloadItem)
 pre_save.connect(_delete_old_file_on_change, sender=StudentResource)
+
+
+class AdmissionStep(TimeStampedModel):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    link_label = models.CharField(max_length=80, blank=True)
+    link_url = models.URLField(blank=True, help_text="Optional official admissions link.")
+    sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["sort_order", "pk"]
+
+    def __str__(self):
+        return self.title
+
+
+class CampusService(TimeStampedModel):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    url = models.URLField()
+    sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["sort_order", "title"]
+
+    def __str__(self):
+        return self.title
+
+
+class CampusOffice(TimeStampedModel):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=50, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    office_hours = models.CharField(max_length=255, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["sort_order", "name"]
+
+    def __str__(self):
+        return self.name

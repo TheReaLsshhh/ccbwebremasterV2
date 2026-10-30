@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_description }}">
-    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="robots" content="{% if noindex %}noindex, follow{% else %}index, follow, max-image-preview:large{% endif %}">
     <link rel="canonical" href="{{ canonical_url }}">
 
     <meta property="og:site_name" content="City College of Bayawan">
@@ -85,158 +85,25 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous"></noscript>
     <!-- Ensure Font Awesome loads even if the preload onload fails in some browsers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="stylesheet" href="{% static 'css/institutional.css' %}">
 </head>
 <body>
-    <div class="site-skeleton" id="siteSkeleton" aria-hidden="true">
-        <div class="site-skeleton-topbar"></div>
-        <div class="site-skeleton-nav">
-            <div class="container">
-                <div class="site-skeleton-nav-inner">
-                    <div class="site-skeleton-brand">
-                        <span class="site-skeleton-logo"></span>
-                        <span class="site-skeleton-brand-copy">
-                            <span></span>
-                            <span></span>
-                        </span>
-                    </div>
-                    <div class="site-skeleton-links">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <main class="site-skeleton-main {% if active_page == 'website:home' %}site-skeleton-main-home{% elif active_page == 'website:contact' %}site-skeleton-main-contact{% elif active_page == 'website:faculty' %}site-skeleton-main-faculty{% elif active_page == 'website:news' %}site-skeleton-main-news{% else %}site-skeleton-main-inner{% endif %}">
-            <div class="container">
-                {% if active_page == "website:home" %}
-                    <section class="site-skeleton-hero site-skeleton-hero-home">
-                        <div class="site-skeleton-copy">
-                            <span class="site-skeleton-pill"></span>
-                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-line site-skeleton-line-md"></span>
-                            <span class="site-skeleton-actions"></span>
-                        </div>
-                        <div class="site-skeleton-panel">
-                            <span class="site-skeleton-line site-skeleton-line-sm"></span>
-                            <span class="site-skeleton-tile"></span>
-                            <span class="site-skeleton-tile"></span>
-                            <span class="site-skeleton-tile"></span>
-                        </div>
-                    </section>
-                    <section class="site-skeleton-grid site-skeleton-grid-three">
-                        <span class="site-skeleton-card"></span>
-                        <span class="site-skeleton-card"></span>
-                        <span class="site-skeleton-card"></span>
-                    </section>
-                {% elif active_page == "website:contact" %}
-                    <section class="site-skeleton-hero site-skeleton-hero-inner">
-                        <div class="site-skeleton-copy">
-                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-line site-skeleton-line-md"></span>
-                        </div>
-                    </section>
-                    <section class="site-skeleton-section-title">
-                        <span class="site-skeleton-pill"></span>
-                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                        <span class="site-skeleton-line site-skeleton-line-md"></span>
-                    </section>
-                    <section class="site-skeleton-contact-layout">
-                        <div class="site-skeleton-card site-skeleton-contact-card">
-                            <span class="site-skeleton-line site-skeleton-line-sm"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-tile"></span>
-                            <span class="site-skeleton-tile"></span>
-                            <span class="site-skeleton-actions"></span>
-                        </div>
-                        <div class="site-skeleton-card site-skeleton-map-card"></div>
-                    </section>
-                {% elif active_page == "website:faculty" %}
-                    <section class="site-skeleton-hero site-skeleton-hero-inner">
-                        <div class="site-skeleton-copy">
-                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-line site-skeleton-line-md"></span>
-                        </div>
-                    </section>
-                    <section class="site-skeleton-section-title">
-                        <span class="site-skeleton-pill"></span>
-                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                    </section>
-                    <section class="site-skeleton-grid site-skeleton-grid-three">
-                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
-                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
-                        <span class="site-skeleton-card site-skeleton-profile-card"></span>
-                    </section>
-                    <section class="site-skeleton-stack-list">
-                        <span class="site-skeleton-row"></span>
-                        <span class="site-skeleton-row"></span>
-                        <span class="site-skeleton-row"></span>
-                    </section>
-                {% elif active_page == "website:news" %}
-                    <section class="site-skeleton-hero site-skeleton-hero-inner">
-                        <div class="site-skeleton-copy">
-                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-line site-skeleton-line-md"></span>
-                        </div>
-                    </section>
-                    <section class="site-skeleton-section-title">
-                        <span class="site-skeleton-pill"></span>
-                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                        <span class="site-skeleton-line site-skeleton-line-md"></span>
-                    </section>
-                    <section class="site-skeleton-grid site-skeleton-grid-three">
-                        <span class="site-skeleton-card site-skeleton-news-card"></span>
-                        <span class="site-skeleton-card site-skeleton-news-card"></span>
-                        <span class="site-skeleton-card site-skeleton-news-card"></span>
-                    </section>
-                {% else %}
-                    <section class="site-skeleton-hero site-skeleton-hero-inner">
-                        <div class="site-skeleton-copy">
-                            <span class="site-skeleton-line site-skeleton-line-xl"></span>
-                            <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                            <span class="site-skeleton-line site-skeleton-line-md"></span>
-                        </div>
-                    </section>
-                    <section class="site-skeleton-section-title">
-                        <span class="site-skeleton-pill"></span>
-                        <span class="site-skeleton-line site-skeleton-line-lg"></span>
-                        <span class="site-skeleton-line site-skeleton-line-md"></span>
-                    </section>
-                    <section class="site-skeleton-grid {% if active_page == 'website:downloads' %}site-skeleton-grid-three{% else %}site-skeleton-grid-two{% endif %}">
-                        <span class="site-skeleton-card"></span>
-                        <span class="site-skeleton-card"></span>
-                        {% if active_page == "website:downloads" %}<span class="site-skeleton-card"></span>{% endif %}
-                    </section>
-                {% endif %}
-            </div>
-        </main>
-    </div>
-
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="site-shell">
-        <div class="topbar-note py-2">
-            <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 small">
-                <span class="status-pill">
-                    <span class="status-icon" aria-hidden="true">
-                        <i class="fa-solid fa-bell"></i>
-                    </span>
-                    {{ site_settings.hero_notice|default:"Student services, announcements, and campus updates in one portal." }}
-                </span>
+        <div class="college-utility">
+            <div class="container utility-inner">
+                <span>City College of Bayawan <span class="utility-divider">/</span> Official website</span>
+                <div><a href="{% url 'website:students' %}">Students</a><a href="{% url 'website:faculty' %}">Faculty & staff</a><a href="{% url 'website:contact' %}">Visit & contact</a></div>
             </div>
         </div>
-
         <nav class="navbar navbar-expand-xl site-navbar">
             <div class="container py-3">
                 <a class="navbar-brand me-4" href="{% url 'website:home' %}">
@@ -288,9 +155,11 @@
             </div>
         </nav>
 
+        <div class="site-search-strip"><div class="container"><form action="{% url 'website:search' %}" method="get" role="search"><label for="site-search">Looking for something?</label><input id="site-search" type="search" name="q" placeholder="Programs, forms, people..." maxlength="200" value="{{ request.GET.q }}"><button type="submit">Search <span aria-hidden="true">&nearr;</span></button></form></div></div>
+        <main id="main-content" tabindex="-1">
         {% block content %}{% endblock %}
-
         {% include "website/includes/page_faqs.html" %}
+        </main>
 
         <button
             type="button"
@@ -312,30 +181,16 @@
             </span>
         </button>
 
-        <footer class="footer-shell pt-5 pb-3">
+        <footer class="college-footer">
             <div class="container">
-                <div class="row g-4 footer-content-row">
-                    <div class="col-lg-5">
-                        <h5 class="mb-3">{{ site_settings.site_name|default:"City College of Bayawan" }}</h5>
-                        <p class="footer-tagline">{{ site_settings.tagline|default:"A connected campus experience for Bayawan learners, families, faculty, and staff." }}</p>
-                    </div>
-                    <div class="col-lg-4">
-                        <h6 class="mb-3">Campus Information</h6>
-                        <p class="mb-2">{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>
-                        <p class="mb-2">{{ site_settings.primary_email|default:"info@ccb.edu.ph" }}</p>
-                        <p class="mb-0">{{ site_settings.phone|default:"+63 000 000 0000" }}</p>
-                    </div>
-                    <div class="col-lg-3">
-                        <h6 class="mb-3">Student Portal Areas</h6>
-                        <div class="footer-link-list">
-                            <a class="footer-link" href="{% url 'website:admissions' %}">Admissions</a>
-                            <a class="footer-link" href="{% url 'website:downloads' %}">Downloads</a>
-                            <a class="footer-link" href="{% url 'website:news' %}">News & Events</a>
-                        </div>
-                    </div>
+                <div class="footer-intro"><span class="section-eyebrow">Your next chapter</span><h2>Find your place at CCB.</h2><a class="btn btn-brand" href="{% url 'website:admissions' %}">Explore admissions <span aria-hidden="true">&nearr;</span></a></div>
+                <div class="footer-columns">
+                    <div><img src="{% static 'images/hero-images/ccb-logo-96.png' %}" alt="CCB seal" width="64" height="64" loading="lazy"><h3>{{ site_settings.site_name|default:"City College of Bayawan" }}</h3><p>{{ site_settings.tagline|default:"Empowering learners. Building futures." }}</p></div>
+                    <div><h3>Discover</h3><a href="{% url 'website:academics' %}">Academic programs</a><a href="{% url 'website:about' %}">Our college</a><a href="{% url 'website:news' %}">News & events</a><a href="{% url 'website:faculty' %}">Faculty & staff</a></div>
+                    <div><h3>Useful links</h3><a href="{% url 'website:admissions' %}">Admissions</a><a href="{% url 'website:students' %}">Student resources</a><a href="{% url 'website:downloads' %}">Forms & downloads</a><a href="{% url 'website:search' %}">Search the website</a></div>
+                    <div><h3>Get in touch</h3><p>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>{% if site_settings.primary_email %}<a href="mailto:{{ site_settings.primary_email }}">{{ site_settings.primary_email }}</a>{% endif %}{% if site_settings.phone %}<a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>{% endif %}<a href="{% url 'website:contact' %}">Contact & campus map &nearr;</a></div>
                 </div>
-                <hr class="border-light border-opacity-25 my-4">
-                <p class="mb-0 small">{{ site_settings.footer_text|default:"City College of Bayawan" }}</p>
+                <div class="footer-bottom"><span>&copy; {% now "Y" %} {{ site_settings.footer_text|default:"City College of Bayawan" }}</span><span>Learning. Community. Possibility.</span></div>
             </div>
         </footer>
     </div>
@@ -460,7 +315,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
     <script src="{% static 'js/news-modal.js' %}" defer></script>
-    <script src="{% static 'js/ajax-refresh.js' %}" defer></script>
     <script defer>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", function () {
@@ -673,6 +527,7 @@
             });
         })();
     </script>
+    <script src="{% static 'js/college-motion.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

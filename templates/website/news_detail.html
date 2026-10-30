@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% load news_extras %}{% block content %}
+<header class="college-page-hero">
+<div class="container">
+<nav class="college-breadcrumb" aria-label="Breadcrumb">
+<a href="{% url 'website:home' %}">Home</a>
+<span>/</span>
+<a href="{% url 'website:news' %}">News & events</a>
+</nav>
+<span class="section-eyebrow">{{ item.published_at|date:'F j, Y' }}</span>
+<h1>{{ item.title }}</h1>
+{% if item.location %}
+<p>{{ item.location }}</p>
+{% endif %}
+</div>
+</header>
+<section class="college-section">
+<div class="container news-article">
+<article>
+{% if item.cover_image %}
+<img class="article-cover" src="{{ item.cover_image|optimized_image_url:1280 }}" alt="{{ item.title }}" width="1280" height="720">
+{% endif %}
+<p class="article-summary">{{ item.summary }}</p>{{ item.content|linebreaks }}{% if item.attachment %}
+<a class="btn btn-soft" href="{{ item.attachment|file_download_url }}">View attachment</a>
+{% endif %}
+</article>
+<a class="editorial-link mt-5" href="{% url 'website:news' %}">&larr; Back to campus news</a>
+</div>
+</section>
+{% endblock %}
