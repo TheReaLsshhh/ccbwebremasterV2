@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -69,7 +69,7 @@
                 var savedTheme = localStorage.getItem(storageKey);
                 var theme = savedTheme === "light" || savedTheme === "dark"
                     ? savedTheme
-                    : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                    : "light";
                 document.documentElement.setAttribute("data-theme", theme);
             } catch (error) {
                 document.documentElement.setAttribute("data-theme", "light");
@@ -347,11 +347,15 @@
             }
 
             function getPreferredTheme() {
-                const savedTheme = localStorage.getItem(storageKey);
-                if (savedTheme === "light" || savedTheme === "dark") {
-                    return savedTheme;
+                try {
+                    const savedTheme = localStorage.getItem(storageKey);
+                    if (savedTheme === "light" || savedTheme === "dark") {
+                        return savedTheme;
+                    }
+                } catch (error) {
+                    // Light mode remains available when browser storage is blocked.
                 }
-                return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                return "light";
             }
 
             function updateNetworkState() {
@@ -367,8 +371,12 @@
                 themeButton.addEventListener("click", function () {
                     const currentTheme = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
                     const nextTheme = currentTheme === "dark" ? "light" : "dark";
-                    localStorage.setItem(storageKey, nextTheme);
                     applyTheme(nextTheme);
+                    try {
+                        localStorage.setItem(storageKey, nextTheme);
+                    } catch (error) {
+                        // The toggle still works for this visit without storage.
+                    }
                 });
             }
 
