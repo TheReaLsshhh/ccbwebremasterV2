@@ -293,5 +293,6 @@ class PublicWebsiteTests(TestCase):
         slides = response.context["hero_slides"]
         self.assertEqual([slide["image"].name for slide in slides], ["pages/first.jpg", "pages/second.jpg"])
         self.assertNotContains(response, "pages/private.jpg")
-        self.assertContains(response, "data-slide-pause")
+        self.assertNotContains(response, "hero-slideshow-controls")
+        self.assertNotContains(response, "data-slide-pause")
         self.assertContains(response, "js/college-motion.js")

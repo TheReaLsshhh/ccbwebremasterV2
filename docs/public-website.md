@@ -46,8 +46,8 @@ The test suite covers public rendering, draft and scheduled-news visibility, pro
 
 ## Homepage slideshow and parallax
 
-Add published **Page contents** records with Page set to **Home** and a banner image. Sort order determines the slideshow sequence (up to six images); the first published Home record still supplies the heading and introduction. When fewer than two banners are available, existing campus/welcome images fill the remaining slots.
+Add published **Page contents** records with Page set to **Home** and a banner image. Sort order determines the slideshow sequence; the first published Home record still supplies the heading and introduction. All published Home banners are included. With one banner, that image stays visible. Existing campus/welcome images are used only when no banners are published.
 
-Backgrounds crossfade every six seconds. Previous, next, and pause/play controls appear when at least two images load successfully. Autoplay pauses during hover, keyboard focus, hidden tabs, and while the hero is outside the viewport. Broken images are skipped. Without JavaScript, the first image stays visible.
+Backgrounds crossfade every eight seconds with a 1.2-second fade between images. The slideshow is fully automatic with no on-page controls, and continues during hover and keyboard focus. Autoplay pauses in hidden tabs and while the hero is outside the viewport. Broken images are skipped. Without JavaScript, the first image stays visible.
 
-Page banners and the Home hero have subtle scroll parallax on desktop. Small screens use static positioning. Reduced-motion preferences disable parallax, crossfades, and autoplay while retaining manual image selection.
+Page banners and the Home hero have subtle scroll parallax on desktop. Small screens use static positioning. Reduced-motion preferences disable parallax, crossfades, and autoplay so visitors see a static image.

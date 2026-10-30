@@ -31,12 +31,8 @@
 
     if (!hero) return;
     const slides = [...hero.querySelectorAll(".hero-slide")];
-    const controls = hero.querySelector(".hero-slideshow-controls");
-    const pauseButton = hero.querySelector("[data-slide-pause]");
-    const count = hero.querySelector("[data-slide-count]");
+    if (!slides.length) return;
     let active = 0;
-    let userPaused = false;
-    let pointerInside = false;
     let inView = true;
     let timer = null;
 
@@ -46,15 +42,8 @@
         window.clearTimeout(timer);
         timer = null;
         const ready = available();
-        controls.hidden = ready.length < 2;
-        const paused = userPaused || reducedMotion.matches;
-        pauseButton.textContent = paused ? "Play slideshow" : "Pause slideshow";
-        pauseButton.setAttribute("aria-pressed", String(paused));
-        pauseButton.disabled = reducedMotion.matches;
-        pauseButton.title = reducedMotion.matches ? "Automatic playback is disabled by your reduced-motion preference" : "";
-        count.textContent = `${Math.max(1, ready.indexOf(slides[active]) + 1)} / ${ready.length}`;
-        if (ready.length > 1 && !paused && !pointerInside && !hero.contains(document.activeElement) && !document.hidden && inView) {
-            timer = window.setTimeout(() => changeSlide(1), 6000);
+        if (ready.length > 1 && !reducedMotion.matches && !document.hidden && inView) {
+            timer = window.setTimeout(() => changeSlide(1), 8000);
         }
     }
 
@@ -78,15 +67,6 @@
         slide.addEventListener("load", imageSettled);
         slide.addEventListener("error", imageSettled);
     });
-    hero.querySelector("[data-slide-previous]").addEventListener("click", () => changeSlide(-1));
-    hero.querySelector("[data-slide-next]").addEventListener("click", () => changeSlide(1));
-    pauseButton.addEventListener("click", () => { userPaused = !userPaused; sync(); });
-    hero.addEventListener("pointerenter", (event) => {
-        if (event.pointerType !== "touch") { pointerInside = true; sync(); }
-    });
-    hero.addEventListener("pointerleave", () => { pointerInside = false; sync(); });
-    hero.addEventListener("focusin", sync);
-    hero.addEventListener("focusout", () => window.setTimeout(sync, 0));
     document.addEventListener("visibilitychange", sync);
     reducedMotion.addEventListener("change", sync);
     if ("IntersectionObserver" in window) {

@@ -70,7 +70,7 @@ def service_worker(request):
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v7";
+const CACHE_VERSION = "ccb-public-v8";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -433,13 +433,11 @@ def home(request):
     hero_slides = [
         {"image": page.banner_image}
         for page in PageContent.objects.filter(page=PageContent.HOME, published=True)
-        .exclude(banner_image="").exclude(banner_image__isnull=True)[:6]
+        .exclude(banner_image="").exclude(banner_image__isnull=True)
     ]
-    # Existing images provide an immediate slideshow before staff upload banners.
-    for filename in ("ccb.jpg", "bg2.jpg"):
-        if len(hero_slides) >= 2:
-            break
-        hero_slides.append({"url": static(f"images/{filename}")})
+    # Use only staff-selected banners when any are published.
+    if not hero_slides:
+        hero_slides = [{"url": static(f"images/{filename}")} for filename in ("ccb.jpg", "bg2.jpg")]
 
     context = base_context("website:home")
     context.update(
