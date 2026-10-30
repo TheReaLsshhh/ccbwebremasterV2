@@ -72,6 +72,14 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
   gap: 3px;
 }
 .site-navbar .brand-copy strong { line-height: 1.15; }
+.college-footer .footer-mantra {
+  margin: -9px 0 20px;
+  color: #e3c47f;
+  font-family: Georgia,'Times New Roman',serif;
+  font-size: .85rem;
+  font-style: italic;
+  line-height: 1.5;
+}
 .site-navbar .brand-mantra {
   color: var(--college-muted);
   font-family: Georgia,'Times New Roman',serif;

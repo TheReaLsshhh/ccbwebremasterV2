@@ -93,7 +93,7 @@
     <!-- Ensure Font Awesome loads even if the preload onload fails in some browsers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
-    <link rel="stylesheet" href="{% static 'css/institutional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/institutional.css' %}?v=10">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -187,7 +187,7 @@
             <div class="container">
                 <div class="footer-intro"><span class="section-eyebrow">Your next chapter</span><h2>Find your place at CCB.</h2><a class="btn btn-brand" href="{% url 'website:admissions' %}">Explore admissions <span aria-hidden="true">&nearr;</span></a></div>
                 <div class="footer-columns">
-                    <div><img src="{% static 'images/hero-images/ccb-logo-96.png' %}" alt="CCB seal" width="64" height="64" loading="lazy"><h3>{{ site_settings.site_name|default:"City College of Bayawan" }}</h3><p>{{ site_settings.tagline|default:"Empowering learners. Building futures." }}</p></div>
+                    <div><img src="{% static 'images/hero-images/ccb-logo-96.png' %}" alt="CCB seal" width="64" height="64" loading="lazy"><h3>{{ site_settings.site_name|default:"City College of Bayawan" }}</h3><p class="footer-mantra" lang="la">Honus et Excellentia Ad Summum Bonum</p><p>{{ site_settings.tagline|default:"Empowering learners. Building futures." }}</p></div>
                     <div><h3>Discover</h3><a href="{% url 'website:academics' %}">Academic programs</a><a href="{% url 'website:about' %}">Our college</a><a href="{% url 'website:news' %}">News & events</a><a href="{% url 'website:faculty' %}">Faculty & staff</a></div>
                     <div><h3>Useful links</h3><a href="{% url 'website:admissions' %}">Admissions</a><a href="{% url 'website:students' %}">Student resources</a><a href="{% url 'website:downloads' %}">Forms & downloads</a><a href="{% url 'website:search' %}">Search the website</a></div>
                     <div><h3>Get in touch</h3><p>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>{% if site_settings.primary_email %}<a href="mailto:{{ site_settings.primary_email }}">{{ site_settings.primary_email }}</a>{% endif %}{% if site_settings.phone %}<a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>{% endif %}<a href="{% url 'website:contact' %}">Contact & campus map &nearr;</a></div>

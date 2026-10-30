@@ -76,7 +76,7 @@ After creating a superuser (see below), manage:
 **Set or reset a PIN from Render Shell:**
 ```bash
 python manage.py set_admin_pin your_username 482913
-```
+```slip-enhancement
 
 Optional env vars:
 - `ADMIN_URL=ccb-office` (default)
