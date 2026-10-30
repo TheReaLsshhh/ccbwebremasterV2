@@ -26,6 +26,7 @@ from .models import (
     CampusService,
     CampusOffice,
     AcademicProgram,
+    HomeSlide,
     AdmissionRequirement,
     ContactInquiry,
     DownloadItem,
@@ -430,14 +431,11 @@ def home(request):
     news_fields = ("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
     home_news_items = _home_news_carousel_items(news_fields)
 
-    hero_slides = [
-        {"image": page.banner_image}
-        for page in PageContent.objects.filter(page=PageContent.HOME, published=True)
-        .exclude(banner_image="").exclude(banner_image__isnull=True)
-    ]
+    hero_slides = [{"image": slide.image} for slide in HomeSlide.objects.filter(published=True)]
     # Use only staff-selected banners when any are published.
     if not hero_slides:
-        hero_slides = [{"url": static(f"images/{filename}")} for filename in ("ccb.jpg", "bg2.jpg")]
+        filenames = ("ccb.jpg",) if HomeSlide.objects.exists() else ("ccb.jpg", "bg2.jpg")
+        hero_slides = [{"url": static(f"images/{filename}")} for filename in filenames]
 
     context = base_context("website:home")
     context.update(

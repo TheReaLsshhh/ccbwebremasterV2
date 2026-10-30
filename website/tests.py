@@ -285,10 +285,10 @@ class PublicWebsiteTests(TestCase):
 
 
     def test_home_slideshow_uses_published_ordered_banners(self):
-        from .models import PageContent
-        PageContent.objects.create(page="home", hero_title="First banner", banner_image="pages/first.jpg", sort_order=1)
-        PageContent.objects.create(page="home", hero_title="Second banner", banner_image="pages/second.jpg", sort_order=2)
-        PageContent.objects.create(page="home", hero_title="Private banner", banner_image="pages/private.jpg", sort_order=0, published=False)
+        from .models import HomeSlide
+        HomeSlide.objects.create(title="First banner", image="pages/first.jpg", sort_order=1)
+        HomeSlide.objects.create(title="Second banner", image="pages/second.jpg", sort_order=2)
+        HomeSlide.objects.create(title="Private banner", image="pages/private.jpg", sort_order=0, published=False)
         response = self.client.get("/")
         slides = response.context["hero_slides"]
         self.assertEqual([slide["image"].name for slide in slides], ["pages/first.jpg", "pages/second.jpg"])

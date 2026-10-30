@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+{% block content_title %}
+{{ block.super }}
+<div class="ccb-admin-help">
+    <p>Upload multiple images, set their order, and choose which ones appear on Home. Published images crossfade automatically every eight seconds.</p>
+    <p>Edit the welcome heading in <a href="{% url 'admin:website_pagecontent_changelist' %}?page__exact=home">Page contents</a>. A slideshow image does not create another page heading.</p>
+</div>
+{% endblock %}
+{% block object-tools-items %}
+{% if has_add_permission %}<li><a href="{% url 'admin:website_homeslide_upload' %}" class="addlink">Upload multiple images</a></li>{% endif %}
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Home</a> &rsaquo; <a href="{% url 'admin:website_homeslide_changelist' %}">Home slideshow images</a> &rsaquo; Upload</div>
+{% endblock %}
+{% block content %}
+<div class="ccb-admin-help"><p>Select several images in the file picker. They will be added after the existing slides in selection order. You can change their titles, order, and visibility afterward.</p><p>Use landscape images with the important subject near the center. Text on the Home page stays separate from these backgrounds.</p></div>
+<form method="post" enctype="multipart/form-data" class="ccb-upload-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="form-row">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<p class="help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+    </div>
+    {% endfor %}
+    <div class="submit-row"><input type="submit" value="Upload images" class="default"><a href="{% url 'admin:website_homeslide_changelist' %}">Cancel</a></div>
+</form>
+{% endblock %}

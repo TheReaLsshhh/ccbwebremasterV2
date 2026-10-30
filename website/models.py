@@ -75,6 +75,10 @@ def students_upload_path(instance, filename):
     return f"students/{_generate_unique_filename(instance, filename)}"
 
 
+def home_slide_upload_path(instance, filename):
+    return f"home/slideshow/{_generate_unique_filename(instance, filename)}"
+
+
 MAX_IMAGE_SIZE = (1600, 1600)
 JPEG_QUALITY = 82
 PNG_COMPRESS_LEVEL = 6
@@ -120,6 +124,7 @@ class TimeStampedModel(models.Model):
 
 
 class SiteSettings(TimeStampedModel):
+    institutional_mantra = models.CharField(max_length=150, default="Honus et Excellentia Ad Summum Bonum")
     site_name = models.CharField(max_length=200, default="City College of Bayawan")
     tagline = models.CharField(max_length=255, blank=True, default="Empowering learners. Building futures.")
     hero_notice = models.CharField(max_length=255, blank=True, default="Admissions are open for the upcoming term.")
@@ -225,6 +230,25 @@ class PageContent(TimeStampedModel):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         optimize_uploaded_image(self.banner_image)
+
+
+class HomeSlide(TimeStampedModel):
+    title = models.CharField(max_length=200, help_text="Internal label to identify this image in Admin.")
+    image = models.ImageField(upload_to=home_slide_upload_path, help_text="Use a landscape JPG, PNG, or WebP campus image.")
+    sort_order = models.PositiveIntegerField(default=0, help_text="Smaller numbers appear first.")
+    published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["sort_order", "pk"]
+        verbose_name = "Home slideshow image"
+        verbose_name_plural = "Home slideshow images"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        optimize_uploaded_image(self.image)
 
 
 class FrequentlyAskedQuestion(TimeStampedModel):

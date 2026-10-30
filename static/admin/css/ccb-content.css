@@ -1,0 +1,19 @@
+:root { --primary: #204b37; --secondary: #173b2c; --accent: #efd08e; --header-bg: #173b2c; --header-color: #efd08e; --header-branding-color: #fff; --link-fg: #2e6248; --link-selected-fg: #204b37; --button-bg: #28543e; --button-hover-bg: #173b2c; --default-button-bg: #204b37; --default-button-hover-bg: #133022; }
+html[data-theme="dark"] { --link-fg: #b4d4be; --link-selected-fg: #efd08e; }
+@media(prefers-color-scheme:dark) { html[data-theme="auto"] { --link-fg: #b4d4be; --link-selected-fg: #efd08e; } }
+.ccb-admin-workspace { margin-bottom: 28px; }
+.ccb-admin-workspace h2 { font-size: 22px; font-weight: 500; }
+.ccb-admin-workspace > p { color: var(--body-quiet-color); }
+.ccb-admin-task-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(205px,1fr)); gap: 12px; }
+.ccb-admin-task-grid a { display: block; padding: 18px; border: 1px solid var(--hairline-color); border-top: 2px solid #bd9448; border-radius: 2px; background: var(--body-bg); }
+.ccb-admin-task-grid a:hover { background: var(--darkened-bg); }
+.ccb-admin-task-grid strong { display: block; margin-bottom: 8px; }
+.ccb-admin-task-grid span { display: block; color: var(--body-quiet-color); font-size: 12px; line-height: 1.6; }
+.ccb-admin-help { padding: 12px 18px; margin: 18px 0; border-left: 3px solid #bd9448; background: var(--darkened-bg); max-width: 900px; }
+.ccb-admin-help p { line-height: 1.6; }
+.admin-slide-thumbnail { width: 144px; height: 72px; object-fit: cover; border-radius: 2px; }
+.ccb-upload-form { max-width: 900px; }
+.ccb-upload-form .form-row { padding: 20px; border-bottom: 1px solid var(--hairline-color); }
+.ccb-upload-form label { display: block; margin-bottom: 10px; font-weight: 600; }
+.ccb-upload-form .submit-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+@media(max-width:767px) { .ccb-admin-task-grid { grid-template-columns: 1fr; } .admin-slide-thumbnail { width: 96px; height: 54px; } }
