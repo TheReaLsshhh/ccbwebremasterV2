@@ -54,10 +54,22 @@ Migration 0013 copies existing Home banner references into the slideshow collect
 
 Backgrounds crossfade every eight seconds with a 1.2-second fade between images. The slideshow is fully automatic with no on-page controls, and continues during hover and keyboard focus. Autoplay pauses in hidden tabs and while the hero is outside the viewport. Broken images are skipped. Without JavaScript, the first image stays visible.
 
-Page banners and the Home hero have subtle scroll parallax on desktop. Small screens use static positioning. Reduced-motion preferences disable parallax, crossfades, and autoplay so visitors see a static image.
+Page banners and the Home hero have subtle scroll parallax on desktop. Small screens use static positioning. Reduced-motion preferences disable parallax and animated crossfades. Images still advance every eight seconds using an immediate switch.
 
 ## Updated Admin workspace
 
 The Admin home page provides permission-aware shortcuts to slideshow images, page content, academic programs, admissions steps, news, services, offices, and site settings. The existing full model list and security controls remain available. Content lists support bulk Publish and Unpublish actions. News still honors its publication date even after a bulk Publish action.
 
 The slideshow upload screen requires staff access, completed admin PIN verification, the HomeSlide add permission, and CSRF validation. Invalid batches create no records. Failed saves roll back records and attempt to remove newly uploaded files. Grant editors the new Home slideshow image permissions as appropriate; superusers receive access automatically. Uploaded images continue using the deployment's configured image storage (Cloudinary in production).
+
+## Cross-device presentation update
+
+- Home slideshow media-query listeners support both modern browsers and older Safari `addListener` APIs. Background cycling continues with reduced motion, without animated fades. Page restoration restarts playback; hidden tabs and offscreen heroes pause it.
+- The header uses a larger responsive brand and switches to the menu button below 1400px. The narrow identity strip uses the editable college tagline instead of duplicate navigation links.
+- Headings use Georgia with a Times fallback; interface and body text use Arial/Helvetica. No downloaded typography is required. Static navigation/action labels use consistent title capitalization. Stylized Unicode letters copied into news are normalized for display only; Admin retains the original content.
+- Section labels use plain text and consistent outline SVG icons matched to each page or Home section, the Home story cards size to their content, and the search field has a green focus indicator and an SVG search button.
+- Photos offer responsive WebP sources at quality 90 with an original/automatically negotiated fallback. Cloudinary generates production variants. Local upload derivatives are cached under `media/image-variants/` without replacing the source file. Bundled campus photos have tracked prebuilt WebP variants; regenerate them with `python manage.py build_image_variants` after replacing a source image. New local upload optimization allows up to 2400px at JPEG quality 90.
+
+WebP improves delivery efficiency; it cannot restore detail missing from a low-resolution source. Use large original landscape photos for the hero. Picture fallback behavior follows [MDN's picture documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture); production transformations use [Cloudinary image optimization](https://cloudinary.com/documentation/image_optimization).
+
+Run the slideshow compatibility tests with `node --test tests/college-motion.test.cjs` alongside the Django suite. These emulate browser APIs and lifecycle events; real-device visual review remains necessary.

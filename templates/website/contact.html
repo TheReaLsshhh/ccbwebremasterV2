@@ -5,15 +5,15 @@
 
 {% block content %}
 {% include "website/includes/page_header.html" %}
-<section class="college-section"><div class="container"><span class="section-eyebrow">The right people, within reach</span><h2 class="section-title">Office directory.</h2><div class="office-search">{% include "website/includes/content_search.html" with search_label="offices" %}</div><div class="office-grid">{% for office in offices %}<article class="content-card"><h3>{{ office.name }}</h3><p>{{ office.description }}</p>{% if office.email %}<a href="mailto:{{ office.email }}">{{ office.email }}</a>{% endif %}{% if office.phone %}<a href="tel:{{ office.phone }}">{{ office.phone }}</a>{% endif %}{% if office.location %}<p class="mt-3 mb-1">{{ office.location }}</p>{% endif %}{% if office.office_hours %}<p>{{ office.office_hours }}</p>{% endif %}</article>{% empty %}<p class="muted-copy">{% if request.GET.q %}No offices match your search. {% endif %}Use the contact details or inquiry form below to reach the college.</p>{% endfor %}</div></div></section>
+<section class="college-section"><div class="container"><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}The right people, within reach</span><h2 class="section-title">Office Directory.</h2><div class="office-search">{% include "website/includes/content_search.html" with search_label="offices" %}</div><div class="office-grid">{% for office in offices %}<article class="content-card"><h3>{{ office.name }}</h3><p>{{ office.description }}</p>{% if office.email %}<a href="mailto:{{ office.email }}">{{ office.email }}</a>{% endif %}{% if office.phone %}<a href="tel:{{ office.phone }}">{{ office.phone }}</a>{% endif %}{% if office.location %}<p class="mt-3 mb-1">{{ office.location }}</p>{% endif %}{% if office.office_hours %}<p>{{ office.office_hours }}</p>{% endif %}</article>{% empty %}<p class="muted-copy">{% if request.GET.q %}No offices match your search. {% endif %}Use the contact details or inquiry form below to reach the college.</p>{% endfor %}</div></div></section>
 
 
 <section class="section-block contact-content-section">
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow section-eyebrow-inquiry">Direct Inquiry</span>
-                <h2 class="section-title mt-3 mb-2">Reach The Campus Easily</h2>
+                <span class="section-eyebrow section-eyebrow-inquiry">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Direct Inquiry</span>
+                <h2 class="section-title mt-3 mb-2">Reach the Campus Easily</h2>
                 <p class="muted-copy mb-0">Send a question, connect with our offices, or find your way to campus.</p>
             </div>
         </div>
@@ -22,8 +22,8 @@
                 <div class="content-card content-card-static contact-info-card h-100">
                     <div class="contact-shell">
                         <div>
-                            <span class="section-eyebrow section-eyebrow-contact">Contact Desk</span>
-                            <h2 class="section-title mt-3">Reach The Campus</h2>
+                            <span class="section-eyebrow section-eyebrow-contact">{% include "website/includes/section_icon.html" with icon="phone" %}Contact Desk</span>
+                            <h2 class="section-title mt-3">Reach the Campus</h2>
                             <p class="muted-copy mb-0">{{ page_content.body_text|default:"Send a question, request information, or direct students and parents to the proper office." }}</p>
                         </div>
                         <div class="contact-detail-grid">
@@ -96,7 +96,7 @@
                     <div class="contact-map-label">
                         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-sm-between align-items-sm-start">
                             <div>
-                                <span class="section-eyebrow section-eyebrow-map">Campus Map</span>
+                                <span class="section-eyebrow section-eyebrow-map">{% include "website/includes/section_icon.html" with icon="map" %}Campus Map</span>
                                 <strong id="mapViewTitle">City College of Bayawan - Location</strong>
                             </div>
                             <div class="contact-map-view-toggle btn-group" role="group" aria-label="Switch map view">
@@ -117,7 +117,7 @@
                                href="{% if site_settings.normalized_map_embed_url %}{{ site_settings.normalized_map_embed_url }}{% else %}https://www.google.com/maps?q=City%20College%20of%20Bayawan%2C%20Bayawan%20City%2C%20Negros%20Oriental&z=14{% endif %}"
                                target="_blank"
                                rel="noopener noreferrer">
-                                <i class="fa-solid fa-up-right-from-square me-1" aria-hidden="true"></i><span>Open full map</span>
+                                <i class="fa-solid fa-up-right-from-square me-1" aria-hidden="true"></i><span>Open Full Map</span>
                             </a>
                         </div>
                     </div>

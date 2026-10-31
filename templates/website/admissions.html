@@ -4,8 +4,8 @@
 <div class="container">
 <div class="section-header">
 <div>
-<span class="section-eyebrow">Your journey starts here</span>
-<h2 class="section-title">Take your next step.</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Your journey starts here</span>
+<h2 class="section-title">Take Your Next Step.</h2>
 <p class="muted-copy">Explore your options and prepare for admission. Contact the college for current schedules and application guidance.</p>
 </div>
 </div>
@@ -24,32 +24,32 @@
 <article class="admission-step">
 <span class="step-number">01</span>
 <div>
-<h3>Explore your academic options</h3>
+<h3>Explore Your Academic Options</h3>
 <p>Read about our programs and find a path that fits your interests.</p>
-<a class="editorial-link" href="{% url 'website:academics' %}">Explore programs &nearr;</a>
+<a class="editorial-link" href="{% url 'website:academics' %}">Explore Programs &nearr;</a>
 </div>
 </article>
 <article class="admission-step">
 <span class="step-number">02</span>
 <div>
-<h3>Prepare your requirements</h3>
+<h3>Prepare Your Requirements</h3>
 <p>Review the published requirements and download the forms you need.</p>
-<a class="editorial-link" href="{% url 'website:downloads' %}">Find official forms &nearr;</a>
+<a class="editorial-link" href="{% url 'website:downloads' %}">Find Official Forms &nearr;</a>
 </div>
 </article>
 <article class="admission-step">
 <span class="step-number">03</span>
 <div>
-<h3>Confirm the next steps</h3>
+<h3>Confirm the Next Steps</h3>
 <p>Contact the college for current application schedules and submission instructions.</p>
-<a class="editorial-link" href="{% url 'website:contact' %}">Contact the college &nearr;</a>
+<a class="editorial-link" href="{% url 'website:contact' %}">Contact the College &nearr;</a>
 </div>
 </article>
 {% endfor %}
 </div>
 <aside class="admission-checklist">
-<span class="section-eyebrow">Get prepared</span>
-<h2>Your requirements checklist</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="checklist" %}Get prepared</span>
+<h2>Your Requirements Checklist</h2>
 <p class="checklist-help">Check items as you prepare. This checklist stays on this page and does not submit an application.</p>
 {% for requirement in requirements %}
 <div class="checklist-item">
@@ -60,13 +60,13 @@
 {% if requirement.description %}
 <p>{{ requirement.description }}</p>
 {% endif %}{% if requirement.document_file %}
-<a href="{{ requirement.document_file|file_download_url }}">Download document &nearr;</a>
+<a href="{{ requirement.document_file|file_download_url }}">Download Document &nearr;</a>
 {% endif %}
 </div>
 {% empty %}
 <p>Contact the college for the latest admission requirements.</p>
 {% endfor %}
-<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">Need help with admission?</a>
+<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">Need Help with Admission?</a>
 </aside>
 </div>
 </div>

@@ -1,7 +1,7 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}{% load news_extras %}{% block content %}
 <header class="college-page-hero">
 <div class="container">
-<span class="section-eyebrow">Find your way</span>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Find your way</span>
 <h1>Search CCB.</h1>
 <p>Find academic programs, campus news, resources, and people.</p>
 </div>
@@ -13,13 +13,13 @@
 <div class="search-results">
 {% for result in page_obj %}
 <a class="search-result" href="{{ result.url }}">
-<span class="section-eyebrow">{{ result.label }}</span>
-<h2>{{ result.title }} <span aria-hidden="true">&nearr;</span>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}{{ result.label }}</span>
+<h2>{{ result.title|plain_text }} <span aria-hidden="true">&nearr;</span>
 </h2>
-<p>{{ result.description|truncatewords:35 }}</p>
+<p>{{ result.description|plain_text|truncatewords:35 }}</p>
 </a>
 {% empty %}
-<div class="notice-band">No matching results. Try another keyword or <a href="{% url 'website:contact' %}">contact the college</a> for help.</div>
+<div class="notice-band">No matching results. Try another keyword or <a href="{% url 'website:contact' %}">Contact the College</a> for help.</div>
 {% endfor %}
 </div>
 {% include "website/includes/pagination.html" %}{% else %}

@@ -79,8 +79,8 @@ def home_slide_upload_path(instance, filename):
     return f"home/slideshow/{_generate_unique_filename(instance, filename)}"
 
 
-MAX_IMAGE_SIZE = (1600, 1600)
-JPEG_QUALITY = 82
+MAX_IMAGE_SIZE = (2400, 2400)
+JPEG_QUALITY = 90
 PNG_COMPRESS_LEVEL = 6
 
 

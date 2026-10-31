@@ -71,7 +71,7 @@ def service_worker(request):
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v11";
+const CACHE_VERSION = "ccb-public-v14";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -391,6 +391,11 @@ def get_page_faqs(active_page):
 
 def base_context(active_page):
     return {
+        "eyebrow_icon": {
+            "home": "about", "academics": "academics", "admissions": "admissions",
+            "news": "news", "downloads": "downloads", "students": "students",
+            "faculty": "faculty", "about": "about", "contact": "contact", "search": "search",
+        }.get(active_page.rsplit(":", 1)[-1], "about"),
         "site_settings": get_site_settings(),
         "nav_items": NAV_ITEMS,
         "active_page": active_page,

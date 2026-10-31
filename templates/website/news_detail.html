@@ -4,10 +4,10 @@
 <nav class="college-breadcrumb" aria-label="Breadcrumb">
 <a href="{% url 'website:home' %}">Home</a>
 <span>/</span>
-<a href="{% url 'website:news' %}">News & events</a>
+<a href="{% url 'website:news' %}">News & Events</a>
 </nav>
-<span class="section-eyebrow">{{ item.published_at|date:'F j, Y' }}</span>
-<h1>{{ item.title }}</h1>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="calendar" %}{{ item.published_at|date:'F j, Y' }}</span>
+<h1>{{ item.title|plain_text }}</h1>
 {% if item.location %}
 <p>{{ item.location }}</p>
 {% endif %}
@@ -17,13 +17,13 @@
 <div class="container news-article">
 <article>
 {% if item.cover_image %}
-<img class="article-cover" src="{{ item.cover_image|optimized_image_url:1280 }}" alt="{{ item.title }}" width="1280" height="720">
+<picture class="responsive-image">{% with webp_sources=item.cover_image|webp_image_srcset:"480,960,1600" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="(min-width: 1200px) 640px, (min-width: 768px) 50vw, 100vw">{% endif %}{% endwith %}<img class="article-cover" src="{{ item.cover_image|optimized_image_url:1280 }}" alt="{{ item.title|plain_text }}" width="1280" height="720"></picture>
 {% endif %}
-<p class="article-summary">{{ item.summary }}</p>{{ item.content|linebreaks }}{% if item.attachment %}
-<a class="btn btn-soft" href="{{ item.attachment|file_download_url }}">View attachment</a>
+<p class="article-summary">{{ item.summary|plain_text }}</p>{{ item.content|plain_text|linebreaks }}{% if item.attachment %}
+<a class="btn btn-soft" href="{{ item.attachment|file_download_url }}">View Attachment</a>
 {% endif %}
 </article>
-<a class="editorial-link mt-5" href="{% url 'website:news' %}">&larr; Back to campus news</a>
+<a class="editorial-link mt-5" href="{% url 'website:news' %}">&larr; Back to Campus News</a>
 </div>
 </section>
 {% endblock %}

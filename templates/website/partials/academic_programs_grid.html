@@ -7,7 +7,7 @@
             <h3 class="mt-3"><a href="{% url 'website:program_detail' program.pk %}">{{ program.name }}</a></h3>
             {% if program.award %}<p class="text-dark fw-semibold">{{ program.award }}</p>{% endif %}
             <p class="muted-copy">{{ program.description }}</p>
-            <a class="editorial-link me-3" href="{% url 'website:program_detail' program.pk %}">Explore program &nearr;</a>
+            <a class="editorial-link me-3" href="{% url 'website:program_detail' program.pk %}">Explore Program &nearr;</a>
             {% if program.brochure_file %}
                 <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ program.brochure_file|file_download_url }}">Download Brochure</a>
             {% endif %}

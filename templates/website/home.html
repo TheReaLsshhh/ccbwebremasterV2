@@ -4,9 +4,11 @@
 <section class="college-home-hero" data-hero-slideshow aria-label="Welcome to City College of Bayawan">
 <div class="hero-slideshow" aria-hidden="true">
     {% for slide in hero_slides %}
-    <img class="hero-slide{% if forloop.first %} is-active{% endif %}"
-         src="{% if slide.image %}{{ slide.image|optimized_image_url:1600 }}{% else %}{{ slide.url }}{% endif %}"
-         alt="" decoding="async" {% if forloop.first %}fetchpriority="high"{% endif %}>
+    {% if forloop.first %}{% with priority="high" %}
+        {% if slide.image %}{% responsive_image slide.image width=1600 widths="480,960,1600,1920" css_class="hero-slide is-active" loading="eager" priority=priority %}{% else %}{% responsive_image slide.url width=1600 widths="480,960,1600,1920" css_class="hero-slide is-active" loading="eager" priority=priority %}{% endif %}
+    {% endwith %}{% else %}
+        {% if slide.image %}{% responsive_image slide.image width=1600 widths="480,960,1600,1920" css_class="hero-slide" loading="eager" priority="low" %}{% else %}{% responsive_image slide.url width=1600 widths="480,960,1600,1920" css_class="hero-slide" loading="eager" priority="low" %}{% endif %}
+    {% endif %}
     {% endfor %}
 </div>
 <div class="container home-hero-inner">
@@ -14,9 +16,9 @@
 <h1>{{ page_content.hero_title|default:"A brighter future begins here." }}</h1>
 <p>{{ page_content.hero_text }}</p>
 <div class="hero-actions">
-<a class="btn btn-brand" href="{% url 'website:admissions' %}">Begin your CCB journey <span aria-hidden="true">&nearr;</span>
+<a class="btn btn-brand" href="{% url 'website:admissions' %}">Begin Your CCB Journey <span aria-hidden="true">&nearr;</span>
 </a>
-<a class="hero-text-link" href="{% url 'website:academics' %}">Explore our programs <span aria-hidden="true">&nearr;</span>
+<a class="hero-text-link" href="{% url 'website:academics' %}">Explore Our Programs <span aria-hidden="true">&nearr;</span>
 </a>
 </div>
 <div class="hero-caption">
@@ -29,17 +31,17 @@
 <div class="container journey-grid">
 <a href="{% url 'website:academics' %}">
 <span>01 / DISCOVER</span>
-<strong>Find your program</strong>
+<strong>Find Your Program</strong>
 <span class="journey-arrow" aria-hidden="true">&nearr;</span>
 </a>
 <a href="{% url 'website:admissions' %}">
 <span>02 / BEGIN</span>
-<strong>Plan your admission</strong>
+<strong>Plan Your Admission</strong>
 <span class="journey-arrow" aria-hidden="true">&nearr;</span>
 </a>
 <a href="{% url 'website:students' %}">
 <span>03 / CONNECT</span>
-<strong>Make the most of CCB</strong>
+<strong>Make the Most of CCB</strong>
 <span class="journey-arrow" aria-hidden="true">&nearr;</span>
 </a>
 </div>
@@ -47,12 +49,12 @@
 <section class="college-section">
 <div class="container editorial-intro">
 <div>
-<span class="section-eyebrow">An education. A community. A future.</span>
-<h2>A place to learn.<br>A place to belong.</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="about" %}An education. A community. A future.</span>
+<h2>A Place to Learn.<br>A Place to Belong.</h2>
 </div>
 <div>
 <p class="intro-copy">Your ambitions have a home in Bayawan. Explore academic opportunities, connect with our college community, and take the next step toward your future.</p>
-<a class="editorial-link" href="{% url 'website:about' %}">Get to know CCB <span aria-hidden="true">&nearr;</span>
+<a class="editorial-link" href="{% url 'website:about' %}">Get to Know CCB <span aria-hidden="true">&nearr;</span>
 </a>
 </div>
 </div>
@@ -61,10 +63,10 @@
 <div class="container">
 <div class="section-header">
 <div>
-<span class="section-eyebrow">From our community</span>
-<h2 class="section-title">The latest at CCB.</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="news" %}From our community</span>
+<h2 class="section-title">The Latest at CCB.</h2>
 </div>
-<a class="editorial-link" href="{% url 'website:news' %}">All news & events &nearr;</a>
+<a class="editorial-link" href="{% url 'website:news' %}">All News & Events &nearr;</a>
 </div>
 <div class="story-grid">
 {% for item in home_news_items|slice:':3' %}
@@ -72,21 +74,21 @@
 <a href="{% url 'website:news_detail' item.pk %}">
 <div class="story-image">
 {% if item.cover_image %}
-<img src="{{ item.cover_image|optimized_image_url:720 }}" alt="{{ item.title }}" loading="lazy" width="720" height="480">
+<picture class="responsive-image">{% with webp_sources=item.cover_image|webp_image_srcset:"480,960,1600" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="(min-width: 1200px) 420px, (min-width: 768px) 45vw, 100vw">{% endif %}{% endwith %}<img src="{{ item.cover_image|optimized_image_url:720 }}" alt="{{ item.title|plain_text }}" loading="lazy" width="720" height="480"></picture>
 {% else %}
-<img src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" loading="lazy" width="720" height="480">
+<picture class="responsive-image"><source type="image/webp" srcset="{% static 'images/responsive/ccb-480.webp' %} 480w, {% static 'images/responsive/ccb-960.webp' %} 960w, {% static 'images/responsive/ccb-1600.webp' %} 1600w" sizes="(min-width: 1200px) 640px, (min-width: 768px) 50vw, 100vw"><img src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" loading="lazy" width="720" height="480"></picture>
 {% endif %}
 </div>
 <div class="story-body">
 <time datetime="{{ item.published_at|date:'Y-m-d' }}">{{ item.published_at|date:'F j, Y' }}</time>
-<h3>{{ item.title }}</h3>
-<p>{{ item.summary|truncatewords:24 }}</p>
+<h3>{{ item.title|plain_text }}</h3>
+<p>{{ item.summary|plain_text|truncatewords:24 }}</p>
 <span class="editorial-link">Read story &nearr;</span>
 </div>
 </a>
 </article>
 {% empty %}
-<div class="notice-band">Campus stories and announcements will appear here when available. <a href="{% url 'website:contact' %}">Contact the college</a> for current information.</div>
+<div class="notice-band">Campus stories and announcements will appear here when available. <a href="{% url 'website:contact' %}">Contact the College</a> for current information.</div>
 {% endfor %}
 </div>
 </div>
@@ -95,24 +97,24 @@
 <div class="container">
 <div class="section-header">
 <div>
-<span class="section-eyebrow">Learn with purpose</span>
-<h2 class="section-title">Discover your direction.</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="academics" %}Learn with purpose</span>
+<h2 class="section-title">Discover Your Direction.</h2>
 </div>
-<a class="editorial-link" href="{% url 'website:academics' %}">All academic programs &nearr;</a>
+<a class="editorial-link" href="{% url 'website:academics' %}">All Academic Programs &nearr;</a>
 </div>
 <div class="program-feature-grid">
 {% for program in featured_programs %}
 <a class="program-feature" href="{% url 'website:program_detail' program.pk %}">
-<span class="section-eyebrow">{{ program.award|default:'Academic program' }}</span>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="academics" %}{{ program.award|default:'Academic program' }}</span>
 <h3>{{ program.name }}</h3>
 <p>{{ program.description|truncatewords:26 }}</p>
 <span class="editorial-link">Explore program &nearr;</span>
 </a>
 {% empty %}
 <div class="program-feature">
-<h3>Explore your academic options.</h3>
+<h3>Explore Your Academic Options.</h3>
 <p>Find program information and official brochures to help plan your next step.</p>
-<a class="editorial-link" href="{% url 'website:academics' %}">Visit academics &nearr;</a>
+<a class="editorial-link" href="{% url 'website:academics' %}">Visit Academics &nearr;</a>
 </div>
 {% endfor %}
 </div>
@@ -121,15 +123,15 @@
 <section class="campus-feature">
 <div class="container campus-feature-grid">
 <div class="campus-feature-image">
-<img src="{% static 'images/ccb.jpg' %}" alt="The City College of Bayawan campus building" loading="lazy" width="1200" height="600">
+<picture class="responsive-image"><source type="image/webp" srcset="{% static 'images/responsive/ccb-480.webp' %} 480w, {% static 'images/responsive/ccb-960.webp' %} 960w, {% static 'images/responsive/ccb-1600.webp' %} 1600w" sizes="(min-width: 1200px) 640px, (min-width: 768px) 50vw, 100vw"><img src="{% static 'images/ccb.jpg' %}" alt="The City College of Bayawan campus building" loading="lazy" width="1200" height="600"></picture>
 </div>
 <div class="campus-feature-copy">
-<span class="section-eyebrow">Here for you</span>
-<h2>Connected to campus.<br>Ready for what's next.</h2>
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="support" %}Here for you</span>
+<h2>Connected to Campus.<br>Ready for What's Next.</h2>
 <p>Find student support, access official forms, and connect with the people who can help.</p>
-<a class="editorial-link" href="{% url 'website:students' %}">Explore student resources &nearr;</a>
-<a class="editorial-link" href="{% url 'website:downloads' %}">Forms & downloads &nearr;</a>
-<a class="editorial-link" href="{% url 'website:contact' %}">Plan your visit &nearr;</a>
+<a class="editorial-link" href="{% url 'website:students' %}">Explore Student Resources &nearr;</a>
+<a class="editorial-link" href="{% url 'website:downloads' %}">Forms & Downloads &nearr;</a>
+<a class="editorial-link" href="{% url 'website:contact' %}">Plan Your Visit &nearr;</a>
 </div>
 </div>
 </section>

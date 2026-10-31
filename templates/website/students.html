@@ -10,7 +10,7 @@
     <div class="container">
         <div class="section-header">
             <div>
-                <span class="section-eyebrow section-eyebrow-student">Student Hub</span>
+                <span class="section-eyebrow section-eyebrow-student">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Student Hub</span>
                 <h2 class="section-title mt-3 mb-2">Resources and Support Tools</h2>
                 <p class="muted-copy mb-0">Find helpful resources, official documents, and support for your college journey.</p>
             </div>
@@ -20,5 +20,5 @@
         </div>
     </div>
 </section>
-<section class="college-section college-section-tinted"><div class="container"><div class="section-header"><div><span class="section-eyebrow">Stay connected</span><h2 class="section-title">Campus services.</h2></div></div><div class="service-links">{% for service in service_menu_items %}<a class="service-link" href="{{ service.url }}" target="_blank" rel="noopener noreferrer"><h3>{{ service.label }} &nearr;</h3>{% if service.description %}<p>{{ service.description }}</p>{% endif %}<span class="editorial-link">Visit service website</span></a>{% empty %}<p>Contact the college for campus service information.</p>{% endfor %}</div></div></section>{% endblock %}
+<section class="college-section college-section-tinted"><div class="container"><div class="section-header"><div><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="services" %}Stay connected</span><h2 class="section-title">Campus Services.</h2></div></div><div class="service-links">{% for service in service_menu_items %}<a class="service-link" href="{{ service.url }}" target="_blank" rel="noopener noreferrer"><h3>{{ service.label }} &nearr;</h3>{% if service.description %}<p>{{ service.description }}</p>{% endif %}<span class="editorial-link">Visit service website</span></a>{% empty %}<p>Contact the college for campus service information.</p>{% endfor %}</div></div></section>{% endblock %}
 

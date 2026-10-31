@@ -3,11 +3,11 @@
     <a
         class="coverflow-card-link"
         href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
-        aria-label="Read more: {{ item.title }}"
+        aria-label="Read more: {{ item.title|plain_text }}"
     >
         <div class="coverflow-card-image-wrap">
             {% if item.cover_image %}
-                <img
+                <picture class="responsive-image">{% with webp_sources=item.cover_image|webp_image_srcset:"480,960,1600" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="(min-width: 1200px) 34vw, (min-width: 768px) 50vw, 92vw">{% endif %}{% endwith %}<img
                     src="{{ item.cover_image|optimized_image_url:480 }}"
                     srcset="{{ item.cover_image|optimized_image_srcset:'320,480,640,960' }}"
                     sizes="(min-width: 1200px) 34vw, (min-width: 768px) 50vw, 92vw"
@@ -17,7 +17,7 @@
                     height="480"
                     decoding="async"
                     {% if priority_image %}fetchpriority="high"{% else %}loading="lazy" fetchpriority="low"{% endif %}
-                >
+                ></picture>
             {% else %}
                 <div class="coverflow-card-placeholder" aria-hidden="true">
                     <i class="fa-solid fa-newspaper" aria-hidden="true"></i>
@@ -29,7 +29,7 @@
         </div>
 
         <div class="coverflow-card-body">
-            <h3 class="coverflow-card-title">{{ item.title }}</h3>
+            <h3 class="coverflow-card-title">{{ item.title|plain_text }}</h3>
             {% if item.location %}
                 <span class="coverflow-card-location">
                     <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
@@ -37,9 +37,9 @@
                 </span>
             {% endif %}
             {% if item.summary %}
-                <p class="coverflow-card-excerpt">{{ item.summary }}</p>
+                <p class="coverflow-card-excerpt">{{ item.summary|plain_text }}</p>
             {% elif item.content %}
-                <p class="coverflow-card-excerpt">{{ item.content|truncatewords:18 }}</p>
+                <p class="coverflow-card-excerpt">{{ item.content|plain_text|truncatewords:18 }}</p>
             {% endif %}
             <span class="coverflow-card-cta" aria-hidden="true">
                 Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>

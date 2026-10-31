@@ -2,17 +2,17 @@
 <article class="news-detail-modal-content">
     {% if item.cover_image %}
         <div class="news-detail-modal-hero">
-            <img
+            <picture class="responsive-image">{% with webp_sources=item.cover_image|webp_image_srcset:"480,960,1600" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="(min-width: 992px) 960px, 94vw">{% endif %}{% endwith %}<img
                 src="{{ item.cover_image|optimized_image_url:960 }}"
                 srcset="{{ item.cover_image|optimized_image_srcset:'480,720,960,1280' }}"
                 sizes="(min-width: 992px) 960px, 94vw"
-                alt="{{ item.title }}"
+                alt="{{ item.title|plain_text }}"
                 class="news-detail-modal-image"
                 width="960"
                 height="540"
                 loading="lazy"
                 decoding="async"
-                fetchpriority="low">
+                fetchpriority="low"></picture>
         </div>
     {% endif %}
     <div class="news-detail-modal-main">
@@ -25,12 +25,12 @@
                 </span>
             {% endif %}
         </div>
-        <h2 class="news-detail-modal-title">{{ item.title }}</h2>
+        <h2 class="news-detail-modal-title">{{ item.title|plain_text }}</h2>
         {% if item.summary %}
-            <p class="news-detail-modal-summary">{{ item.summary }}</p>
+            <p class="news-detail-modal-summary">{{ item.summary|plain_text }}</p>
         {% endif %}
         {% if item.content %}
-            <div class="news-detail-modal-copy">{{ item.content|linebreaksbr }}</div>
+            <div class="news-detail-modal-copy">{{ item.content|plain_text|linebreaksbr }}</div>
         {% endif %}
         {% if item.attachment %}
             <div class="news-detail-modal-actions">

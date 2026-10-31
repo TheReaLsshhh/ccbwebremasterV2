@@ -5,19 +5,19 @@
 <section class="college-section">
     <div class="container editorial-intro">
         <div>
-            <span class="section-eyebrow">Our college. Our community.</span>
-            <h2>Rooted in Bayawan.<br>Looking to the future.</h2>
+            <span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Our college. Our community.</span>
+            <h2>Rooted in Bayawan.<br>Looking to the Future.</h2>
             <p class="intro-copy">Discover the values, history, and aspirations that shape our college community.</p>
-            <a class="editorial-link" href="{% url 'website:faculty' %}">Meet our faculty &amp; staff &nearr;</a>
+            <a class="editorial-link" href="{% url 'website:faculty' %}">Meet Our Faculty &amp; Staff &nearr;</a>
         </div>
-        <img class="about-campus-image" src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" width="1000" height="600" loading="lazy">
+        <picture class="responsive-image"><source type="image/webp" srcset="{% static 'images/responsive/ccb-480.webp' %} 480w, {% static 'images/responsive/ccb-960.webp' %} 960w, {% static 'images/responsive/ccb-1600.webp' %} 1600w" sizes="(min-width: 1200px) 640px, (min-width: 768px) 50vw, 100vw"><img class="about-campus-image" src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" width="1000" height="600" loading="lazy"></picture>
     </div>
 </section>
 <section class="college-section college-section-tinted">
     <div class="container institutional-sections">
         {% for section in about_sections %}
         <article class="institutional-section">
-            <div><span class="section-eyebrow">{{ forloop.counter|stringformat:'02d' }} / City College of Bayawan</span><h2>{{ section.body_title|default:"Our college" }}</h2></div>
+            <div><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}{{ forloop.counter|stringformat:'02d' }} / City College of Bayawan</span><h2>{{ section.body_title|default:"Our college" }}</h2></div>
             <div class="institutional-copy">{{ section.body_text|default:"Learn more about City College of Bayawan and our community. Contact the college for further information."|linebreaks }}</div>
         </article>
         {% endfor %}

@@ -7,6 +7,12 @@
     const banners = [...document.querySelectorAll(".college-home-hero, .college-page-hero")];
     let frame = null;
 
+    // Safari before 14 exposes addListener rather than addEventListener.
+    function watchMedia(query, callback) {
+        if (typeof query.addEventListener === "function") query.addEventListener("change", callback);
+        else if (typeof query.addListener === "function") query.addListener(callback);
+    }
+
     function paintParallax() {
         frame = null;
         banners.forEach((banner) => {
@@ -25,8 +31,8 @@
 
     window.addEventListener("scroll", scheduleParallax, { passive: true });
     window.addEventListener("resize", scheduleParallax, { passive: true });
-    reducedMotion.addEventListener("change", scheduleParallax);
-    smallScreen.addEventListener("change", scheduleParallax);
+    watchMedia(reducedMotion, scheduleParallax);
+    watchMedia(smallScreen, scheduleParallax);
     paintParallax();
 
     if (!hero) return;
@@ -42,7 +48,7 @@
         window.clearTimeout(timer);
         timer = null;
         const ready = available();
-        if (ready.length > 1 && !reducedMotion.matches && !document.hidden && inView) {
+        if (ready.length > 1 && !document.hidden && inView) {
             timer = window.setTimeout(() => changeSlide(1), 8000);
         }
     }
@@ -60,7 +66,7 @@
 
     function imageSettled() {
         if (!slides[active].naturalWidth && available().length) changeSlide(1);
-        else sync();
+        else if (timer === null) sync();
     }
 
     slides.forEach((slide) => {
@@ -68,7 +74,10 @@
         slide.addEventListener("error", imageSettled);
     });
     document.addEventListener("visibilitychange", sync);
-    reducedMotion.addEventListener("change", sync);
+    watchMedia(reducedMotion, sync);
+    // Restart timers when iOS/Safari restores a page from its back-forward cache.
+    window.addEventListener("pageshow", () => { scheduleParallax(); imageSettled(); });
+    window.addEventListener("pagehide", () => { window.clearTimeout(timer); timer = null; });
     if ("IntersectionObserver" in window) {
         const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync(); });
         observer.observe(hero);

@@ -60,7 +60,7 @@ body {
     linear-gradient(180deg, rgba(233, 241, 230, 0.58), rgba(255, 255, 255, 0) 18%),
     linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(255, 255, 255, 0) 34%),
     var(--ccb-portal);
-  font-family: "Public Sans", "Segoe UI", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -392,7 +392,7 @@ h4,
 h5,
 h6,
 .navbar-brand {
-  font-family: "Sora", "Segoe UI", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -1547,7 +1547,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .home-news-carousel .home-news-tile-title {
   margin: -0.12rem 0 0;
   color: var(--ccb-stone-950);
-  font-family: "Sora", "Public Sans", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(1.35rem, 2.15vw, 2rem);
   font-weight: 700;
   line-height: 1.16;
@@ -1897,7 +1897,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .coverflow-card-title {
   margin: 0;
   color: var(--ccb-stone-950);
-  font-family: "Sora", "Public Sans", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   line-height: 1.28;
@@ -2517,7 +2517,7 @@ body.modal-open:has(#newsDetailModal.show) .modal-backdrop {
 .news-detail-modal-title {
   margin: 0;
   color: var(--ccb-green-900);
-  font-family: "Sora", "Public Sans", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(1.35rem, 2.4vw, 1.85rem);
   font-weight: 700;
   line-height: 1.22;

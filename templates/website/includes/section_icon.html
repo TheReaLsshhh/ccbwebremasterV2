@@ -1,0 +1,39 @@
+{% with symbol=icon|default:eyebrow_icon %}
+<svg class="section-eyebrow-icon" data-eyebrow-icon="{{ symbol }}" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+{% if symbol == "academics" %}
+    <path d="M12 6c-3-2-6-2-10-1v14c4-1 7-1 10 1 3-2 6-2 10-1V5c-4-1-7-1-10 1Z"></path><path d="M12 6v14"></path>
+{% elif symbol == "admissions" %}
+    <rect x="5" y="4" width="14" height="18" rx="2"></rect><rect x="9" y="2" width="6" height="4" rx="1"></rect><path d="m8 13 3 3 5-6"></path>
+{% elif symbol == "news" %}
+    <path d="m4 10 13-5v14L4 14v-4Z"></path><path d="m6 15 2 6h3l-2-5M20 9l2-1m-2 7 2 1"></path>
+{% elif symbol == "downloads" %}
+    <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"></path>
+{% elif symbol == "students" %}
+    <rect x="5" y="6" width="14" height="16" rx="3"></rect><path d="M9 6V4a3 3 0 0 1 6 0v2M5 12h14M9 17h6"></path>
+{% elif symbol == "faculty" %}
+    <path d="m2 8 10-5 10 5-10 5L2 8Zm4 2v7c4 3 8 3 12 0v-7M22 8v9"></path>
+{% elif symbol == "about" %}
+    <path d="m3 8 9-5 9 5H3Zm0 13h18M5 11v7m7-7v7m7-7v7"></path>
+{% elif symbol == "contact" %}
+    <rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m3 6 9 7 9-7"></path>
+{% elif symbol == "phone" %}
+    <path d="m5 3 4 4-2 3c2 3 4 5 7 7l3-2 4 4-2 3C10 22 2 14 2 5l3-2Z"></path>
+{% elif symbol == "map" %}
+    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle>
+{% elif symbol == "support" %}
+    <path d="M20 5a5 5 0 0 0-8 1 5 5 0 0 0-8-1c-4 4 0 8 8 15 8-7 12-11 8-15Z"></path>
+{% elif symbol == "services" %}
+    <rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect>
+{% elif symbol == "checklist" %}
+    <path d="m3 6 2 2 3-4m-5 9 2 2 3-4M12 6h9m-9 7h9M3 20h18"></path>
+{% elif symbol == "calendar" %}
+    <rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M7 3v4m10-4v4M3 11h18m-13 5h1m6 0h1"></path>
+{% elif symbol == "faq" %}
+    <circle cx="12" cy="12" r="9"></circle><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .6-1.5 1-1.5 3m0 3h.01"></path>
+{% elif symbol == "search" %}
+    <circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path>
+{% else %}
+    <path d="m3 10 9-7 9 7v11h-6v-7H9v7H3V10Z"></path>
+{% endif %}
+</svg>
+{% endwith %}

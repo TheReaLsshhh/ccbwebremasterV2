@@ -10,7 +10,7 @@
   <div class="container">
     <div class="section-header">
       <div>
-        <span class="section-eyebrow">Campus Updates</span>
+        <span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}Campus Updates</span>
         <h2 class="section-title mt-3 mb-2">Announcements, News & Events</h2>
         <p class="muted-copy mb-0">
           Follow the stories, achievements, and announcements from our college community.
@@ -27,21 +27,21 @@
           data-news-id="{{ item.pk }}"
           role="button"
           tabindex="0"
-          aria-label="View full announcement: {{ item.title }}"
+          aria-label="View full announcement: {{ item.title|plain_text }}"
         >
           {% if item.cover_image %}
           <div class="news-visual-wrap news-grid-visual">
-            <img
+            <picture class="responsive-image">{% with webp_sources=item.cover_image|webp_image_srcset:"480,960,1600" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 100vw">{% endif %}{% endwith %}<img
               src="{{ item.cover_image|optimized_image_url:480 }}"
               srcset="{{ item.cover_image|optimized_image_srcset:'320,480,720,960' }}"
-              alt="{{ item.title }}"
+              alt="{{ item.title|plain_text }}"
               class="news-visual-image news-grid-image"
               width="720"
               sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 100vw"
               loading="lazy"
               decoding="async"
               fetchpriority="low"
-            />
+            /></picture>
             {% if item.event_date %}
             <span class="signal-badge signal-badge-date news-grid-date-badge"
               >{{ item.event_date }}</span
@@ -64,15 +64,15 @@
               {% endif %}
             </div>
             <div class="d-flex flex-column align-items-start gap-2">
-              <h3 class="mt-0 mb-0">{{ item.title }}</h3>
+              <h3 class="mt-0 mb-0">{{ item.title|plain_text }}</h3>
             </div>
             <div class="news-grid-text">
-              <p class="muted-copy mb-2">{{ item.summary }}</p>
+              <p class="muted-copy mb-2">{{ item.summary|plain_text }}</p>
               {% if item.content %}
               <p class="mb-0">
                 {% if item.content|exceeds_word_limit:24 %}
-                  {{ item.content|words_truncate:24 }}...
-                {% else %} {{ item.content }} {% endif %}
+                  {{ item.content|plain_text|words_truncate:24 }}...
+                {% else %} {{ item.content|plain_text }} {% endif %}
               </p>
               {% endif %}
             </div>

@@ -1,0 +1,5 @@
+<picture class="responsive-image {{ picture_class }}">
+    {% if webp_srcset %}<source type="image/webp" srcset="{{ webp_srcset }}" sizes="{{ sizes }}">{% endif %}
+    <img src="{{ image_url }}" {% if image_srcset %}srcset="{{ image_srcset }}" sizes="{{ sizes }}"{% endif %}
+         alt="{{ image_alt }}" class="{{ css_class }}" loading="{{ loading }}" decoding="async" fetchpriority="{{ priority }}">
+</picture>

@@ -1,6 +1,8 @@
 from django import template
+import unicodedata
 from urllib.parse import urlencode, urlparse
 
+from django.templatetags.static import static
 from django.core import signing
 from django.urls import NoReverseMatch, reverse
 
@@ -12,7 +14,7 @@ IMAGE_EXTENSIONS = frozenset(
 DOCUMENT_EXTENSIONS = frozenset(
     {"pdf", "doc", "docx", "xls", "xlsx", "csv", "txt", "zip", "rar", "ppt", "pptx"}
 )
-IMAGE_TRANSFORM_DEFAULTS = "f_auto,q_auto,c_limit"
+IMAGE_TRANSFORM_DEFAULTS = "f_auto,q_auto:good,c_limit"
 
 
 @register.filter
@@ -72,6 +74,8 @@ def file_download_url(file_field):
 def _file_url(file_field):
     if not file_field:
         return ""
+    if isinstance(file_field, str):
+        return file_field
 
     try:
         return file_field.url
@@ -113,3 +117,60 @@ def optimized_image_srcset(file_field, widths):
             continue
         srcset.append(f"{_cloudinary_transform_url(url, width)} {width}w")
     return ", ".join(srcset)
+
+
+@register.filter
+def plain_text(value):
+    """Display pasted mathematical/bold Unicode letters in the site's fonts."""
+    return unicodedata.normalize("NFKC", str(value or ""))
+
+
+@register.filter
+def webp_image_url(file_field, width):
+    try:
+        width = min(2400, max(160, int(width)))
+    except (ValueError, TypeError):
+        return ""
+    url = _file_url(file_field)
+    if "res.cloudinary.com/" in url and "/image/upload/" in url:
+        return url.replace("/image/upload/", f"/image/upload/f_webp,q_90,c_limit,w_{width}/", 1)
+    # These bundled photos have prebuilt WebP variants; no runtime writes to static.
+    for filename in ("ccb", "bg2"):
+        if url == static(f"images/{filename}.jpg"):
+            candidate = next((size for size in (480, 960, 1600, 1920) if size >= width), 1920)
+            return static(f"images/responsive/{filename}-{candidate}.webp")
+    if not file_field or isinstance(file_field, str):
+        return ""
+    from website.image_variants import local_webp_url
+    return local_webp_url(file_field, width)
+
+
+@register.inclusion_tag("website/includes/responsive_image.html")
+def responsive_image(image, alt="", width=960, widths="480,960,1600", sizes="100vw", css_class="", loading="lazy", priority="auto", picture_class=""):
+    variants = []
+    for size in str(widths).split(","):
+        size = size.strip()
+        if not size.isdigit() or not 160 <= int(size) <= 2400:
+            continue
+        url = webp_image_url(image, int(size))
+        if url:
+            variants.append(f"{url} {size}w")
+    return {
+        "image_url": optimized_image_url(image, width),
+        "image_srcset": optimized_image_srcset(image, widths) if "res.cloudinary.com/" in _file_url(image) else "",
+        "webp_srcset": ", ".join(variants), "sizes": sizes,
+        "image_alt": plain_text(alt), "css_class": css_class,
+        "loading": loading, "priority": priority, "picture_class": picture_class,
+    }
+
+
+@register.filter
+def webp_image_srcset(image, widths):
+    variants = []
+    for size in str(widths).split(","):
+        size = size.strip()
+        if size.isdigit() and 160 <= int(size) <= 2400:
+            url = webp_image_url(image, size)
+            if url:
+                variants.append(f"{url} {size}w")
+    return ", ".join(variants)

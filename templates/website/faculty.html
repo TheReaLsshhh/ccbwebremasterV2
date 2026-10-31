@@ -12,7 +12,7 @@
             <div class="section-header{% if not forloop.first %} mt-5{% endif %}">
                 <div>
                     {% ifchanged section.eyebrow_label %}
-                        <span class="section-eyebrow">{{ section.eyebrow_label }}</span>
+                        <span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}{{ section.eyebrow_label }}</span>
                     {% endifchanged %}
                     <h2 class="section-title mt-3 mb-2">{{ section.title }}</h2>
                 </div>
@@ -34,7 +34,7 @@
                                         <p class="muted-copy">{{ person.bio }}</p>
                                     </div>
                                     {% if person.profile_image %}
-                                        <img src="{{ person.profile_image|optimized_image_url:176 }}" alt="{{ person.name }}" class="faculty-leader-image" width="88" height="88" loading="lazy" decoding="async" fetchpriority="low">
+                                        <picture class="responsive-image">{% with webp_sources=person.profile_image|webp_image_srcset:"160,320,480" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="96px">{% endif %}{% endwith %}<img src="{{ person.profile_image|optimized_image_url:176 }}" alt="{{ person.name }}" class="faculty-leader-image" width="88" height="88" loading="lazy" decoding="async" fetchpriority="low"></picture>
                                     {% endif %}
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
                         <div class="directory-row">
                             <div class="faculty-directory-main">
                                 {% if person.profile_image %}
-                                    <img src="{{ person.profile_image|optimized_image_url:128 }}" alt="{{ person.name }}" class="faculty-directory-image" width="64" height="64" loading="lazy" decoding="async" fetchpriority="low">
+                                    <picture class="responsive-image">{% with webp_sources=person.profile_image|webp_image_srcset:"160,320,480" %}{% if webp_sources %}<source type="image/webp" srcset="{{ webp_sources }}" sizes="96px">{% endif %}{% endwith %}<img src="{{ person.profile_image|optimized_image_url:128 }}" alt="{{ person.name }}" class="faculty-directory-image" width="64" height="64" loading="lazy" decoding="async" fetchpriority="low"></picture>
                                 {% endif %}
                                 <div>
                                     <strong>{{ person.name }}</strong>
