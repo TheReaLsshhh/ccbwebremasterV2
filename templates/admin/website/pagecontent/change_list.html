@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+{% block content %}
+<section class="ccb-admin-workspace" aria-labelledby="about-editors-title">
+    <h2 id="about-editors-title">About Page Editors</h2>
+    <p>Select a page to manage its sections. Publish verified content and use sort order to arrange it. The former About overview is retired.</p>
+    <div class="ccb-admin-task-grid">
+        {% for item in about_editors %}
+        <a href="{% url 'admin:website_pagecontent_changelist' %}?page__exact={{ item.page|urlencode }}"><strong>{{ item.label }}</strong><span>{{ item.description }}</span></a>
+        {% endfor %}
+    </div>
+    <p>Faculty records remain in the backend. They do not automatically appear on Administrators or Board of Trustees.</p>
+</section>
+{{ block.super }}
+{% endblock %}

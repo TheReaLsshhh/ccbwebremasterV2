@@ -29,7 +29,7 @@ class SearchIndexingTests(TestCase):
         self.assertIn("<loc>https://ccbacad.dpdns.org/</loc>", body)
         self.assertIn("<loc>https://ccbacad.dpdns.org/academics/</loc>", body)
         self.assertIn("<loc>https://ccbacad.dpdns.org/news/</loc>", body)
-        self.assertNotIn("admin", body)
+        self.assertNotIn("/admin/", body)
         self.assertNotIn("ccb-office", body)
 
     def test_canonical_url_uses_current_public_path(self):
@@ -50,10 +50,9 @@ class SearchIndexingTests(TestCase):
     def test_public_pages_have_unique_search_metadata(self):
         expected = {
             "/": "City College of Bayawan | Official Website",
-            "/about/": "About City College of Bayawan | Mission and Campus",
+            "/about/vision-mission-goals-core-values/": "Vision, Mission, Goals, Core Values | City College of Bayawan",
             "/academics/": "Academic Programs | City College of Bayawan",
             "/admissions/": "Admissions | City College of Bayawan",
-            "/faculty/": "Faculty and Staff | City College of Bayawan",
             "/students/": "Student Resources | City College of Bayawan",
             "/downloads/": "Forms and Downloads | City College of Bayawan",
             "/news/": "Campus News and Events | City College of Bayawan",
@@ -140,7 +139,7 @@ class PublicWebsiteTests(TestCase):
         self.person = FacultyStaffEntry.objects.create(name="Test Educator", role="Instructor", department="Education", section=self.section)
 
     def test_all_public_pages_render_with_shared_layout(self):
-        for route in ["home", "academics", "admissions", "news", "downloads", "students", "faculty", "about", "contact", "search"]:
+        for route in ["home", "academics", "admissions", "news", "downloads", "students", "contact", "search"]:
             with self.subTest(route=route):
                 response = self.client.get(reverse("website:"+route))
                 self.assertEqual(response.status_code, 200)
@@ -216,16 +215,13 @@ class PublicWebsiteTests(TestCase):
             self.assertContains(response, "Scholarship guide")
             self.assertNotContains(response, "Private scholarship")
 
-    def test_faculty_search_and_department_filter(self):
-        FacultyStaffEntry.objects.create(name="Private faculty", role="Instructor", section=self.section, published=False)
-        response = self.client.get("/faculty/", {"q": "Educator", "department": "Education"})
-        self.assertContains(response, "Test Educator")
-        self.assertNotContains(response, "Private faculty")
-        response = self.client.get("/faculty/", {"department": "Other"})
-        self.assertNotContains(response, "Test Educator")
-        self.section.published = False
-        self.section.save()
-        self.assertNotContains(self.client.get("/search/", {"q": "Educator"}), "Test Educator")
+    def test_faculty_frontend_is_retired_without_deleting_records(self):
+        response = self.client.get("/faculty/")
+        self.assertRedirects(response, "/about/administrators/", status_code=301)
+        self.assertTrue(FacultyStaffEntry.objects.filter(pk=self.person.pk).exists())
+        self.assertNotContains(self.client.get("/"), 'href="/faculty/"')
+        self.assertEqual(self.client.get("/search/", {"q": "Test Educator"}).context["page_obj"].paginator.count, 0)
+        self.assertNotContains(self.client.get("/sitemap.xml"), "/faculty/")
 
     def test_admissions_steps_and_checklist_are_admin_managed(self):
         AdmissionStep.objects.create(title="Book an appointment", description="Contact admissions.")
@@ -235,7 +231,8 @@ class PublicWebsiteTests(TestCase):
         response = self.client.get("/admissions/")
         self.assertContains(response, "Book an appointment")
         self.assertContains(response, "School documents")
-        self.assertContains(response, 'type="checkbox"')
+        self.assertNotContains(response, 'type="checkbox"')
+        self.assertContains(response, 'class="requirement-marker"')
         self.assertNotContains(response, "Private step")
         self.assertNotContains(response, "Private requirement")
 
@@ -296,3 +293,86 @@ class PublicWebsiteTests(TestCase):
         self.assertNotContains(response, "hero-slideshow-controls")
         self.assertNotContains(response, "data-slide-pause")
         self.assertContains(response, "js/college-motion.js")
+
+
+    def test_about_dropdown_has_five_destinations_on_desktop_and_mobile(self):
+        from .views import ABOUT_MENU_ITEMS
+        response = self.client.get("/")
+        self.assertEqual(len(response.context["about_menu_items"]), 5)
+        self.assertContains(response, 'id="aboutDropdown"')
+        self.assertContains(response, 'id="mobileAboutMenu"')
+        self.assertNotContains(response, 'href="/faculty/"')
+        html = response.content.decode()
+        for item in ABOUT_MENU_ITEMS:
+            url = reverse("website:about_section", kwargs={"section": item["slug"]})
+            self.assertGreaterEqual(html.count(f'href="{url}"'), 2)
+
+    def test_all_about_sections_render_with_matching_titles(self):
+        from .views import ABOUT_MENU_ITEMS
+        for item in ABOUT_MENU_ITEMS:
+            response = self.client.get(reverse("website:about_section", kwargs={"section": item["slug"]}))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["about_section_title"], item["label"])
+            self.assertEqual(response.context["active_page"], "website:about")
+            self.assertContains(response, 'aria-current="page"')
+
+    def test_about_content_respects_publication_and_sitemap(self):
+        from .models import PageContent
+        page = PageContent.objects.filter(page=PageContent.ABOUT_HISTORY).first()
+        self.assertIsNotNone(page)
+        page.body_text = "An unpublished institutional history."
+        page.save()
+        url = reverse("website:about_section", kwargs={"section": "history"})
+        response = self.client.get(url)
+        self.assertNotContains(response, "An unpublished institutional history.")
+        self.assertTrue(response.context["noindex"])
+        self.assertNotContains(self.client.get("/sitemap.xml"), url)
+        page.published = True
+        page.save()
+        self.assertContains(self.client.get(url), "An unpublished institutional history.")
+        self.assertContains(self.client.get("/sitemap.xml"), url)
+
+    def test_unknown_about_section_returns_404(self):
+        self.assertEqual(self.client.get("/about/not-a-section/").status_code, 404)
+
+    def test_about_editor_view_on_site_resolves_subpage(self):
+        from django.contrib import admin
+        from .models import PageContent
+        page = PageContent.objects.filter(page=PageContent.ABOUT_TRUSTEES).first()
+        self.assertEqual(admin.site._registry[PageContent].view_on_site(page), "/about/board-of-trustees/")
+
+    def test_requirement_list_is_read_only_but_document_links_work(self):
+        AdmissionRequirement.objects.create(title="Prepare this document", document_file="admissions/example.pdf")
+        response = self.client.get("/admissions/")
+        self.assertContains(response, 'class="requirements-list"')
+        self.assertContains(response, 'class="requirement-marker"')
+        self.assertContains(response, "admissions/example.pdf")
+        self.assertNotContains(response, 'type="checkbox"')
+        self.assertNotContains(response, 'role="checkbox"')
+        self.assertNotContains(response, "Check items as you prepare")
+
+
+    def test_about_overview_is_retired_and_subnavigation_has_only_five_links(self):
+        from html.parser import HTMLParser
+        class AboutLinks(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.in_navigation = False
+                self.links = []
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == "nav" and attrs.get("class") == "about-section-navigation":
+                    self.in_navigation = True
+                elif tag == "a" and self.in_navigation:
+                    self.links.append(attrs.get("href"))
+            def handle_endtag(self, tag):
+                if tag == "nav":
+                    self.in_navigation = False
+        self.assertRedirects(self.client.get("/about/"), "/about/vision-mission-goals-core-values/", status_code=301)
+        response = self.client.get("/about/history/")
+        parser = AboutLinks()
+        parser.feed(response.content.decode())
+        self.assertEqual(len(parser.links), 5)
+        self.assertNotIn("/about/", parser.links)
+        self.assertNotContains(response, 'href="/about/"')
+        self.assertNotContains(response, "Rooted in Bayawan.")

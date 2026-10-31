@@ -197,7 +197,14 @@ class PageContent(TimeStampedModel):
     STUDENTS = "students"
     FACULTY = "faculty"
     ABOUT = "about"
+    ABOUT_VISION = "about_vision"
+    ABOUT_HISTORY = "about_history"
+    ABOUT_PRESIDENT = "about_president"
+    ABOUT_ADMINISTRATORS = "about_administrators"
+    ABOUT_TRUSTEES = "about_trustees"
     CONTACT = "contact"
+
+    ABOUT_PAGE_KEYS = (ABOUT, ABOUT_VISION, ABOUT_HISTORY, ABOUT_PRESIDENT, ABOUT_ADMINISTRATORS, ABOUT_TRUSTEES)
 
     PAGE_CHOICES = [
         (HOME, "Home"),
@@ -208,6 +215,11 @@ class PageContent(TimeStampedModel):
         (STUDENTS, "Students"),
         (FACULTY, "Faculty"),
         (ABOUT, "About"),
+        (ABOUT_VISION, "About: Vision, Mission, Goals, Core Values"),
+        (ABOUT_HISTORY, "About: History"),
+        (ABOUT_PRESIDENT, "About: President's Corner"),
+        (ABOUT_ADMINISTRATORS, "About: Administrators"),
+        (ABOUT_TRUSTEES, "About: Board of Trustees"),
         (CONTACT, "Contact"),
     ]
 

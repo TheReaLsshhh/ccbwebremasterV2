@@ -50,22 +50,24 @@
 <aside class="admission-checklist">
 <span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="checklist" %}Get prepared</span>
 <h2>Your Requirements Checklist</h2>
-<p class="checklist-help">Check items as you prepare. This checklist stays on this page and does not submit an application.</p>
+<p class="checklist-help">Review these requirements and prepare the documents relevant to your application.</p>
+<ul class="requirements-list" role="list">
 {% for requirement in requirements %}
-<div class="checklist-item">
-<label class="checklist-label">
-<input type="checkbox">
+<li class="checklist-item">
+<div class="checklist-label">
+<span class="requirement-marker" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg></span>
 <strong>{{ requirement.title }}</strong>
-</label>
+</div>
 {% if requirement.description %}
 <p>{{ requirement.description }}</p>
 {% endif %}{% if requirement.document_file %}
 <a href="{{ requirement.document_file|file_download_url }}">Download Document &nearr;</a>
 {% endif %}
-</div>
+</li>
 {% empty %}
-<p>Contact the college for the latest admission requirements.</p>
+<li class="checklist-empty">Contact the college for the latest admission requirements.</li>
 {% endfor %}
+</ul>
 <a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">Need Help with Admission?</a>
 </aside>
 </div>

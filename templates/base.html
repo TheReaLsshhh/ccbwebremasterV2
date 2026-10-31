@@ -87,7 +87,7 @@
     <!-- Ensure Font Awesome loads even if the preload onload fails in some browsers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/site.css' %}?v=12">
-    <link rel="stylesheet" href="{% static 'css/institutional.css' %}?v=15">
+    <link rel="stylesheet" href="{% static 'css/institutional.css' %}?v=18">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to Content</a>
@@ -139,9 +139,21 @@
                                     </ul>
                                 </li>
                             {% endif %}
+                            {% if url_name == "website:about" %}
+                            <li class="nav-item dropdown nav-item-services nav-item-about">
+                                <button class="nav-link dropdown-toggle {% if active_page == url_name %}active{% endif %}" type="button" id="aboutDropdown" data-bs-toggle="dropdown" aria-expanded="false">About</button>
+                                <ul class="dropdown-menu dropdown-menu-end services-dropdown-menu about-dropdown-menu" aria-labelledby="aboutDropdown">
+                                    <li class="services-menu-heading" aria-hidden="true">About the College</li>
+                                    {% for item in about_menu_items %}
+                                    <li><a class="dropdown-item services-dropdown-item {% if active_about_section == item.slug %}active{% endif %}" href="{% url 'website:about_section' section=item.slug %}" {% if active_about_section == item.slug %}aria-current="page"{% endif %}>{{ item.label }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% else %}
                             <li class="nav-item">
                                 <a class="nav-link {% if active_page == url_name %}active{% endif %}" href="{% url url_name %}">{{ label }}</a>
                             </li>
+                            {% endif %}
                         {% endfor %}
                     </ul>
                 </div>
@@ -151,7 +163,7 @@
         <div class="site-search-strip"><div class="container">
             <form action="{% url 'website:search' %}" method="get" role="search">
                 <div class="site-search-field">
-                    <input id="site-search" type="search" name="q" placeholder="Programs, forms, people..." maxlength="200" value="{{ request.GET.q }}">
+                    <input id="site-search" type="search" name="q" placeholder="Programs, forms, offices..." maxlength="200" value="{{ request.GET.q }}">
                     <button type="submit"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg><span>Search</span></button>
                 </div>
             </form>
@@ -186,7 +198,7 @@
                 <div class="footer-intro"><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="admissions" %}Your next chapter</span><h2>Find Your Place at CCB.</h2><a class="btn btn-brand" href="{% url 'website:admissions' %}">Explore Admissions <span aria-hidden="true">&nearr;</span></a></div>
                 <div class="footer-columns">
                     <div><img src="{% static 'images/hero-images/ccb-logo-96.png' %}" alt="CCB seal" width="64" height="64" loading="lazy"><h3>{{ site_settings.site_name|default:"City College of Bayawan" }}</h3><p class="footer-mantra" lang="la">{{ site_settings.institutional_mantra|default:"Honus et Excellentia Ad Summum Bonum" }}</p><p>{{ site_settings.tagline|default:"Empowering learners. Building futures." }}</p></div>
-                    <div><h3>Discover</h3><a href="{% url 'website:academics' %}">Academic Programs</a><a href="{% url 'website:about' %}">Our College</a><a href="{% url 'website:news' %}">News & Events</a><a href="{% url 'website:faculty' %}">Faculty & Staff</a></div>
+                    <div><h3>Discover</h3><a href="{% url 'website:academics' %}">Academic Programs</a><a href="{% url 'website:about_section' section='vision-mission-goals-core-values' %}">Our College</a><a href="{% url 'website:news' %}">News & Events</a><a href="{% url 'website:about_section' section='administrators' %}">Administrators</a></div>
                     <div><h3>Useful Links</h3><a href="{% url 'website:admissions' %}">Admissions</a><a href="{% url 'website:students' %}">Student Resources</a><a href="{% url 'website:downloads' %}">Forms & Downloads</a><a href="{% url 'website:search' %}">Search the Website</a></div>
                     <div><h3>Get in Touch</h3><p>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>{% if site_settings.primary_email %}<a href="mailto:{{ site_settings.primary_email }}">{{ site_settings.primary_email }}</a>{% endif %}{% if site_settings.phone %}<a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>{% endif %}<a href="{% url 'website:contact' %}">Contact & Campus Map &nearr;</a></div>
                 </div>
@@ -232,9 +244,20 @@
                                         </div>
                                     </li>
                                 {% endif %}
+                                {% if url_name == "website:about" %}
+                                <li class="mobile-nav-services">
+                                    <button class="mobile-nav-services-toggle {% if active_page != url_name %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#mobileAboutMenu" aria-expanded="{% if active_page == url_name %}true{% else %}false{% endif %}" aria-controls="mobileAboutMenu">About</button>
+                                    <div class="collapse {% if active_page == url_name %}show{% endif %}" id="mobileAboutMenu">
+                                        <ul class="mobile-nav-services-list">
+                                            {% for item in about_menu_items %}<li><a class="mobile-nav-service-link" href="{% url 'website:about_section' section=item.slug %}" {% if active_about_section == item.slug %}aria-current="page"{% endif %}>{{ item.label }}</a></li>{% endfor %}
+                                        </ul>
+                                    </div>
+                                </li>
+                                {% else %}
                                 <li>
                                     <a class="mobile-nav-link {% if active_page == url_name %}active{% endif %}" href="{% url url_name %}">{{ label }}</a>
                                 </li>
+                                {% endif %}
                             {% endfor %}
                         </ul>
                     </nav>

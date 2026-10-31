@@ -62,6 +62,35 @@ class AdminContentTests(TestCase):
         for route in ["website_academicprogram_add", "website_newsevent_add", "website_sitesettings_add", "website_campusoffice_add", "website_campusservice_add", "website_admissionstep_add"]:
             self.assertEqual(self.client.get(reverse("admin:" + route)).status_code, 200)
 
+    def test_about_editor_filters_sections_and_publishes_to_correct_page(self):
+        history = PageContent.objects.create(
+            page=PageContent.ABOUT_HISTORY, hero_title="History",
+            body_title="Our Beginnings", body_text="Verified college history.", published=False,
+        )
+        other = PageContent.objects.create(
+            page=PageContent.ABOUT_TRUSTEES, hero_title="Trustees", published=False,
+        )
+        url = reverse("admin:website_pagecontent_changelist")
+        response = self.client.get(url, {"page__exact": PageContent.ABOUT_HISTORY})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "About Page Editors")
+        sections = list(response.context["cl"].queryset)
+        self.assertIn(history, sections)
+        self.assertTrue(all(section.page == PageContent.ABOUT_HISTORY for section in sections))
+        response = self.client.post(url, {
+            "action": "publish_selected", "_selected_action": [history.pk],
+        })
+        self.assertEqual(response.status_code, 302)
+        history.refresh_from_db()
+        other.refresh_from_db()
+        self.assertTrue(history.published)
+        self.assertFalse(other.published)
+        self.assertContains(self.client.get("/about/history/"), "Verified college history.")
+        response = self.client.get(reverse("admin:website_admissionrequirement_add"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Visitors cannot tick items or save progress")
+        self.assertContains(response, 'name="document_file"')
+
     def test_multiple_uploads_save_order_visibility_and_files(self):
         HomeSlide.objects.create(title="Existing", image="pages/existing.jpg", sort_order=10)
         response = self.client.post(self.upload_url, {"images": [self.image("first.jpg"), self.image("second.jpg")], "published": "on"})

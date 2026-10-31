@@ -4,14 +4,12 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.utils import timezone
-from .models import AcademicProgram, NewsEvent, LegalPage
+from .models import AcademicProgram, NewsEvent, LegalPage, PageContent
 
 PUBLIC_SITEMAP_PATHS = (
     ("", "weekly", "1.0"),
-    ("about/", "weekly", "0.7"),
     ("admissions/", "weekly", "0.8"),
     ("academics/", "weekly", "0.8"),
-    ("faculty/", "weekly", "0.6"),
     ("students/", "weekly", "0.7"),
     ("downloads/", "weekly", "0.7"),
     ("news/", "weekly", "0.8"),
@@ -60,6 +58,12 @@ def sitemap_xml(request):
     ]:
         for pk in queryset.values_list("pk", flat=True):
             url_entries.append(f"  <url><loc>{site_url}{reverse(route, args=[pk])}</loc></url>")
+
+    from .views import ABOUT_MENU_ITEMS
+    visible_about_pages = set(PageContent.objects.filter(page__in=PageContent.ABOUT_PAGE_KEYS, published=True).values_list("page", flat=True))
+    for item in ABOUT_MENU_ITEMS:
+        if item["page"] in visible_about_pages:
+            url_entries.append(f"  <url><loc>{site_url}{reverse('website:about_section', kwargs={'section': item['slug']})}</loc></url>")
 
     for slug in LegalPage.objects.filter(approved_for_publication=True).values_list("slug", flat=True):
         url_entries.append(f"  <url><loc>{site_url}{reverse('website:' + slug)}</loc></url>")

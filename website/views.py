@@ -9,7 +9,7 @@ from django.core import signing
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.templatetags.static import static
@@ -31,8 +31,6 @@ from .models import (
     AdmissionRequirement,
     ContactInquiry,
     DownloadItem,
-    FacultyStaffEntry,
-    FacultyStaffSection,
     FrequentlyAskedQuestion,
     NewsEvent,
     PageContent,
@@ -72,7 +70,7 @@ def service_worker(request):
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v15";
+const CACHE_VERSION = "ccb-public-v18";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -288,9 +286,16 @@ NAV_ITEMS = [
     ("News", "website:news"),
     ("Downloads", "website:downloads"),
     ("Students", "website:students"),
-    ("Faculty", "website:faculty"),
     ("About", "website:about"),
     ("Contact", "website:contact"),
+]
+
+ABOUT_MENU_ITEMS = [
+    {"label": "Vision, Mission, Goals, Core Values", "slug": "vision-mission-goals-core-values", "page": PageContent.ABOUT_VISION, "icon": "academics", "description": "The principles and direction of our college."},
+    {"label": "History", "slug": "history", "page": PageContent.ABOUT_HISTORY, "icon": "calendar", "description": "The story of City College of Bayawan."},
+    {"label": "President's Corner", "slug": "presidents-corner", "page": PageContent.ABOUT_PRESIDENT, "icon": "faculty", "description": "Messages and updates from the college president."},
+    {"label": "Administrators", "slug": "administrators", "page": PageContent.ABOUT_ADMINISTRATORS, "icon": "services", "description": "Learn about the college administration."},
+    {"label": "Board of Trustees", "slug": "board-of-trustees", "page": PageContent.ABOUT_TRUSTEES, "icon": "about", "description": "Information about the college's governing board."},
 ]
 
 SERVICE_DROPDOWN_ITEMS = [
@@ -404,6 +409,7 @@ def base_context(active_page):
         "nav_items": NAV_ITEMS,
         "active_page": active_page,
         "service_menu_items": get_service_dropdown_items(),
+        "about_menu_items": ABOUT_MENU_ITEMS,
         "page_faqs": get_page_faqs(active_page),
     }
 
@@ -659,47 +665,33 @@ def students_partial(request):
 
 
 def faculty(request):
-    faculty_people = FacultyStaffEntry.objects.filter(published=True).only(
-        "name",
-        "section",
-        "role",
-        "department",
-        "bio",
-        "email",
-        "profile_image",
-    ).order_by("name")
-    faculty_people = search_queryset(faculty_people, request, ("name", "role", "department", "bio"))
-    department = request.GET.get("department", "").strip()
-    if department:
-        faculty_people = faculty_people.filter(department=department)
-    faculty_sections = (
-        FacultyStaffSection.objects.only("title", "eyebrow_label", "layout", "sort_order")
-        .filter(published=True, people__in=faculty_people)
-        .distinct()
-        .prefetch_related(Prefetch("people", queryset=faculty_people))
-    )
-
-    context = base_context("website:faculty")
-    context.update(
-        {
-            "page_content": get_page_content(PageContent.FACULTY),
-            "faculty_sections": faculty_sections,
-            "departments": FacultyStaffEntry.objects.filter(published=True, section__published=True).exclude(department="").values_list("department", flat=True).distinct().order_by("department"),
-        }
-    )
-    return render_public(request, "website/faculty.html", context)
+    # Retain old links without exposing the retired public directory.
+    return redirect("website:about_section", section="administrators", permanent=True)
 
 
 def about(request):
+    return redirect("website:about_section", section="vision-mission-goals-core-values", permanent=True)
+
+
+def about_section(request, section):
+    item = next((item for item in ABOUT_MENU_ITEMS if item["slug"] == section), None)
+    if item is None:
+        from django.http import Http404
+        raise Http404
+    sections = list(PageContent.objects.filter(page=item["page"], published=True))
     context = base_context("website:about")
-    about_sections = get_page_contents(PageContent.ABOUT)
-    context.update(
-        {
-            "page_content": about_sections[0],
-            "about_sections": about_sections,
-        }
-    )
-    return render_public(request, "website/about.html", context)
+    context.update({
+        "page_content": sections[0] if sections else {"hero_title": item["label"], "hero_text": item["description"]},
+        "about_sections": sections,
+        "active_about_section": section,
+        "about_section_title": item["label"],
+        "eyebrow_icon": item["icon"],
+        "seo_title": f"{item['label']} | City College of Bayawan",
+        "seo_description": item["description"],
+        "page_faqs": get_page_faqs(f"website:{item['page']}"),
+        "noindex": not sections,
+    })
+    return render_public(request, "website/about_section.html", context)
 
 
 CONTACT_RATE_LIMIT_HOUR = 1  # max 1 submission per IP per hour
@@ -818,7 +810,6 @@ def search(request):
             (NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()), ("title", "summary", "content"), "News", "title", "summary", "website:news_detail"),
             (DownloadItem.objects.filter(published=True), ("title", "description"), "Download", "title", "description", "website:downloads"),
             (StudentResource.objects.filter(published=True), ("title", "description"), "Student resource", "title", "description", "website:students"),
-            (FacultyStaffEntry.objects.filter(published=True, section__published=True), ("name", "role", "department"), "Faculty & staff", "name", "role", "website:faculty"),
             (CampusOffice.objects.filter(published=True), ("name", "description", "location"), "Office", "name", "description", "website:contact"),
         ]
         for queryset, fields, label, title_field, description_field, route in sources:

@@ -172,10 +172,17 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(PageContent)
 class PageContentAdmin(PublishedContentAdmin):
-    list_display = ("page", "hero_title", "published", "sort_order", "updated_at")
+    change_list_template = "admin/website/pagecontent/change_list.html"
+    list_display = ("page", "body_title", "hero_title", "published", "sort_order", "updated_at")
     list_filter = ("published", "page")
     search_fields = ("hero_title", "body_title", "body_text")
     list_editable = ("published", "sort_order")
+    def changelist_view(self, request, extra_context=None):
+        from .views import ABOUT_MENU_ITEMS
+        return super().changelist_view(request, {
+            **(extra_context or {}), "about_editors": ABOUT_MENU_ITEMS,
+        })
+
     fieldsets = (
         (None, {"fields": ("page", "published", "sort_order")}),
         (
@@ -204,14 +211,21 @@ class PageContentAdmin(PublishedContentAdmin):
                 self.fieldsets[0],
                 ("Page banner and introduction", {"fields": ("hero_title", "hero_text", "banner_image")}),
             ]
-            if obj.page == PageContent.ABOUT:
-                sections.append(("About section", {"fields": ("body_title", "body_text")}))
+            if obj.page in PageContent.ABOUT_PAGE_KEYS:
+                sections.append(("About section", {
+                    "fields": ("body_title", "body_text"),
+                    "description": "Each published record becomes a section on the selected About page, in sort order. Use separate records for Vision, Mission, Goals, and Core Values. Draft records remain private. The former About overview is retired; edit one of the five About pages instead.",
+                }))
             elif obj.page == PageContent.CONTACT:
                 sections.append(("Contact introduction", {"fields": ("body_text",)}))
             return tuple(sections)
         return super().get_fieldsets(request, obj)
 
     def view_on_site(self, obj):
+        from .views import ABOUT_MENU_ITEMS
+        for item in ABOUT_MENU_ITEMS:
+            if obj.page == item["page"]:
+                return reverse("website:about_section", kwargs={"section": item["slug"]})
         return reverse(f"website:{obj.page}")
 
 
@@ -309,10 +323,21 @@ class AcademicProgramAdmin(PublishedContentAdmin):
 
 @admin.register(AdmissionRequirement)
 class AdmissionRequirementAdmin(PublishedContentAdmin):
+    search_fields = ("title", "description")
+    fieldsets = (
+        ("Requirements checklist", {
+            "fields": ("title", "description", "document_file"),
+            "description": "These are read-only preparation instructions on Admissions. Visitors cannot tick items or save progress. Attach an official form when needed.",
+        }),
+        ("Publication and order", {"fields": ("published", "sort_order")}),
+    )
     list_filter = ("published",)
     list_display = ("title", "sort_order", "updated_at", "published")
     list_editable = ("sort_order", "published")
     ordering = ("sort_order", "title")
+
+    def view_on_site(self, obj):
+        return reverse("website:admissions")
 
 
 @admin.register(NewsEvent)

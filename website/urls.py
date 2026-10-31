@@ -25,5 +25,6 @@ urlpatterns = [
     path("students/partial/", views.students_partial, name="students_partial"),
     path("faculty/", views.faculty, name="faculty"),
     path("about/", views.about, name="about"),
+    path("about/<slug:section>/", views.about_section, name="about_section"),
     path("contact/", views.contact, name="contact"),
 ]

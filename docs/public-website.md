@@ -4,13 +4,13 @@ The public site uses the existing Django templates and deployment stack. The sha
 
 ## Visitor features
 
-- Site search: `/search/?q=...`, with paginated results from published programs, news, downloads, student resources, faculty, and offices.
+- Site search: `/search/?q=...`, with paginated results from published programs, news, downloads, student resources and offices.
 - Programs: searchable listing and permanent `/academics/<id>/` detail pages, including optional department, duration, career pathways, and brochure.
 - News: keyword search, permanent `/news/<id>/` stories, and support for existing `/news/?open=<id>` links. A news item must be published and its publication date must have arrived to appear publicly.
 - Downloads: keyword and category filters, with pagination preserving both selections.
-- Admissions: ordered admission steps and a requirements checklist. Checkboxes are temporary page state; they do not save or submit an application.
+- Admissions: ordered admission steps and a read-only requirements list with static checkmark bullets and document links. It does not accept or save progress.
 - Students: searchable resources and editable campus service links.
-- Faculty: name, role, and biography search plus department filtering.
+- About: five dropdown destinations for institutional principles, History, President's Corner, Administrators, and Board of Trustees.
 - Contact: searchable office directory alongside the existing inquiry form and map.
 
 ## Content management
@@ -33,7 +33,7 @@ Use genuine CCB photography and verified institutional copy. No programs, admiss
 ## Local review and deployment
 
 1. Back up the target database before deployment. Local work created `db.before-public-redesign.sqlite3` if a local database was present.
-2. Install the existing requirements and run `python manage.py migrate` (including migrations 0012 and 0013).
+2. Install the existing requirements and run `python manage.py migrate` (including migrations 0012 through 0015).
 3. Run `python manage.py collectstatic --noinput`.
 4. Review every public page, mobile navigation, light/dark themes, searches, downloads, and an inquiry submission in a browser.
 5. Deploy through the existing Render workflow. Production continues using PostgreSQL, Cloudinary uploads, and existing email configuration. No production deployment was performed during this work.
@@ -73,3 +73,27 @@ The slideshow upload screen requires staff access, completed admin PIN verificat
 WebP improves delivery efficiency; it cannot restore detail missing from a low-resolution source. Use large original landscape photos for the hero. Picture fallback behavior follows [MDN's picture documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture); production transformations use [Cloudinary image optimization](https://cloudinary.com/documentation/image_optimization).
 
 Run the slideshow compatibility tests with `node --test tests/college-motion.test.cjs` alongside the Django suite. These emulate browser APIs and lifecycle events; real-device visual review remains necessary.
+
+## About dropdown and retired Faculty frontend
+
+The public Faculty directory is retired. Navigation, footer links, search results,
+and sitemap no longer advertise it. Existing `/faculty/` links redirect permanently
+to `/about/administrators/`. Faculty/staff models and Django Admin editors are kept;
+no faculty records are deleted or automatically relabeled as administrators.
+
+About has five destinations on both desktop and mobile: Vision, Mission, Goals,
+Core Values; History; President's Corner; Administrators; and Board of Trustees.
+The redundant About overview is retired. `/about/` redirects to Vision, Mission, Goals, Core Values; Home and footer links open that destination directly. The section navigation contains only the five About destinations. Existing legacy About content is kept in Admin and is not automatically shown on the new pages.
+
+Use **Admin -> Page contents**, filter by the relevant **About:** page, and fill in
+its official body text. Migration 0015 adds eight unpublished draft sections:
+four separate Vision/Mission/Goals/Core Values entries and one for each other page.
+Edit each body title/text and enable Published when ready. The smallest sort order
+selects the page introduction and controls section ordering. New FAQ layout choices
+allow FAQs on individual About subpages. The editor's View on site link opens the
+correct child page. No official institutional statements or leadership names were
+invented; empty pages direct visitors to Contact and remain excluded from indexing.
+
+The admissions list uses ordinary list markup and decorative checkmarks. It has no
+checkbox inputs or checked state. Existing requirement text, ordering, publication
+controls, and document downloads are unchanged.

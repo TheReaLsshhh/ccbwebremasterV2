@@ -30,13 +30,6 @@ PAGE_SEARCH_METADATA = {
             "College of Bayawan in Bayawan City, Negros Oriental."
         ),
     },
-    "website:faculty": {
-        "title": "Faculty and Staff | City College of Bayawan",
-        "description": (
-            "Meet the faculty, staff, and academic leaders serving the City College of "
-            "Bayawan community."
-        ),
-    },
     "website:students": {
         "title": "Student Resources | City College of Bayawan",
         "description": (

@@ -6,9 +6,10 @@
     <div class="ccb-admin-task-grid">
         {% if perms.website.view_legalpage %}<a href="{% url 'admin:website_legalpage_changelist' %}"><strong>Terms &amp; Privacy</strong><span>Review policy drafts, edit sections, and approve verified wording.</span></a>{% endif %}
         {% if perms.website.view_homeslide %}<a href="{% url 'admin:website_homeslide_changelist' %}"><strong>Home slideshow</strong><span>Upload images, preview slides, and set their order.</span></a>{% endif %}
-        {% if perms.website.view_pagecontent %}<a href="{% url 'admin:website_pagecontent_changelist' %}"><strong>Page headings &amp; About</strong><span>Edit introductions, page banners, and About sections.</span></a>{% endif %}
+        {% if perms.website.view_pagecontent %}<a href="{% url 'admin:website_pagecontent_changelist' %}"><strong>About Pages &amp; Page Headings</strong><span>Manage the five About pages, their sections, banners, and publication.</span></a>{% endif %}
         {% if perms.website.view_academicprogram %}<a href="{% url 'admin:website_academicprogram_changelist' %}"><strong>Academic programs</strong><span>Maintain program details, career paths, and brochures.</span></a>{% endif %}
         {% if perms.website.view_admissionstep %}<a href="{% url 'admin:website_admissionstep_changelist' %}"><strong>Admissions guide</strong><span>Order the steps applicants follow.</span></a>{% endif %}
+        {% if perms.website.view_admissionrequirement %}<a href="{% url 'admin:website_admissionrequirement_changelist' %}"><strong>Admissions Requirements</strong><span>Edit the read-only checklist, document attachments, and display order.</span></a>{% endif %}
         {% if perms.website.view_newsevent %}<a href="{% url 'admin:website_newsevent_changelist' %}"><strong>News &amp; events</strong><span>Publish stories, schedule releases, and feature updates.</span></a>{% endif %}
         {% if perms.website.view_campusservice %}<a href="{% url 'admin:website_campusservice_changelist' %}"><strong>Services menu</strong><span>Manage navigation and student service links.</span></a>{% endif %}
         {% if perms.website.view_campusoffice %}<a href="{% url 'admin:website_campusoffice_changelist' %}"><strong>Office directory</strong><span>Keep public office contacts and hours current.</span></a>{% endif %}

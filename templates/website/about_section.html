@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "website/includes/page_header.html" %}
+<section class="college-section"><div class="container">
+    <nav class="about-section-navigation" aria-label="About the college">
+        {% for item in about_menu_items %}<a href="{% url 'website:about_section' section=item.slug %}" {% if active_about_section == item.slug %}aria-current="page"{% endif %}>{{ item.label }}</a>{% endfor %}
+    </nav>
+    <div class="institutional-sections">
+        {% for section in about_sections %}
+        <article class="institutional-section">
+            <div><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=eyebrow_icon %}City College of Bayawan</span><h2>{{ section.body_title|default:about_section_title }}</h2></div>
+            <div class="institutional-copy">{{ section.body_text|linebreaks }}</div>
+        </article>
+        {% empty %}
+        <div class="notice-band"><p>For official information about {{ about_section_title }}, please contact the college. Details will be available here when published.</p><a class="editorial-link" href="{% url 'website:contact' %}">Contact the College</a></div>
+        {% endfor %}
+    </div>
+</div></section>
+{% endblock %}
