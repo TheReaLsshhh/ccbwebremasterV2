@@ -281,6 +281,12 @@ class PublicWebsiteTests(TestCase):
         self.assertNotContains(self.client.get("/"), "Placeholder question")
 
 
+    def test_no_uploaded_slides_means_no_development_images(self):
+        response = self.client.get("/")
+        self.assertEqual(response.context["hero_slides"], [])
+        self.assertNotContains(response, "images/ccb.jpg")
+        self.assertNotContains(response, "images/bg2.jpg")
+
     def test_home_slideshow_uses_published_ordered_banners(self):
         from .models import HomeSlide
         HomeSlide.objects.create(title="First banner", image="pages/first.jpg", sort_order=1)

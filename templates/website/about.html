@@ -10,7 +10,6 @@
             <p class="intro-copy">Discover the values, history, and aspirations that shape our college community.</p>
             <a class="editorial-link" href="#about-sections">Explore Our College &nearr;</a>
         </div>
-        <picture class="responsive-image"><source type="image/webp" srcset="{% static 'images/responsive/ccb-480.webp' %} 480w, {% static 'images/responsive/ccb-960.webp' %} 960w, {% static 'images/responsive/ccb-1600.webp' %} 1600w" sizes="(min-width: 1200px) 640px, (min-width: 768px) 50vw, 100vw"><img class="about-campus-image" src="{% static 'images/ccb.jpg' %}" alt="City College of Bayawan campus" width="1000" height="600" loading="lazy"></picture>
     </div>
 </section>
 <section class="college-section college-section-tinted" id="about-sections"><div class="container"><div class="about-topic-grid">{% for item in about_menu_items %}<a class="about-topic-card" href="{% url 'website:about_section' section=item.slug %}"><span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon=item.icon %}About CCB</span><h2>{{ item.label }}</h2><p>{{ item.description }}</p><span class="editorial-link">Learn More &nearr;</span></a>{% endfor %}</div></div></section>

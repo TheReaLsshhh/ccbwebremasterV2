@@ -172,6 +172,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(PageContent)
 class PageContentAdmin(PublishedContentAdmin):
+    ordering = ("page", "sort_order", "pk")
     change_list_template = "admin/website/pagecontent/change_list.html"
     list_display = ("page", "body_title", "hero_title", "published", "sort_order", "updated_at")
     list_filter = ("published", "page")
@@ -307,14 +308,15 @@ class FrequentlyAskedQuestionAdmin(PublishedContentAdmin):
 
 @admin.register(AcademicProgram)
 class AcademicProgramAdmin(PublishedContentAdmin):
-    list_display = ("name", "award", "is_featured", "updated_at", "published")
-    list_editable = ("is_featured", "published")
+    list_display_links = ("name",)
+    list_display = ("sort_order", "name", "award", "is_featured", "updated_at", "published")
+    list_editable = ("sort_order", "is_featured", "published")
     search_fields = ("name", "award", "description", "department")
     list_filter = ("department", "is_featured", "published")
     fieldsets = (
         ("Program identity", {"fields": ("name", "award", "department", "duration")}),
         ("Program detail page", {"fields": ("description", "career_paths", "brochure_file")}),
-        ("Publishing", {"fields": ("published", "is_featured"), "description": "Featured programs are prioritized on Home. Unpublished programs are hidden from listings, details, and search."}),
+        ("Publishing", {"fields": ("sort_order", "published", "is_featured"), "description": "Featured programs are prioritized on Home. Unpublished programs are hidden from listings, details, and search."}),
     )
 
     def view_on_site(self, obj):
@@ -342,14 +344,15 @@ class AdmissionRequirementAdmin(PublishedContentAdmin):
 
 @admin.register(NewsEvent)
 class NewsEventAdmin(PublishedContentAdmin):
-    list_display = ("title", "event_date", "location", "is_featured", "published_at", "published")
+    list_display_links = ("title",)
+    list_display = ("sort_order", "title", "event_date", "location", "is_featured", "published_at", "published")
     list_filter = ("is_featured", "event_date", "published")
     search_fields = ("title", "summary", "content", "location")
-    list_editable = ("is_featured", "published")
+    list_editable = ("sort_order", "is_featured", "published")
     date_hierarchy = "event_date"
     fieldsets = (
         ("Story", {"fields": ("title", "summary", "content")}),
-        ("Publishing", {"fields": ("published", "published_at", "is_featured"), "description": "A story appears publicly only when Published is checked and Published at has arrived. Featured stories are prioritized on Home."}),
+        ("Publishing", {"fields": ("sort_order", "published", "published_at", "is_featured"), "description": "A story appears publicly only when Published is checked and Published at has arrived. Featured stories are prioritized on Home."}),
         ("Schedule & place", {"fields": ("event_date", "location")}),
         ("Media", {"fields": ("cover_image", "attachment")}),
     )
@@ -360,17 +363,19 @@ class NewsEventAdmin(PublishedContentAdmin):
 
 @admin.register(DownloadItem)
 class DownloadItemAdmin(PublishedContentAdmin):
-    list_display = ("title", "category", "is_featured", "updated_at", "published")
+    list_display_links = ("title",)
+    list_display = ("sort_order", "title", "category", "is_featured", "updated_at", "published")
     list_filter = ("category", "is_featured", "published")
     search_fields = ("title", "description")
-    list_editable = ("is_featured", "published")
+    list_editable = ("sort_order", "is_featured", "published")
 
 
 @admin.register(StudentResource)
 class StudentResourceAdmin(PublishedContentAdmin):
+    list_display_links = ("title",)
     list_filter = ("published",)
-    list_editable = ("published",)
-    list_display = ("title", "updated_at", "published")
+    list_editable = ("sort_order", "published",)
+    list_display = ("sort_order", "title", "updated_at", "published")
     search_fields = ("title", "description")
 
 
@@ -454,8 +459,9 @@ class CampusServiceAdmin(PublishedContentAdmin):
 
 @admin.register(CampusOffice)
 class CampusOfficeAdmin(PublishedContentAdmin):
-    list_display = ("name", "email", "phone", "published")
-    list_editable = ("published",)
+    list_display_links = ("name",)
+    list_display = ("sort_order", "name", "email", "phone", "published")
+    list_editable = ("sort_order", "published",)
     search_fields = ("name", "description", "location")
     list_filter = ("published",)
     fieldsets = (

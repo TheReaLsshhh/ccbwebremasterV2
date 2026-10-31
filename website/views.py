@@ -70,7 +70,7 @@ def service_worker(request):
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v18";
+const CACHE_VERSION = "ccb-public-v19";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -166,7 +166,7 @@ self.addEventListener("fetch", (event) => {{
 def _news_page_by_id(per_page=NEWS_PAGE_SIZE):
     # Compute from the visible records so publishing and scheduled releases cannot
     # leave deep links pointing at a page from an outdated cached index.
-    news_ids = NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).order_by("-published_at", "-pk").values_list("pk", flat=True)
+    news_ids = NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).order_by("sort_order", "-published_at", "-pk").values_list("pk", flat=True)
     return {pk: (index // per_page) + 1 for index, pk in enumerate(news_ids)}
 
 
@@ -427,7 +427,7 @@ def _home_news_carousel_items(queryset_fields):
         extras = list(
             NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).only(*queryset_fields)
             .exclude(pk__in=existing_ids)
-            .order_by("-published_at")[: HOME_NEWS_CAROUSEL_SIZE - len(featured)]
+            .order_by("sort_order", "-published_at", "-pk")[: HOME_NEWS_CAROUSEL_SIZE - len(featured)]
         )
         featured.extend(extras)
 
@@ -447,16 +447,12 @@ def home(request):
     home_news_items = _home_news_carousel_items(news_fields)
 
     hero_slides = [{"image": slide.image} for slide in HomeSlide.objects.filter(published=True)]
-    # Use only staff-selected banners when any are published.
-    if not hero_slides:
-        filenames = ("ccb.jpg",) if HomeSlide.objects.exists() else ("ccb.jpg", "bg2.jpg")
-        hero_slides = [{"url": static(f"images/{filename}")} for filename in filenames]
 
     context = base_context("website:home")
     context.update(
         {
             "page_content": get_page_content(PageContent.HOME),
-            "featured_programs": AcademicProgram.objects.filter(published=True).order_by("-is_featured", "name")[:3],
+            "featured_programs": AcademicProgram.objects.filter(published=True).order_by("-is_featured", "sort_order", "name")[:3],
             "home_news_items": home_news_items,
             "home_news_count": len(home_news_items),
             "hero_slides": hero_slides,
@@ -563,7 +559,7 @@ def admissions_partial(request):
 def news(request):
     try:
         news_queryset = NewsEvent.objects.filter(published=True, published_at__lte=timezone.now()).only("title", "summary", "content", "event_date", "location", "cover_image", "attachment", "published_at")
-        news_queryset = news_queryset.order_by("-published_at", "-pk")
+        news_queryset = news_queryset.order_by("sort_order", "-published_at", "-pk")
         news_queryset = search_queryset(news_queryset, request, ("title", "summary", "content", "location"))
         paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
         news_page_by_id = {pk: (index // NEWS_PAGE_SIZE) + 1 for index, pk in enumerate(news_queryset.values_list("pk", flat=True))}

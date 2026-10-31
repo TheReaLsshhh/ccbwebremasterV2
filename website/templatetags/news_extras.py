@@ -134,11 +134,6 @@ def webp_image_url(file_field, width):
     url = _file_url(file_field)
     if "res.cloudinary.com/" in url and "/image/upload/" in url:
         return url.replace("/image/upload/", f"/image/upload/f_webp,q_90,c_limit,w_{width}/", 1)
-    # These bundled photos have prebuilt WebP variants; no runtime writes to static.
-    for filename in ("ccb", "bg2"):
-        if url == static(f"images/{filename}.jpg"):
-            candidate = next((size for size in (480, 960, 1600, 1920) if size >= width), 1920)
-            return static(f"images/responsive/{filename}-{candidate}.webp")
     if not file_field or isinstance(file_field, str):
         return ""
     from website.image_variants import local_webp_url

@@ -55,12 +55,8 @@ class ImageDeliveryTests(SimpleTestCase):
         self.assertIn("f_auto,q_auto:good", optimized_image_url(field, 960))
         self.assertIn("480w", webp_image_srcset(field, "480,960,1600"))
 
-    def test_prebuilt_campus_variants_exist(self):
-        for name in ("ccb", "bg2"):
-            for width in (480, 960, 1600, 1920):
-                url = webp_image_url(static(f"images/{name}.jpg"), width)
-                self.assertTrue(url.endswith(f"{name}-{width}.webp"))
-                self.assertTrue(finders.find(f"images/responsive/{name}-{width}.webp"))
+    def test_static_development_photos_have_no_generated_fallback(self):
+        self.assertEqual(webp_image_url(static("images/ccb.jpg"), 960), "")
 
     def test_missing_local_image_uses_original_fallback(self):
         slide = HomeSlide(image="pages/missing.jpg")

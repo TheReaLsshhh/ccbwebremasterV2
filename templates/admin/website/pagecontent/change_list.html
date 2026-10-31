@@ -2,7 +2,7 @@
 {% block content %}
 <section class="ccb-admin-workspace" aria-labelledby="about-editors-title">
     <h2 id="about-editors-title">About Page Editors</h2>
-    <p>Select a page to manage its sections. Publish verified content and use sort order to arrange it. The former About overview is retired.</p>
+    <p>Select a page to manage its sections. Publish verified content and use sort order to arrange it (0 first, then 1, 2, and so on). Edit the numbers in the list below and click Save. The former About overview is retired.</p>
     <div class="ccb-admin-task-grid">
         {% for item in about_editors %}
         <a href="{% url 'admin:website_pagecontent_changelist' %}?page__exact={{ item.page|urlencode }}"><strong>{{ item.label }}</strong><span>{{ item.description }}</span></a>

@@ -91,6 +91,22 @@ class AdminContentTests(TestCase):
         self.assertContains(response, "Visitors cannot tick items or save progress")
         self.assertContains(response, 'name="document_file"')
 
+    def test_public_about_sections_follow_saved_sort_order(self):
+        first = PageContent.objects.create(
+            page=PageContent.ABOUT_HISTORY, hero_title="History",
+            body_title="First Section", body_text="First verified passage.", sort_order=20,
+        )
+        second = PageContent.objects.create(
+            page=PageContent.ABOUT_HISTORY, hero_title="History",
+            body_title="Second Section", body_text="Second verified passage.", sort_order=10,
+        )
+        response = self.client.get("/about/history/")
+        self.assertLess(response.content.index(b"Second verified passage."), response.content.index(b"First verified passage."))
+        first.sort_order = 5
+        first.save()
+        response = self.client.get("/about/history/")
+        self.assertLess(response.content.index(b"First verified passage."), response.content.index(b"Second verified passage."))
+
     def test_multiple_uploads_save_order_visibility_and_files(self):
         HomeSlide.objects.create(title="Existing", image="pages/existing.jpg", sort_order=10)
         response = self.client.post(self.upload_url, {"images": [self.image("first.jpg"), self.image("second.jpg")], "published": "on"})
@@ -109,7 +125,7 @@ class AdminContentTests(TestCase):
         self.assertFalse(slide.published)
         home = self.client.get("/")
         self.assertNotContains(home, slide.image.name)
-        self.assertEqual(len(home.context["hero_slides"]), 1)
+        self.assertEqual(len(home.context["hero_slides"]), 0)
 
     def test_invalid_image_rejects_entire_batch(self):
         invalid = SimpleUploadedFile("fake.jpg", b"not an image", content_type="image/jpeg")

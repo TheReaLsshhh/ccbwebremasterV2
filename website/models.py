@@ -316,6 +316,7 @@ class AcademicProgram(TimeStampedModel):
     department = models.CharField(max_length=200, blank=True)
     duration = models.CharField(max_length=100, blank=True)
     career_paths = models.TextField(blank=True)
+    sort_order = models.PositiveIntegerField(default=0, help_text="Smaller numbers appear first.")
     published = models.BooleanField(default=True)
     name = models.CharField(max_length=200)
     award = models.CharField(max_length=200, blank=True)
@@ -331,7 +332,7 @@ class AcademicProgram(TimeStampedModel):
     is_featured = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["sort_order", "name", "pk"]
 
     def __str__(self):
         return self.name
@@ -359,6 +360,7 @@ class AdmissionRequirement(TimeStampedModel):
 
 
 class NewsEvent(TimeStampedModel):
+    sort_order = models.PositiveIntegerField(default=0, help_text="Smaller numbers appear first.")
     published = models.BooleanField(default=True)
     title = models.CharField(max_length=200)
     summary = models.TextField()
@@ -376,7 +378,7 @@ class NewsEvent(TimeStampedModel):
     published_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ["-published_at"]
+        ordering = ["sort_order", "-published_at", "-pk"]
         verbose_name = "News or event"
         verbose_name_plural = "News and events"
 
@@ -396,6 +398,7 @@ class NewsEvent(TimeStampedModel):
 
 
 class DownloadItem(TimeStampedModel):
+    sort_order = models.PositiveIntegerField(default=0, help_text="Smaller numbers appear first.")
     published = models.BooleanField(default=True)
     ACADEMIC = "academic"
     FORM = "form"
@@ -421,13 +424,14 @@ class DownloadItem(TimeStampedModel):
     is_featured = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["category", "title"]
+        ordering = ["sort_order", "category", "title", "pk"]
 
     def __str__(self):
         return self.title
 
 
 class StudentResource(TimeStampedModel):
+    sort_order = models.PositiveIntegerField(default=0, help_text="Smaller numbers appear first.")
     published = models.BooleanField(default=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -442,7 +446,7 @@ class StudentResource(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["title"]
+        ordering = ["sort_order", "title", "pk"]
 
     def __str__(self):
         return self.title
