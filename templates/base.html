@@ -87,7 +87,7 @@
     <!-- Ensure Font Awesome loads even if the preload onload fails in some browsers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/site.css' %}?v=12">
-    <link rel="stylesheet" href="{% static 'css/institutional.css' %}?v=14">
+    <link rel="stylesheet" href="{% static 'css/institutional.css' %}?v=15">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to Content</a>
@@ -150,7 +150,6 @@
 
         <div class="site-search-strip"><div class="container">
             <form action="{% url 'website:search' %}" method="get" role="search">
-                <label for="site-search">Search CCB</label>
                 <div class="site-search-field">
                     <input id="site-search" type="search" name="q" placeholder="Programs, forms, people..." maxlength="200" value="{{ request.GET.q }}">
                     <button type="submit"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg><span>Search</span></button>
@@ -191,7 +190,7 @@
                     <div><h3>Useful Links</h3><a href="{% url 'website:admissions' %}">Admissions</a><a href="{% url 'website:students' %}">Student Resources</a><a href="{% url 'website:downloads' %}">Forms & Downloads</a><a href="{% url 'website:search' %}">Search the Website</a></div>
                     <div><h3>Get in Touch</h3><p>{{ site_settings.address|default:"Bayawan City, Negros Oriental, Philippines" }}</p>{% if site_settings.primary_email %}<a href="mailto:{{ site_settings.primary_email }}">{{ site_settings.primary_email }}</a>{% endif %}{% if site_settings.phone %}<a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>{% endif %}<a href="{% url 'website:contact' %}">Contact & Campus Map &nearr;</a></div>
                 </div>
-                <div class="footer-bottom"><span>&copy; {% now "Y" %} {{ site_settings.footer_text|default:"City College of Bayawan" }}</span><span>Learning. Community. Possibility.</span></div>
+                <div class="footer-bottom"><span>&copy; {% now "Y" %} {{ site_settings.footer_text|default:"City College of Bayawan" }}</span><nav class="footer-policy-links" aria-label="Terms and policy"><a href="{% url 'website:terms' %}">Terms of Use</a><a href="{% url 'website:privacy' %}">Privacy Policy</a></nav></div>
             </div>
         </footer>
     </div>

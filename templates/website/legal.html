@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% include "website/includes/page_header.html" %}
+<section class="college-section"><div class="container legal-layout">
+    <aside class="legal-navigation" aria-label="Policy navigation">
+        <a href="{% url 'website:terms' %}" {% if document.slug == 'terms' %}aria-current="page"{% endif %}>Terms of Use</a>
+        <a href="{% url 'website:privacy' %}" {% if document.slug == 'privacy' %}aria-current="page"{% endif %}>Privacy Policy</a>
+        <a href="{% url 'website:contact' %}">Contact the College</a>
+    </aside>
+    <article class="legal-copy">
+        {% if not document.approved_for_publication %}<div class="policy-review-notice"><strong>Draft for institutional review</strong><p>This text has not yet been approved by the college. Privacy contacts, processing details, and retention periods must be confirmed before publication as an approved policy.</p></div>{% endif %}
+        <p class="muted-copy">Last revised: {{ document.updated_at|date:"F j, Y" }}</p>
+        {% for section in policy_sections %}<section id="policy-section-{{ section.pk }}"><h2>{{ section.title }}</h2>{{ section.body|linebreaks }}</section>{% endfor %}
+        {% if document.slug == 'terms' %}<section><h2>Third-Party Software Notices</h2><p>Bootstrap 5.3.3 is distributed under the MIT license. Font Awesome Free 6.5.2 uses separate licenses for its code, fonts, and icons. These licenses do not grant rights to the college's photographs, documents, logos, or other third-party material.</p><ul><li><a href="{% static 'licenses/bootstrap-5.3.3-LICENSE.txt' %}">Bootstrap license and copyright notice</a></li><li><a href="{% static 'licenses/font-awesome-6.5.2-LICENSE.txt' %}">Font Awesome Free licenses and attribution</a></li></ul></section>{% endif %}
+        <section><h2>Contact</h2><p>{{ site_settings.site_name|default:"City College of Bayawan" }}</p>{% if site_settings.primary_email %}<p><a href="mailto:{{ site_settings.primary_email }}">{{ site_settings.primary_email }}</a></p>{% endif %}{% if site_settings.address %}<p>{{ site_settings.address }}</p>{% endif %}<a class="editorial-link" href="{% url 'website:contact' %}">Contact the College</a></section>
+        <p class="legal-reference">Related: <a href="https://privacy.gov.ph/data-privacy-act/" target="_blank" rel="noopener noreferrer">Philippine Data Privacy Act</a> · <a href="https://www.ipophil.gov.ph/copyright/" target="_blank" rel="noopener noreferrer">IPOPHL Copyright Guidance</a></p>
+    </article>
+</div></section>
+{% endblock %}

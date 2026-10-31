@@ -6,6 +6,9 @@ on:
     - cron: "0 2 1 * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   backup:
     name: PostgreSQL Backup
@@ -19,13 +22,16 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          TIMESTAMP=$(date +%Y-%m-%d_%H%M%S)
-          FILENAME="ccb_backup_${TIMESTAMP}.sql.gz"
+          set -euo pipefail
+          : "${DATABASE_URL:?Configure the database backup secret}"
+          TIMESTAMP=$(date -u +%Y-%m-%d_%H%M%S)
+          export FILENAME="ccb_backup_${TIMESTAMP}.dump"
           docker run --rm \
             -v "${{ github.workspace }}:/backup" \
-            -e PGPASSWORD="$(echo $DATABASE_URL | sed -n 's/.*:\/\/[^:]*:\([^@]*\)@.*/\1/p')" \
+            -e DATABASE_URL -e FILENAME \
             postgres:18 \
-            sh -c "pg_dump '$DATABASE_URL' --format=plain --no-owner --no-privileges | gzip > /backup/$FILENAME"
+            sh -ec 'pg_dump --dbname="$DATABASE_URL" --format=custom --no-owner --no-privileges --file="/backup/$FILENAME"'
+          test -s "$FILENAME"
           echo "FILENAME=${FILENAME}" >> "$GITHUB_ENV"
 
       - name: Upload backup artifact
@@ -38,7 +44,7 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## Database Backup Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Database Backup Artifact Created" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- **File:** \`${{ env.FILENAME }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> "$GITHUB_STEP_SUMMARY"

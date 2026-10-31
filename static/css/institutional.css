@@ -278,3 +278,24 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--college-heading-font); }
 @media(max-width:359px) { :root .site-navbar .brand-mark { flex-basis: 36px; width: 36px; height: 36px; } :root .site-navbar .brand-lockup { gap: 8px; } :root .site-navbar .brand-copy strong { font-size: .88rem; } }
 :root .mobile-nav-modal .mobile-nav-services-toggle::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); font-family: inherit; }
 :root .mobile-nav-modal .mobile-nav-services-toggle[aria-expanded="true"]::after { transform: rotate(225deg); }
+/* Keep search accessible while the page scrolls; overflow:hidden would trap sticky. */
+:root .site-shell { overflow: visible; }
+@supports(overflow:clip) { :root .site-shell { overflow-x: clip; overflow-y: visible; } }
+:root .site-search-strip { position: -webkit-sticky; position: sticky; top: 0; z-index: 1020; align-self: stretch; flex-shrink: 0; box-shadow: 0 5px 14px rgba(16,47,34,.06); }
+html { scroll-padding-top: 90px; }
+.footer-policy-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.footer-policy-links a { color: #dbe6dd; text-decoration: underline; text-underline-offset: 4px; }
+.footer-policy-links a:hover { color: #f0ce8b; }
+.legal-layout { display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 60px; }
+.legal-navigation a { display: block; padding: 12px 0; border-bottom: 1px solid var(--college-line); font-size: .85rem; }
+.legal-navigation a[aria-current="page"] { font-weight: 700; }
+.legal-copy { max-width: 850px; }
+.legal-copy section { margin: 36px 0; scroll-margin-top: 90px; }
+.legal-copy h2 { font-size: 1.75rem; margin-bottom: 14px; }
+.legal-copy p { line-height: 1.85; color: var(--college-muted); }
+.policy-review-notice { padding: 20px; border-left: 3px solid #397553; background: var(--college-tint); }
+.policy-review-notice p { margin: 8px 0 0; font-size: .85rem; }
+.legal-reference, .contact-privacy-notice { font-size: .78rem; }
+.contact-privacy-notice { color: var(--college-muted); line-height: 1.6; }
+.contact-privacy-notice a { text-decoration: underline; }
+@media(max-width:767px) { .legal-layout { grid-template-columns: 1fr; gap: 32px; } .legal-navigation { display: flex; flex-wrap: wrap; gap: 0 20px; } }

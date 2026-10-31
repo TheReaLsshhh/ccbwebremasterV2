@@ -82,6 +82,7 @@
                             <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
                             {{ form.message }}
                             {{ form.message.errors }}
+                            <p class="contact-privacy-notice">Your name, email, subject, and message are used to handle your inquiry. Read our <a href="{% url 'website:privacy' %}">Privacy Policy</a>. Please avoid sending sensitive records through this form.</p>
                             <button type="button" id="contactSubmitBtn" class="btn btn-brand btn-portal">
                                 <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
                                 <span>Send Inquiry</span>

@@ -4,6 +4,7 @@
     <h2 id="ccb-workspace-title">Manage the CCB website</h2>
     <p>Choose a task below, or use the full content list.</p>
     <div class="ccb-admin-task-grid">
+        {% if perms.website.view_legalpage %}<a href="{% url 'admin:website_legalpage_changelist' %}"><strong>Terms &amp; Privacy</strong><span>Review policy drafts, edit sections, and approve verified wording.</span></a>{% endif %}
         {% if perms.website.view_homeslide %}<a href="{% url 'admin:website_homeslide_changelist' %}"><strong>Home slideshow</strong><span>Upload images, preview slides, and set their order.</span></a>{% endif %}
         {% if perms.website.view_pagecontent %}<a href="{% url 'admin:website_pagecontent_changelist' %}"><strong>Page headings &amp; About</strong><span>Edit introductions, page banners, and About sections.</span></a>{% endif %}
         {% if perms.website.view_academicprogram %}<a href="{% url 'admin:website_academicprogram_changelist' %}"><strong>Academic programs</strong><span>Maintain program details, career paths, and brochures.</span></a>{% endif %}

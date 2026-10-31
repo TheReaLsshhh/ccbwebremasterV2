@@ -95,6 +95,7 @@ CACHES = {
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "website.middleware.PublicSecurityHeadersMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "website.middleware.CanonicalHostRedirectMiddleware",
     "website.middleware.AdminLoginRateLimitMiddleware",
@@ -190,6 +191,27 @@ if USE_CLOUDINARY and CLOUDINARY_CLOUD_NAME:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+PERMISSIONS_POLICY_HEADER = "camera=(), microphone=(), geolocation=(), payment=()"
+PUBLIC_CSP_ENABLED = env_bool("PUBLIC_CSP_ENABLED", True)
+# Compatibility policy: existing templates contain inline scripts and styles.
+# This limits source origins and embedding; it is not a nonce-based XSS defense.
+PUBLIC_CONTENT_SECURITY_POLICY = "; ".join([
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.google.com https://www.gstatic.com https://www.recaptcha.net",
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+    "font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' https://www.google.com https://www.gstatic.com https://www.recaptcha.net",
+    "frame-src https://www.google.com https://recaptcha.google.com https://maps.google.com https://www.recaptcha.net https://embed.windy.com",
+    "media-src 'self' https://res.cloudinary.com",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+])
+
 CSRF_TRUSTED_ORIGINS = sorted({
     origin.strip().strip('"').strip("'").rstrip("\n").rstrip("\r").strip()
     for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
@@ -250,12 +272,6 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
-    SECURE_PERMISSIONS_POLICY = {
-        "camera": [],
-        "microphone": [],
-        "geolocation": [],
-        "payment": [],
-    }
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "website.email_backend.BrevoEmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp-relay.brevo.com")

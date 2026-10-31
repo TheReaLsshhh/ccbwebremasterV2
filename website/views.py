@@ -27,6 +27,7 @@ from .models import (
     CampusOffice,
     AcademicProgram,
     HomeSlide,
+    LegalPage,
     AdmissionRequirement,
     ContactInquiry,
     DownloadItem,
@@ -71,7 +72,7 @@ def service_worker(request):
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v14";
+const CACHE_VERSION = "ccb-public-v15";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -82,6 +83,9 @@ const NEVER_CACHE_PATHS = [
   ADMIN_PATH,
   "/admin/",
   "/contact/",
+  "/terms/",
+  "/privacy/",
+  "/.well-known/security.txt",
   "/download/",
   "/sw.js"
 ];
@@ -453,6 +457,50 @@ def home(request):
         }
     )
     return render_public(request, "website/home.html", context)
+
+
+@never_cache
+def legal_page(request, slug):
+    document = get_object_or_404(LegalPage.objects.prefetch_related("sections"), slug=slug)
+    context = base_context(f"website:{slug}")
+    context.update({
+        "document": document,
+        "policy_sections": document.sections.all(),
+        "page_content": {"hero_title": document.title, "hero_text": document.introduction},
+        "eyebrow_icon": "checklist" if slug == "terms" else "support",
+        "seo_title": f"{document.title} | City College of Bayawan",
+        "seo_description": document.introduction[:160],
+        "noindex": not document.approved_for_publication,
+    })
+    response = render(request, "website/legal.html", context)
+    if not document.approved_for_publication:
+        response["X-Robots-Tag"] = "noindex, follow"
+    return response
+
+
+def terms(request):
+    return legal_page(request, "terms")
+
+
+def privacy(request):
+    return legal_page(request, "privacy")
+
+
+def security_txt(request):
+    from datetime import timedelta
+    site_url = settings.PUBLIC_SITE_URL.rstrip("/")
+    expires = (timezone.now() + timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    content = "\n".join([
+        f"Contact: {site_url}{reverse('website:contact')}",
+        f"Expires: {expires}",
+        f"Canonical: {site_url}/.well-known/security.txt",
+        "Preferred-Languages: en",
+        f"Policy: {site_url}{reverse('website:privacy')}",
+        "",
+    ])
+    response = HttpResponse(content, content_type="text/plain; charset=utf-8")
+    patch_cache_control(response, public=True, max_age=3600)
+    return response
 
 
 def academics(request):

@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.utils import timezone
-from .models import AcademicProgram, NewsEvent
+from .models import AcademicProgram, NewsEvent, LegalPage
 
 PUBLIC_SITEMAP_PATHS = (
     ("", "weekly", "1.0"),
@@ -60,6 +60,9 @@ def sitemap_xml(request):
     ]:
         for pk in queryset.values_list("pk", flat=True):
             url_entries.append(f"  <url><loc>{site_url}{reverse(route, args=[pk])}</loc></url>")
+
+    for slug in LegalPage.objects.filter(approved_for_publication=True).values_list("slug", flat=True):
+        url_entries.append(f"  <url><loc>{site_url}{reverse('website:' + slug)}</loc></url>")
 
     content = "\n".join(
         [

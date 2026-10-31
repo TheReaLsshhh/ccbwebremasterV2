@@ -2,7 +2,7 @@ services:
   - type: web
     name: ccbwebsite
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    buildCommand: python -m pip install --upgrade "pip>=26.2.2" && pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: python manage.py migrate --run-syncdb && gunicorn ccbwebsite.wsgi:application --workers 2 --threads 4 --timeout 60 --log-file -
     envVars:
       - key: PYTHON_VERSION

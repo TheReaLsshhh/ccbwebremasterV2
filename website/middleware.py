@@ -23,6 +23,25 @@ SEO_CRITICAL_PATHS = {
 }
 
 
+class PublicSecurityHeadersMiddleware:
+    """Apply effective browser restrictions without changing admin script behavior."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        response.setdefault("Permissions-Policy", settings.PERMISSIONS_POLICY_HEADER)
+        admin_path = f"/{settings.ADMIN_URL}"
+        is_admin = request.path.startswith(admin_path) or request.path.startswith("/admin/")
+        if settings.PUBLIC_CSP_ENABLED and not is_admin and response.get("Content-Type", "").startswith("text/html"):
+            policy = settings.PUBLIC_CONTENT_SECURITY_POLICY
+            if request.is_secure():
+                policy += "; upgrade-insecure-requests"
+            response.setdefault("Content-Security-Policy", policy)
+        return response
+
+
 class CanonicalHostRedirectMiddleware:
     """Permanently redirect retired public hostnames to the canonical site URL."""
 

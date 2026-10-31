@@ -251,6 +251,34 @@ class HomeSlide(TimeStampedModel):
         optimize_uploaded_image(self.image)
 
 
+class LegalPage(TimeStampedModel):
+    slug = models.CharField(max_length=20, unique=True, choices=[("terms", "Terms of Use"), ("privacy", "Privacy Policy")])
+    title = models.CharField(max_length=200)
+    introduction = models.TextField(blank=True)
+    approved_for_publication = models.BooleanField(default=False, help_text="Check only after the college has reviewed the complete text, privacy contact, lawful basis, and retention details. Draft pages are marked for review and excluded from indexing.")
+
+    class Meta:
+        ordering = ["slug"]
+        verbose_name = "Terms or privacy page"
+        verbose_name_plural = "Terms and privacy pages"
+
+    def __str__(self):
+        return self.title
+
+
+class LegalSection(TimeStampedModel):
+    page = models.ForeignKey(LegalPage, on_delete=models.CASCADE, related_name="sections")
+    title = models.CharField(max_length=200)
+    body = models.TextField(help_text="Plain text; HTML is not rendered.")
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "pk"]
+
+    def __str__(self):
+        return self.title
+
+
 class FrequentlyAskedQuestion(TimeStampedModel):
     question = models.CharField(max_length=255)
     answer = models.TextField()

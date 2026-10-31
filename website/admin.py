@@ -25,6 +25,8 @@ from .models import (
     CampusOffice,
     AcademicProgram,
     HomeSlide,
+    LegalPage,
+    LegalSection,
     AdmissionRequirement,
     ContactInquiry,
     DownloadItem,
@@ -41,6 +43,25 @@ admin.site.site_header = "CCB Administration"
 admin.site.site_title = "CCB Admin"
 admin.site.index_title = "Website Content Management"
 logger = logging.getLogger(__name__)
+
+
+class LegalSectionInline(admin.StackedInline):
+    model = LegalSection
+    extra = 0
+    fields = ("title", "body", "sort_order")
+
+
+@admin.register(LegalPage)
+class LegalPageAdmin(admin.ModelAdmin):
+    list_display = ("title", "approved_for_publication", "updated_at")
+    list_filter = ("approved_for_publication",)
+    search_fields = ("title", "introduction", "sections__body")
+    readonly_fields = ("updated_at",)
+    fields = ("slug", "title", "introduction", "approved_for_publication", "updated_at")
+    inlines = (LegalSectionInline,)
+
+    def view_on_site(self, obj):
+        return reverse(f"website:{obj.slug}")
 
 
 class PublishedContentAdmin(admin.ModelAdmin):
