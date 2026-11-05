@@ -2,7 +2,7 @@
 <article class="coverflow-card" data-index="{{ index }}" tabindex="-1">
     <a
         class="coverflow-card-link"
-        href="{% url 'website:news' %}?open={{ item.pk }}{% if item.news_page > 1 %}&amp;page={{ item.news_page }}{% endif %}#news-{{ item.pk }}"
+        href="{% url 'website:news_detail' item.pk %}"
         aria-label="Read more: {{ item.title|plain_text }}"
     >
         <div class="coverflow-card-image-wrap">

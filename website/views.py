@@ -64,13 +64,12 @@ def service_worker(request):
         static("css/site.css"),
         static("css/institutional.css"),
         static("js/college-motion.js"),
-        static("js/news-modal.js"),
         static("js/ajax-refresh.js"),
         static("images/hero-images/ccb-logo-64.png"),
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v20";
+const CACHE_VERSION = "ccb-public-v21";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -562,20 +561,17 @@ def news(request):
         news_queryset = news_queryset.order_by("sort_order", "-published_at", "-pk")
         news_queryset = search_queryset(news_queryset, request, ("title", "summary", "content", "location"))
         paginator = Paginator(news_queryset, NEWS_PAGE_SIZE)
-        news_page_by_id = {pk: (index // NEWS_PAGE_SIZE) + 1 for index, pk in enumerate(news_queryset.values_list("pk", flat=True))}
-
-        page_number = request.GET.get("page")
-        open_news_id = None
+        # Keep previously shared modal URLs useful by opening the article instead.
         open_param = request.GET.get("open")
         if open_param:
             try:
                 open_pk = int(open_param)
-                if open_pk in news_page_by_id:
-                    open_news_id = open_pk
-                    page_number = news_page_by_id[open_pk]
-            except (TypeError, ValueError):
+                if news_queryset.filter(pk=open_pk).exists():
+                    return redirect("website:news_detail", pk=open_pk)
+            except (TypeError, ValueError, OverflowError):
                 pass
 
+        page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
         context = base_context("website:news")
@@ -584,7 +580,6 @@ def news(request):
                 "page_content": get_page_content(PageContent.NEWS),
                 "news_items": page_obj,
                 "page_obj": page_obj,
-                "open_news_id": open_news_id,
             }
         )
         return render_public(request, "website/news.html", context)

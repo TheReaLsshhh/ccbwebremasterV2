@@ -23,11 +23,7 @@
       <div class="news-grid-column">
         <article
           id="news-{{ item.pk }}"
-          class="announcement-card news-grid-card news-grid-card-interactive"
-          data-news-id="{{ item.pk }}"
-          role="button"
-          tabindex="0"
-          aria-label="View full announcement: {{ item.title|plain_text }}"
+          class="announcement-card news-grid-card"
         >
           {% if item.cover_image %}
           <div class="news-visual-wrap news-grid-visual">
@@ -81,12 +77,12 @@
             >
               {% if item.attachment %}
               <a
-                class="btn btn-soft btn-sm news-detail-ignore"
+                class="btn btn-soft btn-sm news-card-attachment"
                 href="{{ item.attachment|file_download_url }}"
                 >View Attachment</a
               >
               {% endif %}
-              <a href="{% url 'website:news_detail' item.pk %}" class="news-read-more-link news-grid-read-more">
+              <a href="{% url 'website:news_detail' item.pk %}" class="news-read-more-link news-grid-read-more news-card-link" aria-label="Read full article: {{ item.title|plain_text }}">
                 Read more <svg class="site-icon" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
               </a>
             </div>
@@ -104,17 +100,3 @@
   </div>
 </section>
 {% endblock %}
-
-{% block page_modals %}
-{% if page_obj.object_list %}
-  {% include "website/includes/news_detail_modal.html" with news_modal_items=news_items %}
-{% endif %}
-{% if open_news_id %}
-<script>
-  window.ccbOpenNewsId = "{{ open_news_id }}";
-</script>
-{% endif %}
-{% endblock %}
-
-
-

@@ -253,14 +253,29 @@ class PublicWebsiteTests(TestCase):
         self.assertNotContains(response, "Private office")
         self.assertIn("no-store", response["Cache-Control"])
 
-    def test_news_search_deep_link_uses_filtered_order(self):
+    def test_legacy_news_link_redirects_to_full_article(self):
         for i in range(8):
             NewsEvent.objects.create(title=f"Unrelated event {i}", summary="Other")
         response = self.client.get("/news/", {"q": "achievement", "open": self.news.pk})
-        self.assertEqual(response.context["page_obj"].number, 1)
-        self.assertEqual(response.context["open_news_id"], self.news.pk)
+        self.assertRedirects(response, reverse("website:news_detail", args=[self.news.pk]))
         response = self.client.get(reverse("website:news_detail", args=[self.news.pk]))
         self.assertContains(response, "The complete campus story.")
+
+    def test_news_cards_link_to_articles_without_modal_controls(self):
+        response = self.client.get(reverse("website:news"))
+        self.assertContains(response, f'href="{reverse("website:news_detail", args=[self.news.pk])}"')
+        self.assertContains(response, 'news-card-link')
+        self.assertNotContains(response, 'id="newsDetailModal"')
+        self.assertNotContains(response, 'data-news-id=')
+        self.assertNotContains(response, 'js/news-modal.js')
+
+    def test_legacy_news_link_does_not_redirect_to_unreleased_articles(self):
+        for value in [self.hidden_news.pk, self.future_news.pk, "invalid", "9" * 100]:
+            with self.subTest(value=value):
+                response = self.client.get(reverse("website:news"), {"open": value})
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, self.hidden_news.title)
+                self.assertNotContains(response, self.future_news.title)
 
     def test_news_unpublishing_updates_deep_link_mapping(self):
         from .views import _news_page_by_id
