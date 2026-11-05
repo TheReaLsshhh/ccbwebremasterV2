@@ -45,7 +45,7 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
 .content-search {display:flex;align-items:end;gap:15px;padding:27px 0;border-bottom:1px solid var(--college-line);flex-wrap:wrap;}.search-field {flex:1;min-width:180px;}.search-field label {font-size:.7rem;font-weight:700;display:block;margin-bottom:7px;}.form-control,.form-select {border-radius:2px;border:1px solid var(--college-line);background-color:var(--college-paper);color:var(--college-ink);padding:12px 14px;font-size:.85rem;}.form-control:focus,.form-select:focus {background:var(--college-paper);color:var(--college-ink);border-color:#9d7c37;box-shadow:0 0 0 3px rgba(185,146,68,.15);}.search-reset {font-size:.8rem;padding-bottom:12px;}.college-pagination {display:flex;justify-content:center;gap:25px;align-items:center;margin-top:35px;font-size:.8rem;}.college-pagination a {padding:10px 18px;border:1px solid var(--college-line);text-decoration:none;}
 .detail-layout {display:grid;grid-template-columns:2fr 1fr;gap:70px;}.detail-copy {font-size:1rem;max-width:760px;}.detail-copy h2 {font-size:2rem;margin:15px 0 25px;}.program-aside {height:auto;align-self:start;background:var(--college-tint);}.program-aside h2 {font-size:1.8rem;}.program-aside a {display:table;margin-top:20px;}
 .search-results {max-width:950px;}.search-result {display:block;padding:28px 0;border-bottom:1px solid var(--college-line);text-decoration:none;}.search-result h2 {font-size:1.7rem;margin:12px 0;}.search-result p {color:var(--college-muted);}.result-count {margin-top:25px;font-size:.85rem;}
-.admission-layout {display:grid;grid-template-columns:1.5fr 1fr;gap:50px;}.admission-step {display:grid;grid-template-columns:42px 1fr;gap:20px;padding:25px 0;border-bottom:1px solid var(--college-line);}.step-number {font-family:Georgia,serif;font-size:1.8rem;color:#9c7b35;}.admission-step h3 {font-size:1.5rem;}.admission-step p {color:var(--college-muted);}.admission-checklist {padding:28px;background:var(--college-tint);align-self:start;}.admission-checklist h2 {font-size:1.8rem;}.checklist-item {display:block;border-top:1px solid var(--college-line);padding:18px 0;}.checklist-label {display:flex;gap:12px;cursor:default;}.checklist-item p {margin:6px 0 8px 30px;font-size:.85rem;color:var(--college-muted);}.checklist-item a {margin-left:30px;font-size:.8rem;}.checklist-help {font-size:.75rem;color:var(--college-muted);}
+.admission-layout {display:grid;grid-template-columns:1.5fr 1fr;gap:50px;}.admission-step {display:grid;grid-template-columns:42px 1fr;gap:20px;padding:25px 0;border-bottom:1px solid var(--college-line);}.step-number {font-family:Georgia,serif;font-size:1.8rem;color:#9c7b35;}.admission-step h3 {font-size:1.5rem;}.admission-step p {color:var(--college-muted);}
 .service-links {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;}.service-link {padding:25px;border:1px solid var(--college-line);text-decoration:none;background:var(--college-tint);}.service-link h3 {font-size:1.5rem;}.service-link p {color:var(--college-muted);font-size:.85rem;}
 .office-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px;}.office-grid h3 {font-size:1.5rem;}.office-grid a {display:block;overflow-wrap:anywhere;}.office-grid p {font-size:.85rem;}.office-search {margin-bottom:35px;}
 .college-footer {background:#102f22;color:#dbe6dd;padding:0 0 25px;}.footer-intro {padding:58px 0;border-bottom:1px solid #365043;display:flex;align-items:center;gap:30px;flex-wrap:wrap;}.footer-intro .section-eyebrow {color:#d9bf84;width:100%;}.footer-intro h2 {color:#fff;margin:0;}.footer-intro .btn {margin-left:auto;}.footer-columns {display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:45px;padding:55px 0;}.footer-columns h3 {color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:.75rem;letter-spacing:.02em;margin:15px 0 20px;}.footer-columns p {color:#bccfc0;font-size:.8rem;}.footer-columns a {display:block;color:#bccfc0;text-decoration:none;font-size:.8rem;margin-bottom:10px;overflow-wrap:anywhere;}.footer-columns a:hover {color:#f0ce8b;}.footer-bottom {border-top:1px solid #365043;padding-top:25px;display:flex;justify-content:space-between;gap:20px;font-size:.65rem;color:#afc3b4;}
@@ -299,10 +299,10 @@ html { scroll-padding-top: 90px; }
 .contact-privacy-notice { color: var(--college-muted); line-height: 1.6; }
 .contact-privacy-notice a { text-decoration: none; }
 @media(max-width:767px) { .legal-layout { grid-template-columns: 1fr; gap: 32px; } .legal-navigation { display: flex; flex-wrap: wrap; gap: 0 20px; } }
-.requirements-list { list-style: none; margin: 0; padding: 0; }
-.requirement-marker { display: inline-flex; flex: 0 0 20px; width: 20px; height: 20px; margin-top: 3px; color: #397553; }
-.requirement-marker svg { display: block; }
-.checklist-empty { padding: 14px 0; color: var(--college-muted); }
+
+
+
+
 :root .site-navbar .about-dropdown-menu { right: 0; left: auto; width: 22rem; }
 :root .site-navbar .about-dropdown-menu .dropdown-item.active { background: var(--college-tint); color: var(--college-ink); }
 :root .mobile-nav-modal .mobile-nav-service-link[aria-current="page"] { background: var(--college-tint); font-weight: 700; }
@@ -498,3 +498,24 @@ body.public-site .news-card-link:focus-visible { outline:2px solid var(--college
 :root .college-story .story-image { height:auto; padding-bottom:0; aspect-ratio:auto; }
 :root .college-story .story-image > .responsive-image,
 :root .college-story .story-image img { position:static; width:100%; height:auto; object-fit:contain; transform:none; }
+/* Program identity: a clear logo and a restrained watermark behind the copy. */
+.program-card-with-logo { position:relative; isolation:isolate; overflow:hidden; }
+.program-card-with-logo > :not(.program-card-watermark) { position:relative; z-index:1; }
+.program-card-with-logo .program-card-watermark { position:absolute; z-index:0; right:-20px; bottom:-20px; width:55%; max-width:280px; height:auto; aspect-ratio:1; object-fit:contain; opacity:var(--program-logo-opacity,14%); pointer-events:none; user-select:none; }
+.program-card-with-logo .program-logo-mark { display:inline-flex; justify-content:center; align-items:center; align-self:flex-start; width:60px; height:60px; padding:5px; margin-bottom:14px; border-radius:12px; background:#fff; border:1px solid var(--college-line); }
+.program-logo-mark img { display:block; width:100%; height:100%; object-fit:contain; }
+.program-card-with-logo { background:linear-gradient(120deg,var(--college-paper),var(--college-tint)); }
+.program-card-with-logo .signal-badge { width:fit-content; }
+.program-feature.program-card-with-logo { display:flex; flex-direction:column; border-radius:8px; }
+.program-feature.program-card-with-logo .editorial-link { align-self:flex-start; margin-top:auto; }
+/* Admissions guidance replaces the former requirements checklist. */
+.admission-support-panel { align-self:start; padding:24px; background:var(--college-tint); border:1px solid var(--college-line); border-radius:8px; }
+.admission-support-panel h2 { font-size:1.8rem; margin:10px 0; }
+.admission-support-panel > p { font-size:.9rem; margin-bottom:18px; }
+.admission-support-link { display:flex; align-items:flex-start; gap:12px; padding:16px 0; border-top:1px solid var(--college-line); color:var(--college-ink); }
+.admission-support-icon { display:flex; flex:0 0 36px; width:36px; height:36px; justify-content:center; align-items:center; background:var(--college-paper); border-radius:8px; }
+.admission-support-link strong { display:block; font-size:1rem; margin-bottom:5px; }
+.admission-support-description { display:block; color:var(--college-muted); font-size:.85rem; line-height:1.5; margin-bottom:8px; }
+.admission-support-link .editorial-link { padding-bottom:0; }
+@media(max-width:767px) { .admission-support-panel { padding:20px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }

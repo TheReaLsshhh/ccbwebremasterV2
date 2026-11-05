@@ -28,7 +28,7 @@ from .models import (
     AcademicProgram,
     HomeSlide,
     LegalPage,
-    AdmissionRequirement,
+    AdmissionSupport,
     ContactInquiry,
     DownloadItem,
     FrequentlyAskedQuestion,
@@ -64,12 +64,13 @@ def service_worker(request):
         static("css/site.css"),
         static("css/institutional.css"),
         static("js/college-motion.js"),
+        static("js/page-transitions.js"),
         static("js/ajax-refresh.js"),
         static("images/hero-images/ccb-logo-64.png"),
     ]
     precache_list = ",\n  ".join(f"{url!r}" for url in precache_urls)
     script = f"""
-const CACHE_VERSION = "ccb-public-v22";
+const CACHE_VERSION = "ccb-public-v23";
 const PAGE_CACHE = `${{CACHE_VERSION}}-pages`;
 const ASSET_CACHE = `${{CACHE_VERSION}}-assets`;
 const PRECACHE_URLS = [
@@ -516,7 +517,7 @@ def academics(request):
 
 
 def _academic_programs():
-    return AcademicProgram.objects.filter(published=True).only("name", "award", "description", "brochure_file", "department", "duration")
+    return AcademicProgram.objects.filter(published=True).only("name", "award", "description", "brochure_file", "department", "duration", "logo", "logo_opacity")
 
 
 def academics_partial(request):
@@ -534,23 +535,18 @@ def admissions(request):
     context.update(
         {
             "page_content": get_page_content(PageContent.ADMISSIONS),
-            "requirements": _admission_requirements(),
+            "admission_support": AdmissionSupport.objects.filter(published=True),
             "admission_steps": AdmissionStep.objects.filter(published=True),
         }
     )
     return render_public(request, "website/admissions.html", context)
 
 
-def _admission_requirements():
-    return AdmissionRequirement.objects.filter(published=True).only("title", "description", "document_file", "sort_order")
-
-
 def admissions_partial(request):
-    response = render(
-        request,
-        "website/partials/admission_requirements_grid.html",
-        {"requirements": _admission_requirements()},
-    )
+    # Existing refresh URLs now return the admissions support links.
+    response = render(request, "website/partials/admission_support_links.html", {
+        "admission_support": AdmissionSupport.objects.filter(published=True),
+    })
     patch_cache_control(response, public=True, max_age=PUBLIC_PAGE_CACHE_SECONDS)
     return response
 

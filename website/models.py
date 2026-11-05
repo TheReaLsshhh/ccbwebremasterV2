@@ -337,6 +337,8 @@ class AcademicProgram(TimeStampedModel):
         validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
         help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
     )
+    logo = models.ImageField(upload_to="programs/logos/", blank=True, null=True, help_text="Upload a JPG, PNG, or WebP logo (up to 10 MB). Admin converts it to WebP; transparent PNGs work best.")
+    logo_opacity = models.PositiveSmallIntegerField(default=14, validators=[MinValueValidator(5), MaxValueValidator(25)], help_text="Background watermark opacity, from 5 to 25 percent. The small logo remains fully visible.")
     is_featured = models.BooleanField(default=False)
 
     class Meta:
@@ -346,22 +348,19 @@ class AcademicProgram(TimeStampedModel):
         return self.name
 
 
-class AdmissionRequirement(TimeStampedModel):
-    published = models.BooleanField(default=True)
+class AdmissionSupport(TimeStampedModel):
+    DESTINATIONS = [("website:contact", "Contact the college"), ("website:downloads", "Official downloads"), ("website:academics", "Academic programs")]
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    document_file = models.FileField(
-        upload_to=admissions_upload_path,
-        blank=True,
-        null=True,
-        storage=document_storage,
-        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx", "xls", "xlsx"])],
-        help_text="Allowed formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)",
-    )
+    destination = models.CharField(max_length=40, choices=DESTINATIONS, default="website:contact")
+    link_label = models.CharField(max_length=80, default="Get guidance")
     sort_order = models.PositiveIntegerField(default=0)
+    published = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ["sort_order", "title"]
+        ordering = ["sort_order", "pk"]
+        verbose_name = "Admissions support link"
+        verbose_name_plural = "Admissions support links"
 
     def __str__(self):
         return self.title
@@ -600,7 +599,6 @@ class StaffSecurityProfile(models.Model):
 
 # Connect pre_save signals to delete old files when file fields are changed
 pre_save.connect(_delete_old_file_on_change, sender=AcademicProgram)
-pre_save.connect(_delete_old_file_on_change, sender=AdmissionRequirement)
 pre_save.connect(_delete_old_file_on_change, sender=NewsEvent)
 pre_save.connect(_delete_old_file_on_change, sender=DownloadItem)
 pre_save.connect(_delete_old_file_on_change, sender=StudentResource)

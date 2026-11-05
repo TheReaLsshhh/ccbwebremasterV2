@@ -62,6 +62,51 @@ class AdminContentTests(TestCase):
         for route in ["website_academicprogram_add", "website_newsevent_add", "website_sitesettings_add", "website_campusoffice_add", "website_campusservice_add", "website_admissionstep_add"]:
             self.assertEqual(self.client.get(reverse("admin:" + route)).status_code, 200)
 
+    def test_program_logo_upload_converts_to_webp_and_preserves_alpha(self):
+        from .models import AcademicProgram
+        data = BytesIO()
+        Image.new("RGBA", (180, 120), (30, 90, 50, 128)).save(data, "PNG")
+        upload = SimpleUploadedFile("program.png", data.getvalue(), content_type="image/png")
+        response = self.client.post(reverse("admin:website_academicprogram_add"), {
+            "name": "Tourism", "description": "Program information", "sort_order": 0,
+            "published": "on", "logo": upload, "logo_opacity": 18,
+        })
+        self.assertEqual(response.status_code, 302)
+        program = AcademicProgram.objects.get(name="Tourism")
+        self.assertTrue(program.logo.name.endswith(".webp"))
+        with Image.open(program.logo.path) as image:
+            self.assertEqual(image.format, "WEBP")
+            self.assertEqual(image.size, (180, 120))
+            self.assertEqual(image.getpixel((0, 0))[3], 128)
+        for route in ["/", "/academics/", "/academics/partial/"]:
+            response = self.client.get(route)
+            self.assertContains(response, program.logo.url)
+            self.assertContains(response, "program-card-watermark")
+            self.assertContains(response, "--program-logo-opacity:18%")
+
+    def test_program_logo_rejects_invalid_file_and_opacity(self):
+        from .admin_forms import AcademicProgramAdminForm
+        values = {"name": "Program", "description": "Information", "sort_order": 0, "logo_opacity": 14}
+        invalid = SimpleUploadedFile("fake.png", b"not an image", content_type="image/png")
+        form = AcademicProgramAdminForm(data=values, files={"logo": invalid})
+        self.assertFalse(form.is_valid())
+        self.assertIn("logo", form.errors)
+        form = AcademicProgramAdminForm(data={**values, "logo_opacity": 100})
+        self.assertFalse(form.is_valid())
+        self.assertIn("logo_opacity", form.errors)
+
+    def test_program_logo_jpeg_conversion_and_existing_file(self):
+        from .admin_forms import AcademicProgramAdminForm
+        values = {"name": "Program", "description": "Information", "sort_order": 0, "logo_opacity": 14}
+        form = AcademicProgramAdminForm(data=values, files={"logo": self.image("logo.jpg")})
+        self.assertTrue(form.is_valid(), form.errors)
+        program = form.save()
+        original = Path(program.logo.path).read_bytes()
+        form = AcademicProgramAdminForm(data=values, instance=program)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.assertEqual(Path(program.logo.path).read_bytes(), original)
+
     def banner_crop_data(self, **overrides):
         return {
             "page": "news", "hero_title": "Campus news", "hero_text": "Latest updates",
@@ -147,10 +192,10 @@ class AdminContentTests(TestCase):
         self.assertTrue(history.published)
         self.assertFalse(other.published)
         self.assertContains(self.client.get("/about/history/"), "Verified college history.")
-        response = self.client.get(reverse("admin:website_admissionrequirement_add"))
+        response = self.client.get(reverse("admin:website_admissionsupport_add"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Visitors cannot tick items or save progress")
-        self.assertContains(response, 'name="document_file"')
+        self.assertContains(response, "Help prospective students find application guidance")
+        self.assertContains(response, 'name="destination"')
 
     def test_public_about_sections_follow_saved_sort_order(self):
         first = PageContent.objects.create(

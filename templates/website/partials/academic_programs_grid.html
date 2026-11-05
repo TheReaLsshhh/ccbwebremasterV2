@@ -2,7 +2,8 @@
 
 {% for program in programs %}
     <div class="col-lg-6">
-        <div class="content-card program-card">
+        <div class="content-card program-card{% if program.logo %} program-card-with-logo{% endif %}" style="--program-logo-opacity:{{ program.logo_opacity }}%;">
+            {% include "website/includes/program_logo.html" %}
             <span class="signal-badge signal-badge-program">Program Offering</span>
             <h3 class="mt-3"><a href="{% url 'website:program_detail' program.pk %}">{{ program.name }}</a></h3>
             {% if program.award %}<p class="text-dark fw-semibold">{{ program.award }}</p>{% endif %}

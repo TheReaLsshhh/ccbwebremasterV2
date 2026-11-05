@@ -56,6 +56,14 @@ After creating a superuser (see below), manage:
 | **Faculty and staff** | Faculty page (leadership vs directory) |
 | **Contact inquiries** | Messages from the contact form (read-only; mark resolved) |
 
+### Program logos, admissions help, and page motion
+
+In **Academic programs**, upload a JPG, PNG, or WebP in **Program logo and card background**. Admin saves a lossless WebP, preserves transparency, and limits the longest side to 1200px. Adjust **Logo opacity** (5-25%) for the large card watermark; the small logo stays fully visible. Both Home and Academics use the saved logo.
+
+**Admissions Support** replaces the requirements checklist. Edit the assistance title, description, destination, button label, and order. Available destinations are Contact, Downloads, and Academics. Migration `0018_program_logos_admissions_support` moves existing checklist attachments into Downloads, preserving publication status, before retiring the checklist model.
+
+Public pages use small, one-time upward entrance animations. They stop for reduced-motion preferences, pause when the page is left, and never hide content when JavaScript is unavailable.
+
 ### Crop page banners
 
 Open **Page contents** (or **About Pages & Page Headings** on the dashboard), then choose the page. Upload a banner or adjust its existing image in **Desktop banner crop** and **Mobile banner crop**. Drag the preview or use horizontal position, vertical position, zoom, and banner height controls. Click **Save** to publish the framing. **Reset crop** restores that viewport's centered framing and default height.

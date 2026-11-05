@@ -1,0 +1,8 @@
+{% for support in admission_support %}
+<a class="admission-support-link" href="{% url support.destination %}">
+    <span class="admission-support-icon">{% if support.destination == "website:downloads" %}{% include "website/includes/section_icon.html" with icon="downloads" %}{% elif support.destination == "website:academics" %}{% include "website/includes/section_icon.html" with icon="academics" %}{% else %}{% include "website/includes/section_icon.html" with icon="contact" %}{% endif %}</span>
+    <span><strong>{{ support.title }}</strong>{% if support.description %}<span class="admission-support-description">{{ support.description }}</span>{% endif %}<span class="editorial-link">{{ support.link_label }} {% include "website/includes/section_icon.html" with icon="arrow-right" icon_class="inline-icon" %}</span></span>
+</a>
+{% empty %}
+<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}Contact Admissions</a>
+{% endfor %}

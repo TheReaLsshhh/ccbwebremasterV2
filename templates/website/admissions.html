@@ -47,28 +47,11 @@
 </article>
 {% endfor %}
 </div>
-<aside class="admission-checklist">
-<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="checklist" %}Get prepared</span>
-<h2>Your Requirements Checklist</h2>
-<p class="checklist-help">Review these requirements and prepare the documents relevant to your application.</p>
-<ul class="requirements-list" role="list">
-{% for requirement in requirements %}
-<li class="checklist-item">
-<div class="checklist-label">
-<span class="requirement-marker" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg></span>
-<strong>{{ requirement.title }}</strong>
-</div>
-{% if requirement.description %}
-<p>{{ requirement.description }}</p>
-{% endif %}{% if requirement.document_file %}
-<a href="{{ requirement.document_file|file_download_url }}">{% include "website/includes/section_icon.html" with icon="downloads" icon_class="inline-icon" %}Download Document</a>
-{% endif %}
-</li>
-{% empty %}
-<li class="checklist-empty">Contact the college for the latest admission requirements.</li>
-{% endfor %}
-</ul>
-<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}Need Help with Admission?</a>
+<aside class="admission-support-panel">
+<span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="support" %}Here to help</span>
+<h2>Plan Your Application</h2>
+<p class="muted-copy">Find guidance, explore your options, and connect with the college before applying.</p>
+{% include "website/partials/admission_support_links.html" %}
 </aside>
 </div>
 </div>

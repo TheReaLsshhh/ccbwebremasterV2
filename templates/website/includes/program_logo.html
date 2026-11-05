@@ -1,0 +1,4 @@
+{% if program.logo %}
+<img class="program-card-watermark" src="{{ program.logo.url }}" alt="" aria-hidden="true" loading="lazy" decoding="async" width="280" height="280">
+<span class="program-logo-mark"><img src="{{ program.logo.url }}" alt="{{ program.name }} logo" width="64" height="64" loading="lazy" decoding="async"></span>
+{% endif %}

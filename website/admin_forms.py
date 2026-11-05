@@ -54,3 +54,38 @@ class PageContentAdminForm(forms.ModelForm):
                 name = f"{prefix}_{suffix}"
                 if name in self.fields:
                     self.fields[name].widget.attrs.update({"min": low, "max": high, "step": step, "class": "banner-crop-value"})
+
+
+class AcademicProgramAdminForm(forms.ModelForm):
+    class Meta:
+        from .models import AcademicProgram
+        model = AcademicProgram
+        fields = "__all__"
+
+    def clean_logo(self):
+        from io import BytesIO
+        import uuid
+        import warnings
+        from django.core.files.uploadedfile import UploadedFile, InMemoryUploadedFile
+        from PIL import Image, ImageOps, UnidentifiedImageError
+
+        upload = self.cleaned_data.get("logo")
+        if not isinstance(upload, UploadedFile):
+            return upload
+        if upload.size > 10 * 1024 * 1024:
+            raise forms.ValidationError("Choose a logo of 10 MB or smaller.")
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                upload.seek(0)
+                with Image.open(upload) as original:
+                    if original.format not in {"JPEG", "PNG", "WEBP"} or getattr(original, "is_animated", False):
+                        raise forms.ValidationError("Use a still JPG, PNG, or WebP logo.")
+                    image = ImageOps.exif_transpose(original).convert("RGBA")
+                    image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
+                    output = BytesIO()
+                    image.save(output, "WEBP", lossless=True, method=4)
+            output.seek(0)
+            return InMemoryUploadedFile(output, "logo", uuid.uuid4().hex + ".webp", "image/webp", output.getbuffer().nbytes, None)
+        except (OSError, ValueError, UnidentifiedImageError, Image.DecompressionBombError, Image.DecompressionBombWarning):
+            raise forms.ValidationError("This logo could not be converted. Please upload a valid JPG, PNG, or WebP image.")

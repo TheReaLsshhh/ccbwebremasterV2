@@ -17,7 +17,7 @@ from django.utils.html import format_html
 from django.utils import timezone
 from PIL import Image
 
-from .admin_forms import HomeSlideUploadForm, PageContentAdminForm
+from .admin_forms import HomeSlideUploadForm, PageContentAdminForm, AcademicProgramAdminForm
 
 from .models import (
     AdmissionStep,
@@ -27,7 +27,7 @@ from .models import (
     HomeSlide,
     LegalPage,
     LegalSection,
-    AdmissionRequirement,
+    AdmissionSupport,
     ContactInquiry,
     DownloadItem,
     FacultyStaffEntry,
@@ -324,6 +324,8 @@ class FrequentlyAskedQuestionAdmin(PublishedContentAdmin):
 
 @admin.register(AcademicProgram)
 class AcademicProgramAdmin(PublishedContentAdmin):
+    form = AcademicProgramAdminForm
+    readonly_fields = ("logo_preview",)
     list_display_links = ("name",)
     list_display = ("sort_order", "name", "award", "is_featured", "updated_at", "published")
     list_editable = ("sort_order", "is_featured", "published")
@@ -331,21 +333,28 @@ class AcademicProgramAdmin(PublishedContentAdmin):
     list_filter = ("department", "is_featured", "published")
     fieldsets = (
         ("Program identity", {"fields": ("name", "award", "department", "duration")}),
+        ("Program logo and card background", {"fields": ("logo", "logo_preview", "logo_opacity")}),
         ("Program detail page", {"fields": ("description", "career_paths", "brochure_file")}),
         ("Publishing", {"fields": ("sort_order", "published", "is_featured"), "description": "Featured programs are prioritized on Home. Unpublished programs are hidden from listings, details, and search."}),
     )
+
+    @admin.display(description="Current logo")
+    def logo_preview(self, obj):
+        if not obj or not obj.logo:
+            return "Upload a logo to personalize this program's cards."
+        return format_html('<img src="{}" alt="Program logo" width="80" height="80" style="object-fit:contain">', obj.logo.url)
 
     def view_on_site(self, obj):
         return reverse("website:program_detail", args=[obj.pk])
 
 
-@admin.register(AdmissionRequirement)
-class AdmissionRequirementAdmin(PublishedContentAdmin):
+@admin.register(AdmissionSupport)
+class AdmissionSupportAdmin(PublishedContentAdmin):
     search_fields = ("title", "description")
     fieldsets = (
-        ("Requirements checklist", {
-            "fields": ("title", "description", "document_file"),
-            "description": "These are read-only preparation instructions on Admissions. Visitors cannot tick items or save progress. Attach an official form when needed.",
+        ("Admissions guidance", {
+            "fields": ("title", "description", "destination", "link_label"),
+            "description": "Help prospective students find application guidance, official forms, or program information. These links appear beside the admission steps.",
         }),
         ("Publication and order", {"fields": ("published", "sort_order")}),
     )

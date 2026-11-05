@@ -120,7 +120,7 @@ from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 from .models import (
-    AcademicProgram, AdmissionRequirement, AdmissionStep, CampusOffice,
+    AcademicProgram, AdmissionSupport, AdmissionStep, CampusOffice,
     CampusService, DownloadItem, FacultyStaffEntry, FacultyStaffSection,
     FrequentlyAskedQuestion, NewsEvent, StudentResource,
 )
@@ -223,18 +223,18 @@ class PublicWebsiteTests(TestCase):
         self.assertEqual(self.client.get("/search/", {"q": "Test Educator"}).context["page_obj"].paginator.count, 0)
         self.assertNotContains(self.client.get("/sitemap.xml"), "/faculty/")
 
-    def test_admissions_steps_and_checklist_are_admin_managed(self):
+    def test_admissions_steps_and_support_are_admin_managed(self):
         AdmissionStep.objects.create(title="Book an appointment", description="Contact admissions.")
         AdmissionStep.objects.create(title="Private step", description="Draft", published=False)
-        AdmissionRequirement.objects.create(title="School documents")
-        AdmissionRequirement.objects.create(title="Private requirement", published=False)
+        AdmissionSupport.objects.create(title="Application assistance", destination="website:contact")
+        AdmissionSupport.objects.create(title="Private guidance", published=False)
         response = self.client.get("/admissions/")
         self.assertContains(response, "Book an appointment")
-        self.assertContains(response, "School documents")
+        self.assertContains(response, "Application assistance")
         self.assertNotContains(response, 'type="checkbox"')
-        self.assertContains(response, 'class="requirement-marker"')
+        self.assertContains(response, 'class="admission-support-link"')
         self.assertNotContains(response, "Private step")
-        self.assertNotContains(response, "Private requirement")
+        self.assertNotContains(response, "Private guidance")
 
     def test_services_visibility_does_not_restore_hardcoded_links(self):
         service = CampusService.objects.create(title="Campus library", url="https://example.edu/library")
@@ -362,15 +362,15 @@ class PublicWebsiteTests(TestCase):
         page = PageContent.objects.filter(page=PageContent.ABOUT_TRUSTEES).first()
         self.assertEqual(admin.site._registry[PageContent].view_on_site(page), "/about/board-of-trustees/")
 
-    def test_requirement_list_is_read_only_but_document_links_work(self):
-        AdmissionRequirement.objects.create(title="Prepare this document", document_file="admissions/example.pdf")
-        response = self.client.get("/admissions/")
-        self.assertContains(response, 'class="requirements-list"')
-        self.assertContains(response, 'class="requirement-marker"')
-        self.assertContains(response, "admissions/example.pdf")
-        self.assertNotContains(response, 'type="checkbox"')
-        self.assertNotContains(response, 'role="checkbox"')
-        self.assertNotContains(response, "Check items as you prepare")
+    def test_admissions_support_replaces_checklist_and_partial(self):
+        support = AdmissionSupport.objects.create(title="Find your official forms", destination="website:downloads", link_label="Browse forms")
+        for path in ["/admissions/", "/admissions/partial/"]:
+            response = self.client.get(path)
+            self.assertContains(response, support.title)
+            self.assertContains(response, 'href="/downloads/"')
+            self.assertContains(response, "Browse forms")
+            self.assertNotContains(response, "Your Requirements Checklist")
+            self.assertNotContains(response, 'class="requirements-list"')
 
 
     def test_about_overview_is_retired_and_subnavigation_has_only_five_links(self):

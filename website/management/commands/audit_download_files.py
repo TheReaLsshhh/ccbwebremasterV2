@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 
 from website.models import (
     AcademicProgram,
-    AdmissionRequirement,
     DownloadItem,
     StudentResource,
 )
@@ -11,7 +10,6 @@ from website.views import _cloudinary_download_candidates, _cloudinary_url_is_av
 
 FILE_FIELDS = (
     (AcademicProgram, "brochure_file", "name"),
-    (AdmissionRequirement, "document_file", "title"),
     (DownloadItem, "file", "title"),
     (StudentResource, "attachment", "title"),
 )
