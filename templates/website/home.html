@@ -103,9 +103,12 @@
 <div class="program-feature-grid">
 {% for program in featured_programs %}
 <a class="program-feature{% if program.logo %} program-card-with-logo{% endif %}" href="{% url 'website:program_detail' program.pk %}" style="--program-logo-opacity:{{ program.logo_opacity }}%;">
-{% include "website/includes/program_logo.html" %}
+{% include "website/includes/program_watermark.html" %}
 <span class="section-eyebrow">{% include "website/includes/section_icon.html" with icon="academics" %}{{ program.award|default:'Academic program' }}</span>
+<div class="program-title-row mt-3">
+{% include "website/includes/program_logo.html" %}
 <h3>{{ program.name }}</h3>
+</div>
 <p>{{ program.description|truncatewords:26 }}</p>
 <span class="editorial-link">Explore program &nearr;</span>
 </a>

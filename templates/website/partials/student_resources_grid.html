@@ -6,7 +6,7 @@
             <span class="signal-badge signal-badge-resource">Resource</span>
             <h3>{{ resource.title }}</h3>
             <p class="muted-copy">{{ resource.description }}</p>
-            <div class="d-flex gap-2 flex-wrap mt-3">
+            <div class="resource-card-actions d-flex gap-2 flex-wrap mt-3">
                 {% if resource.link_url %}
                     <a class="btn btn-brand btn-sm" href="{{ resource.link_url }}">{% include "website/includes/section_icon.html" with icon="external" icon_class="inline-icon" %}Open Link</a>
                 {% endif %}

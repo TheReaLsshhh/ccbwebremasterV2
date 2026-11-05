@@ -3,15 +3,18 @@
 {% for program in programs %}
     <div class="col-lg-6">
         <div class="content-card program-card{% if program.logo %} program-card-with-logo{% endif %}" style="--program-logo-opacity:{{ program.logo_opacity }}%;">
-            {% include "website/includes/program_logo.html" %}
+            {% include "website/includes/program_watermark.html" %}
             <span class="signal-badge signal-badge-program">Program Offering</span>
-            <h3 class="mt-3"><a href="{% url 'website:program_detail' program.pk %}">{{ program.name }}</a></h3>
+            <div class="program-title-row mt-3">
+                {% include "website/includes/program_logo.html" %}
+                <h3><a href="{% url 'website:program_detail' program.pk %}">{{ program.name }}</a></h3>
+            </div>
             {% if program.award %}<p class="text-dark fw-semibold">{{ program.award }}</p>{% endif %}
             <p class="muted-copy">{{ program.description }}</p>
             <div class="program-card-actions">
             <a class="editorial-link" href="{% url 'website:program_detail' program.pk %}">Explore Program &nearr;</a>
             {% if program.brochure_file %}
-                <a class="btn btn-soft btn-sm mt-3 btn-download" href="{{ program.brochure_file|file_download_url }}">Download Brochure</a>
+                <a class="btn btn-soft btn-sm btn-download" href="{{ program.brochure_file|file_download_url }}">Download Brochure</a>
             {% endif %}
             </div>
         </div>
