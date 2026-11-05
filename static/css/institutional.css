@@ -16,7 +16,7 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
 .site-navbar .navbar-brand {margin-right:0!important;min-width:0;}.brand-lockup {gap:10px;}.brand-mark {width:46px;height:46px;background:transparent;box-shadow:none;padding:0;border:0;}.brand-mark-image {object-fit:contain;}
 .brand-copy strong {font-size:1.2rem;font-weight:600;color:var(--college-ink);white-space:nowrap;}.brand-initial {color:inherit;}
 .site-navbar .nav-link {font-size:.75rem;font-weight:600;padding:8px 9px!important;border-radius:0;color:var(--college-ink);background:transparent;letter-spacing:0;white-space:nowrap;}
-.site-navbar .nav-link.active {color:var(--college-ink);background:transparent;border-bottom:2px solid #bc8b2e;box-shadow:none;}
+.site-navbar .nav-link.active {color:var(--college-ink);background:transparent;border-bottom:2px solid transparent;box-shadow:none;font-weight:700;background:var(--college-tint);}
 .site-navbar .nav-link:hover {background:var(--college-tint);}.site-navbar .navbar-toggler {border:1px solid var(--college-line);border-radius:2px;}
 .site-search-strip {background:var(--college-paper);border-bottom:1px solid var(--college-line);}
 .site-search-strip form {display:flex;align-items:center;gap:18px;justify-content:flex-end;min-height:44px;font-size:.75rem;}.site-search-strip label {color:var(--college-muted);}.site-search-strip input {width:230px;max-width:50vw;background:transparent;border:0;border-bottom:1px solid var(--college-line);padding:6px;color:var(--college-ink);border-radius:0;}.site-search-strip button {background:transparent;border:0;color:var(--college-ink);font-weight:700;}
@@ -26,7 +26,7 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
 .hero-kicker {font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:#ebcf91;font-weight:600;}
 .college-home-hero h1 {font-size:clamp(3rem,5.4vw,5.5rem);line-height:1.05;color:#fff;max-width:760px;font-weight:400;margin:22px 0;}
 .college-home-hero p {max-width:580px;font-size:1.05rem;color:#e5ece6;line-height:1.85;}
-.hero-actions {display:flex;align-items:center;gap:28px;margin-top:32px;}.hero-text-link {color:#fff;text-decoration:none;font-size:.85rem;border-bottom:1px solid #81948a;padding:8px 0;}.hero-text-link:hover {color:#f3d89f;}
+.hero-actions {display:flex;align-items:center;gap:28px;margin-top:32px;}.hero-text-link {color:#fff;text-decoration:none;font-size:.85rem;border-bottom:1px solid transparent;padding:8px 0;}.hero-text-link:hover {color:#f3d89f;}
 .hero-caption {display:flex;align-items:center;gap:14px;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#dce5df;margin-top:65px;}.caption-line {width:45px;height:1px;background:#d9b562;}
 .btn,.btn-portal {border-radius:2px!important;font-size:.8rem;letter-spacing:.015em;padding:13px 21px;font-weight:600;box-shadow:none;}
 .btn-brand {background:var(--college-gold)!important;color:#173829!important;border:1px solid var(--college-gold)!important;}.btn-brand:hover {background:#f2cf84!important;transform:none;}.btn-brand span {margin-left:18px;}
@@ -35,7 +35,7 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
 .college-section,.section-block {padding:78px 0;}.college-section-tinted {background:var(--college-tint);}
 .section-eyebrow,.eyebrow {font-family:Arial,Helvetica,sans-serif!important;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--college-muted);padding:0;background:transparent;border:0;box-shadow:none;}
 .editorial-intro {display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:90px;}.editorial-intro h2,.campus-feature h2,.footer-intro h2 {font-size:clamp(2.25rem,3.5vw,3.6rem);line-height:1.15;font-weight:400;margin:18px 0;}.intro-copy {font-size:1.05rem;color:var(--college-muted);}
-.editorial-link {font-family:Arial,Helvetica,sans-serif;font-size:.78rem;font-weight:700;color:var(--college-ink);text-decoration:none;border-bottom:1px solid #b9954a;padding-bottom:5px;display:inline-block;}
+.editorial-link {font-family:Arial,Helvetica,sans-serif;font-size:.78rem;font-weight:700;color:var(--college-ink);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:5px;display:inline-block;}
 .section-header {margin-bottom:35px;gap:25px;align-items:end;}.section-title {font-size:clamp(2rem,3.1vw,3rem);font-weight:400;line-height:1.2;margin-top:14px;}.muted-copy {color:var(--college-muted);}
 .story-grid,.program-feature-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;}.college-story {background:var(--college-paper);border:1px solid var(--college-line);}.college-story>a {text-decoration:none;}.story-image {aspect-ratio:3/2;overflow:hidden;}.story-image img {width:100%;height:100%;object-fit:cover;transition:transform .3s;}.college-story:hover .story-image img {transform:scale(1.025);}.story-body {padding:26px;}.story-body time {font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--college-muted);}.story-body h3 {font-size:1.55rem;line-height:1.3;margin:12px 0;}.story-body p {font-size:.85rem;color:var(--college-muted);}
 .program-feature {padding:32px;border-top:2px solid #bb9347;border-bottom:1px solid var(--college-line);background:var(--college-tint);text-decoration:none;}.program-feature h3 {font-size:1.7rem;margin:23px 0 15px;line-height:1.25;}.program-feature p {font-size:.9rem;color:var(--college-muted);}.program-feature:hover {background:var(--college-paper);}
@@ -59,7 +59,7 @@ a {color:inherit;} a:hover {color:var(--college-ink);}
 
 .resource-card {border:1px solid var(--college-line);border-radius:3px;background:var(--college-paper);padding:30px;box-shadow:none;height:100%;}.resource-card:hover {transform:none;box-shadow:none;}.resource-card h3 {font-size:1.65rem;font-weight:400;margin-top:18px;}.page-faq-section {background:var(--college-tint);}.contact-form-shell label {display:block;font-size:.75rem;font-weight:600;margin:14px 0 5px;}
 
-.site-shell:before {display:none;}.site-navbar .nav-link {color:var(--college-ink)!important;}.news-article {max-width:940px;}.article-cover {width:100%;height:auto;max-height:550px;object-fit:cover;margin-bottom:35px;}.article-summary {font-size:1.2rem;color:var(--college-muted);}.site-shell>main {flex:1;} .news-grid-wrapper .news-grid-column .news-grid-card {box-shadow:none;border-radius:3px;}.content-card a:not(.btn),.resource-card a:not(.btn) {text-underline-offset:4px;} .content-card h3 a:hover {text-decoration:underline;}
+.site-shell:before {display:none;}.site-navbar .nav-link {color:var(--college-ink)!important;}.news-article {max-width:940px;}.article-cover {width:100%;height:auto;max-height:550px;object-fit:cover;margin-bottom:35px;}.article-summary {font-size:1.2rem;color:var(--college-muted);}.site-shell>main {flex:1;} .news-grid-wrapper .news-grid-column .news-grid-card {box-shadow:none;border-radius:3px;}.content-card a:not(.btn),.resource-card a:not(.btn) {text-underline-offset:4px;} .content-card h3 a:hover {text-decoration:none;}
 
 .about-campus-image {width:100%;height:300px;object-fit:cover;}.institutional-section {display:grid;grid-template-columns:1fr 1.6fr;gap:60px;padding:40px 0;border-bottom:1px solid var(--college-line);}.institutional-section:first-child {padding-top:0;}.institutional-section:last-child {border-bottom:0;}.institutional-section h2 {font-size:2.2rem;margin-top:16px;}.institutional-copy {color:var(--college-muted);}.program-feature-grid .program-feature {min-height:260px;}.brand-copy strong .brand-initial {color:#a57825;}
 @media(max-width:767px) {.institutional-section {grid-template-columns:1fr;gap:18px;padding:28px 0;}.about-campus-image {height:230px;}}
@@ -284,7 +284,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--college-heading-font); }
 :root .site-search-strip { position: -webkit-sticky; position: sticky; top: 0; z-index: 1020; align-self: stretch; flex-shrink: 0; box-shadow: 0 5px 14px rgba(16,47,34,.06); }
 html { scroll-padding-top: 90px; }
 .footer-policy-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
-.footer-policy-links a { color: #dbe6dd; text-decoration: underline; text-underline-offset: 4px; }
+.footer-policy-links a { color: #dbe6dd; text-decoration: none; text-underline-offset: 4px; }
 .footer-policy-links a:hover { color: #f0ce8b; }
 .legal-layout { display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 60px; }
 .legal-navigation a { display: block; padding: 12px 0; border-bottom: 1px solid var(--college-line); font-size: .85rem; }
@@ -297,7 +297,7 @@ html { scroll-padding-top: 90px; }
 .policy-review-notice p { margin: 8px 0 0; font-size: .85rem; }
 .legal-reference, .contact-privacy-notice { font-size: .78rem; }
 .contact-privacy-notice { color: var(--college-muted); line-height: 1.6; }
-.contact-privacy-notice a { text-decoration: underline; }
+.contact-privacy-notice a { text-decoration: none; }
 @media(max-width:767px) { .legal-layout { grid-template-columns: 1fr; gap: 32px; } .legal-navigation { display: flex; flex-wrap: wrap; gap: 0 20px; } }
 .requirements-list { list-style: none; margin: 0; padding: 0; }
 .requirement-marker { display: inline-flex; flex: 0 0 20px; width: 20px; height: 20px; margin-top: 3px; color: #397553; }
@@ -315,7 +315,7 @@ html { scroll-padding-top: 90px; }
 .about-topic-card p { font-size: .88rem; color: var(--college-muted); }
 .about-section-navigation { display: flex; flex-wrap: wrap; gap: 10px 24px; padding-bottom: 28px; margin-bottom: 38px; border-bottom: 1px solid var(--college-line); }
 .about-section-navigation a { font-size: .8rem; padding: 7px 0; }
-.about-section-navigation a[aria-current="page"] { font-weight: 700; border-bottom: 2px solid #397553; }
+.about-section-navigation a[aria-current="page"] { font-weight: 700; border-bottom: 2px solid transparent; color: var(--college-link-hover); }
 @media(min-width:768px) and (max-width:1199px) { .about-topic-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:767px) { .about-topic-grid { grid-template-columns: 1fr; } }
 /* Internal About links use chevrons, not external-link arrows. */
@@ -332,3 +332,138 @@ html { scroll-padding-top: 90px; }
 /* Both dropdown labels use the same explicit caret spacing. */
 :root .site-navbar .nav-item-services > .dropdown-toggle { display: inline-flex; align-items: center; gap: .4rem; }
 :root .site-navbar .nav-item-services > .dropdown-toggle::after { margin-left: 0; vertical-align: middle; flex-shrink: 0; }
+/* Compact shared rhythm for public content pages. */
+body { line-height: 1.55; }
+.site-icon { display:inline-block; width:1em; height:1em; fill:currentColor; vertical-align:-.125em; flex-shrink:0; }
+:root .site-navbar > .container { min-height:84px; padding-top:14px!important; padding-bottom:14px!important; }
+:root .site-navbar .brand-mark { width:52px; height:52px; flex-basis:52px; }
+:root .college-section, :root .section-block { padding:40px 0; }
+.college-page-hero > .container { padding-top:20px; padding-bottom:28px; }
+.college-breadcrumb { margin-bottom:14px; }
+.college-page-hero h1 { font-size:clamp(2.15rem,4vw,3.25rem); margin:10px 0; }
+.content-search { padding:18px 0; gap:12px; }
+.section-header { margin-bottom:22px; gap:20px; }
+.section-title { font-size:clamp(1.8rem,2.8vw,2.5rem); line-height:1.2; }
+:root .section-header .section-title { margin-top:10px!important; }
+:root .content-card, :root .catalog-card, :root .resource-card { padding:22px; border-radius:8px; }
+:root .content-card h3, :root .catalog-card h3, :root .resource-card h3, :root .feature-card h3, :root .announcement-card h3 { font-family:var(--college-heading-font); font-size:1.4rem; line-height:1.3; margin-bottom:10px; height:auto; min-height:0; }
+.content-card h3 a { text-decoration:none; }
+.content-card p, .catalog-card p, .resource-card p { line-height:1.6; margin-bottom:14px; }
+.program-card { display:flex; flex-direction:column; gap:0; }
+.program-card .signal-badge { align-self:flex-start; }
+.program-card-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; margin-top:auto; padding-top:4px; }
+.program-card-actions .btn { margin:0!important; }
+:root .signal-badge { padding:5px 10px; border-radius:4px; }
+:root .signal-badge.signal-badge-resource { margin-bottom:10px; }
+.btn { padding:10px 16px; }
+.editorial-intro { gap:40px; }
+.editorial-intro h2, .campus-feature h2 { font-size:clamp(2rem,3vw,2.8rem); margin:12px 0; }
+.program-feature-grid .program-feature { min-height:0; padding:24px; }
+.program-feature h3 { margin:14px 0 10px; }
+.story-body { padding:20px; }
+.story-body p { margin-bottom:0; }
+.campus-feature { padding-bottom:40px; }
+.campus-feature-copy { padding:32px; }
+.campus-feature-image img { min-height:300px; }
+.detail-layout { gap:36px; }
+.admission-layout { gap:32px; }
+.institutional-section { gap:32px; padding:28px 0; }
+.about-topic-card { padding:22px; border-radius:8px; }
+.about-topic-card h2 { margin:14px 0 10px; }
+.about-section-navigation { padding-bottom:18px; margin-bottom:24px; }
+.office-search { margin-bottom:22px; }
+.footer-columns { padding:28px 0; gap:28px; }
+.footer-columns h3 { margin:8px 0 12px; }
+.footer-columns a { margin-bottom:6px; }
+.footer-bottom { padding-top:16px; }
+@media(max-width:767px) {
+  :root .college-section, :root .section-block { padding:28px 0; }
+  :root .site-navbar > .container { min-height:76px; padding:12px 16px!important; }
+  :root .site-navbar .brand-mark { width:42px; height:42px; flex-basis:42px; }
+  .college-page-hero > .container { padding-top:16px; padding-bottom:24px; }
+  :root .content-card, :root .catalog-card, :root .resource-card { padding:20px; }
+  .content-search .btn { min-height:44px; }
+  .editorial-intro, .institutional-section, .detail-layout, .admission-layout { gap:20px; }
+  .campus-feature-copy { padding:24px; }
+  .footer-columns { gap:20px; padding:24px 0; }
+  .program-card-actions { gap:12px; }
+}
+/* Contact: keep related details together and let the map have its own height. */
+.contact-directory-section { padding-bottom:20px!important; }
+.contact-content-section { padding-top:20px!important; }
+.contact-directory-section .office-search { margin-bottom:18px; }
+.contact-directory-section .office-grid { gap:16px; align-items:start; }
+.contact-directory-section .office-grid .content-card { height:auto; }
+.contact-directory-section .office-grid p { margin-bottom:8px; }
+.contact-content-section .contact-shell { gap:16px; }
+.contact-content-section .contact-desk-title { margin:10px 0 8px; }
+.contact-content-section .contact-detail-grid { gap:8px; }
+.contact-content-section .contact-tile { padding:10px 12px; border-radius:4px; font-size:.85rem; }
+.contact-content-section .contact-tile strong { margin-bottom:3px; }
+.contact-content-section .contact-inquiry-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; }
+.contact-form-field { min-width:0; }
+.contact-form-field label { display:block; margin:0 0 5px; font-size:.8rem; font-weight:600; }
+.contact-form-wide, .contact-inquiry-form .contact-privacy-notice, .contact-inquiry-form > button { grid-column:1/-1; }
+.contact-content-section .form-control { padding:9px 12px; min-height:42px; }
+.contact-content-section textarea.form-control { height:112px; min-height:112px; resize:vertical; }
+.contact-inquiry-form .contact-privacy-notice { margin:0; line-height:1.45; }
+.contact-inquiry-form .errorlist { margin:5px 0 0; }
+.contact-content-section .contact-info-card { height:auto!important; }
+:root .contact-content-section .contact-map-card { height:auto!important; padding:0; min-height:0; }
+.contact-content-section .contact-map-label { padding:16px; gap:8px; }
+:root .contact-content-section .contact-map-card .map-frame { display:block; height:360px; min-height:0; flex:none; border-radius:0; }
+.contact-content-section .contact-map-label > .d-flex:first-child { flex-direction:column!important; }
+.contact-content-section .email-error-icon { top:37px; }
+@media(min-width:992px) {
+  .contact-layout > .col-lg-5, .contact-layout > .col-lg-7 { width:50%; }
+}
+@media(max-width:575px) {
+  .contact-content-section .contact-inquiry-form { grid-template-columns:1fr; }
+  .contact-content-section .contact-detail-grid { grid-template-columns:1fr; }
+  :root .contact-content-section .contact-map-card .map-frame { height:280px; }
+}
+/* Shared inline SVGs keep actions recognizable without adding vertical space. */
+.inline-icon { display:inline-block; width:1em; height:1em; flex:0 0 1em; margin-inline-end:.4em; vertical-align:-.12em; color:inherit; }
+.college-pagination a:last-child .inline-icon { margin-inline-start:.4em; margin-inline-end:0; }
+/* One interaction palette for public buttons, links, and linked cards. */
+:root { --college-link-hover:#80601e; --college-button-hover:#f2cf84; --college-control-hover:#28583f; --college-hover-duration:160ms; }
+:root[data-theme="dark"] { --college-link-hover:#f0ce8b; --college-control-hover:#9dc7aa; }
+.site-shell :is(a,button,.btn) { transition:color var(--college-hover-duration) ease, background-color var(--college-hover-duration) ease, border-color var(--college-hover-duration) ease; }
+:root .site-shell .btn { transform:none; box-shadow:none; }
+:root .site-shell .btn-brand:is(:hover,:focus-visible,:active):not(:disabled):not(.disabled) {
+  background:var(--college-button-hover)!important; border-color:var(--college-button-hover)!important; color:#173829!important;
+}
+:root .site-shell :is(.btn-soft,.btn-ghost,.btn-outline-secondary):is(:hover,:focus-visible,:active):not(:disabled):not(.disabled) {
+  background:var(--college-tint); border-color:var(--college-control-hover); color:var(--college-ink); transform:none; box-shadow:none;
+}
+:root .site-shell main a:not(.btn):not(.program-feature):not(.service-link):not(.about-topic-card):not(.search-result):is(:hover,:focus-visible) {
+  color:var(--college-link-hover); text-decoration:none; text-underline-offset:4px;
+}
+:root .site-shell .editorial-link:is(:hover,:focus-visible),
+:root .site-shell .hero-text-link:is(:hover,:focus-visible) { border-bottom-color:transparent; text-decoration:none; }
+:root .site-shell :is(.hero-text-link,.college-breadcrumb a):is(:hover,:focus-visible) { color:#f0ce8b; }
+:root .site-shell :is(.college-pagination a,.about-section-navigation a,.legal-navigation a):is(:hover,:focus-visible) {
+  color:var(--college-link-hover); border-color:var(--college-control-hover); background:var(--college-tint);
+}
+:root .site-shell :is(.program-feature,.service-link,.about-topic-card,.search-result):is(:hover,:focus-visible) {
+  color:var(--college-ink); border-color:var(--college-control-hover); background:var(--college-tint); text-decoration:none;
+}
+:root .site-shell :is(.program-feature,.service-link,.about-topic-card,.search-result):is(:hover,:focus-visible) :is(h2,h3,.editorial-link) { color:var(--college-link-hover); }
+:root .site-shell :is(.btn,.editorial-link):is(:hover,:focus-visible)::after { transform:none; }
+:root .site-shell .site-search-field button:is(:hover,:focus-visible) { background:#28583f; color:#fff; }
+:root .site-shell :is(.utility-inner,.college-footer) a:is(:hover,:focus-visible) { color:#f0ce8b; text-decoration:none; text-underline-offset:4px; }
+:root .site-shell .floating-action:is(:hover,:focus-visible) { background:var(--college-tint); color:var(--college-ink); border-color:var(--college-control-hover); }
+@media(prefers-reduced-motion:reduce) { .site-shell :is(a,button,.btn) { transition:none; } }
+/* Include body-level mobile menus and modals as well as the page shell.
+   Hover feedback uses color; keyboard focus retains its visible outline. */
+body.public-site :is(a, button, .btn),
+body.public-site :is(a, button, .btn):is(:hover, :focus, :focus-visible, :active),
+body.public-site :is(a, button, .btn):is(:hover, :focus, :focus-visible, :active) * {
+  text-decoration: none !important;
+}
+body.public-site :is(.editorial-link, .hero-text-link) {
+  border-bottom-color: transparent !important;
+}
+body.public-site :is(.nav-link.active, .about-section-navigation a[aria-current="page"]) {
+  border-bottom-color: transparent !important;
+}

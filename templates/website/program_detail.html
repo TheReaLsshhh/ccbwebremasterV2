@@ -20,19 +20,19 @@
 <h2>About the Program</h2>
 <div>{{ program.description|linebreaks }}</div>
 {% if program.career_paths %}
-<h2>Career Pathways</h2>{{ program.career_paths|linebreaks }}{% endif %}
+<h2>{% include "website/includes/section_icon.html" with icon="career" icon_class="inline-icon" %}Career Pathways</h2>{{ program.career_paths|linebreaks }}{% endif %}
 </article>
 <aside class="content-card program-aside">
-<h2>Take the Next Step</h2>
+<h2>{% include "website/includes/section_icon.html" with icon="admissions" icon_class="inline-icon" %}Take the Next Step</h2>
 {% if program.duration %}
 <p>
-<strong>Duration</strong>
+<strong>{% include "website/includes/section_icon.html" with icon="clock" icon_class="inline-icon" %}Duration</strong>
 <br>{{ program.duration }}</p>
 {% endif %}{% if program.brochure_file %}
-<a class="btn btn-soft" href="{{ program.brochure_file|file_download_url }}">Download Brochure</a>
+<a class="btn btn-soft" href="{{ program.brochure_file|file_download_url }}">{% include "website/includes/section_icon.html" with icon="downloads" icon_class="inline-icon" %}Download Brochure</a>
 {% endif %}
-<a class="btn btn-brand" href="{% url 'website:admissions' %}">View Admissions</a>
-<a class="editorial-link" href="{% url 'website:contact' %}">Ask About This Program &nearr;</a>
+<a class="btn btn-brand" href="{% url 'website:admissions' %}">{% include "website/includes/section_icon.html" with icon="admissions" icon_class="inline-icon" %}View Admissions</a>
+<a class="editorial-link" href="{% url 'website:contact' %}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}Ask About This Program</a>
 </aside>
 </div>
 </section>

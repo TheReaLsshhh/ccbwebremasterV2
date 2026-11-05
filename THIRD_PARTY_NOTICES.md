@@ -10,7 +10,7 @@ applicable legal exceptions before publishing each asset.
 | Component | Source | License notices |
 | --- | --- | --- |
 | Bootstrap 5.3.3, CDN CSS and JavaScript | https://github.com/twbs/bootstrap/tree/v5.3.3 | MIT; complete upstream text retained at `static/licenses/bootstrap-5.3.3-LICENSE.txt` |
-| Font Awesome Free 6.5.2, CDN CSS and webfonts | https://github.com/FortAwesome/Font-Awesome/tree/6.5.2 | Code: MIT; fonts: SIL OFL 1.1; SVG/JS icons: CC BY 4.0. Complete upstream notice retained at `static/licenses/font-awesome-6.5.2-LICENSE.txt` |
+| Font Awesome Free 6.5.2, local SVG icons | https://github.com/FortAwesome/Font-Awesome/tree/6.5.2 | Code: MIT; fonts: SIL OFL 1.1; SVG/JS icons: CC BY 4.0. Complete upstream notice retained at `static/licenses/font-awesome-6.5.2-LICENSE.txt` |
 | Arial, Helvetica, Georgia, Times system font stacks | Device-installed fonts | Font files are not bundled or redistributed by the templates; do not copy proprietary font files into the repository without an appropriate license. |
 | Inline outline SVG section/search icons | Project source | Included as source markup; no Font Awesome attribution is asserted for these independently written paths. |
 

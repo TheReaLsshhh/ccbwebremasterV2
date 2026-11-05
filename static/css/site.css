@@ -794,9 +794,9 @@ button,
 }
 
 .mobile-nav-services-toggle::after {
-  content: "\f078";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/chevron-down.svg") center / contain no-repeat; mask: url("/static/icons/chevron-down.svg") center / contain no-repeat;
   flex: 0 0 auto;
-  font-family: "Font Awesome 6 Free";
+  font-family: inherit;
   font-size: 0.78rem;
   font-weight: 900;
   line-height: 1.5;
@@ -883,16 +883,16 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 .btn-soft.btn-sm.mt-3::after {
-  content: "\f061";
-  font-family: "Font Awesome 6 Free";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/arrow-right.svg") center / contain no-repeat; mask: url("/static/icons/arrow-right.svg") center / contain no-repeat;
+  font-family: inherit;
   font-weight: 900;
   font-size: 0.82em;
   transition: transform 0.24s ease;
 }
 
 .btn-soft.btn-sm.btn-download::after {
-  content: "\f019";
-  font-family: "Font Awesome 6 Free";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/download.svg") center / contain no-repeat; mask: url("/static/icons/download.svg") center / contain no-repeat;
+  font-family: inherit;
   font-weight: 900;
   font-size: 0.82em;
   transition: transform 0.24s ease;
@@ -989,14 +989,14 @@ a.btn.btn-soft.btn-sm.mt-3 {
 .section-eyebrow::before,
 .signal-badge::before {
   display: inline-block;
-  font-family: "Font Awesome 6 Free";
+  font-family: inherit;
   font-weight: 900;
   line-height: 1;
 }
 
 .hero-main .eyebrow::before,
 .page-banner .eyebrow::before {
-  content: "\f19d";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat; mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat;
 }
 
 .section-eyebrow {
@@ -1005,15 +1005,15 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 .section-eyebrow::before {
-  content: "\f0a1";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/bullhorn.svg") center / contain no-repeat; mask: url("/static/icons/bullhorn.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-contact::before {
-  content: "\f095";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/phone.svg") center / contain no-repeat; mask: url("/static/icons/phone.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-map::before {
-  content: "\f279";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/map.svg") center / contain no-repeat; mask: url("/static/icons/map.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-contact,
@@ -1023,43 +1023,43 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 .section-eyebrow.section-eyebrow-leadership::before {
-  content: "\f0c0";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/users.svg") center / contain no-repeat; mask: url("/static/icons/users.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-directory::before {
-  content: "\f2bb";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/address-card.svg") center / contain no-repeat; mask: url("/static/icons/address-card.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-student::before {
-  content: "\f501";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/user-graduate.svg") center / contain no-repeat; mask: url("/static/icons/user-graduate.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-download::before {
-  content: "\f019";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/download.svg") center / contain no-repeat; mask: url("/static/icons/download.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-application::before {
-  content: "\f044";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/pen-to-square.svg") center / contain no-repeat; mask: url("/static/icons/pen-to-square.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-academic::before {
-  content: "\f19d";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat; mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-institution::before {
-  content: "\f66f";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/landmark.svg") center / contain no-repeat; mask: url("/static/icons/landmark.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-inquiry::before {
-  content: "\f4ad";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/comment-dots.svg") center / contain no-repeat; mask: url("/static/icons/comment-dots.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-popular::before {
-  content: "\f005";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/star.svg") center / contain no-repeat; mask: url("/static/icons/star.svg") center / contain no-repeat;
 }
 
 .section-eyebrow.section-eyebrow-featured-programs::before {
-  content: "\f559";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/award.svg") center / contain no-repeat; mask: url("/static/icons/award.svg") center / contain no-repeat;
 }
 
 .hero-main h1,
@@ -1274,7 +1274,7 @@ a.btn.btn-soft.btn-sm.mt-3 {
 }
 
 .page-faq-eyebrow::before {
-  content: "\f059";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/circle-question.svg") center / contain no-repeat; mask: url("/static/icons/circle-question.svg") center / contain no-repeat;
 }
 
 .page-faq-accordion {
@@ -2829,48 +2829,48 @@ span.signal-badge.signal-badge-resource {
 }
 
 .signal-badge::before {
-  content: "\f02b";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/tag.svg") center / contain no-repeat; mask: url("/static/icons/tag.svg") center / contain no-repeat;
   font-size: 0.86em;
 }
 
 .signal-badge.signal-badge-date::before {
-  content: "\f073";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/calendar-days.svg") center / contain no-repeat; mask: url("/static/icons/calendar-days.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-program::before {
-  content: "\f19d";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat; mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-requirement::before {
-  content: "\f0ae";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/list-check.svg") center / contain no-repeat; mask: url("/static/icons/list-check.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-download-academic::before {
-  content: "\f19d";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat; mask: url("/static/icons/graduation-cap.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-download-form::before {
-  content: "\f15c";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/file-lines.svg") center / contain no-repeat; mask: url("/static/icons/file-lines.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-download-policy::before {
-  content: "\f0e3";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/gavel.svg") center / contain no-repeat; mask: url("/static/icons/gavel.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-download-announcement::before {
-  content: "\f0a1";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/bullhorn.svg") center / contain no-repeat; mask: url("/static/icons/bullhorn.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-resource::before {
-  content: "\f02d";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/book.svg") center / contain no-repeat; mask: url("/static/icons/book.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-official::before {
-  content: "\f508";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/user-tie.svg") center / contain no-repeat; mask: url("/static/icons/user-tie.svg") center / contain no-repeat;
 }
 
 .signal-badge.signal-badge-legacy::before {
-  content: "\f66f";
+  content: ""; display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask: url("/static/icons/landmark.svg") center / contain no-repeat; mask: url("/static/icons/landmark.svg") center / contain no-repeat;
 }
 
 .accent-bar {

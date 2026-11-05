@@ -61,14 +61,14 @@
 {% if requirement.description %}
 <p>{{ requirement.description }}</p>
 {% endif %}{% if requirement.document_file %}
-<a href="{{ requirement.document_file|file_download_url }}">Download Document &nearr;</a>
+<a href="{{ requirement.document_file|file_download_url }}">{% include "website/includes/section_icon.html" with icon="downloads" icon_class="inline-icon" %}Download Document</a>
 {% endif %}
 </li>
 {% empty %}
 <li class="checklist-empty">Contact the college for the latest admission requirements.</li>
 {% endfor %}
 </ul>
-<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">Need Help with Admission?</a>
+<a class="btn btn-brand mt-3" href="{% url 'website:contact' %}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}Need Help with Admission?</a>
 </aside>
 </div>
 </div>

@@ -29,7 +29,7 @@
                                         <p class="text-dark fw-semibold mb-1">{{ person.role }}</p>
                                         {% if person.department %}<p class="muted-copy mb-2">{{ person.department }}</p>{% endif %}
                                         {% if person.email %}
-                                            <p class="mb-2"><a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
+                                            <p class="mb-2"><a href="mailto:{{ person.email }}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}{{ person.email }}</a></p>
                                         {% endif %}
                                         <p class="muted-copy">{{ person.bio }}</p>
                                     </div>
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             {% if person.email %}
-                                <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+                                <a href="mailto:{{ person.email }}">{% include "website/includes/section_icon.html" with icon="contact" icon_class="inline-icon" %}{{ person.email }}</a>
                             {% else %}
                                 <span class="muted-copy">Email Unavailable</span>
                             {% endif %}

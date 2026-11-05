@@ -169,3 +169,9 @@ def webp_image_srcset(image, widths):
             if url:
                 variants.append(f"{url} {size}w")
     return ", ".join(variants)
+
+
+@register.filter
+def preferred_webp_url(image, width):
+    """Prefer WebP for CSS backgrounds, retaining unavailable-image fallbacks."""
+    return webp_image_url(image, width) or optimized_image_url(image, width)
