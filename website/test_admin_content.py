@@ -62,6 +62,67 @@ class AdminContentTests(TestCase):
         for route in ["website_academicprogram_add", "website_newsevent_add", "website_sitesettings_add", "website_campusoffice_add", "website_campusservice_add", "website_admissionstep_add"]:
             self.assertEqual(self.client.get(reverse("admin:" + route)).status_code, 200)
 
+    def banner_crop_data(self, **overrides):
+        return {
+            "page": "news", "hero_title": "Campus news", "hero_text": "Latest updates",
+            "sort_order": 0, "published": "on",
+            "banner_position_x": 25, "banner_position_y": 70, "banner_zoom": "1.50", "banner_height": 420,
+            "banner_mobile_position_x": 80, "banner_mobile_position_y": 30, "banner_mobile_zoom": "2.00", "banner_mobile_height": 300,
+            **overrides,
+        }
+
+    def test_banner_crop_editor_saves_both_views_without_changing_original(self):
+        page = PageContent.objects.create(page="news", hero_title="News", banner_image=self.image())
+        original_name = page.banner_image.name
+        original_bytes = Path(page.banner_image.path).read_bytes()
+        url = reverse("admin:website_pagecontent_change", args=[page.pk])
+        response = self.client.get(url)
+        self.assertContains(response, "admin/js/banner-image-crop.js")
+        self.assertContains(response, "Desktop banner crop")
+        self.assertContains(response, "Mobile banner crop")
+        self.assertContains(response, 'data-current-image="' + page.banner_image.url + '"')
+        response = self.client.post(url, self.banner_crop_data())
+        self.assertEqual(response.status_code, 302)
+        page.refresh_from_db()
+        self.assertEqual(page.banner_position_x, 25)
+        self.assertEqual(page.banner_position_y, 70)
+        self.assertEqual(float(page.banner_zoom), 1.5)
+        self.assertEqual(page.banner_height, 420)
+        self.assertEqual(page.banner_mobile_position_x, 80)
+        self.assertEqual(page.banner_mobile_height, 300)
+        self.assertEqual(page.banner_image.name, original_name)
+        self.assertEqual(Path(page.banner_image.path).read_bytes(), original_bytes)
+        response = self.client.get("/news/")
+        for expected in ("--banner-x:25%", "--banner-y:70%", "--banner-zoom:1.50", "--banner-height:420px", "--banner-mobile-x:80%", "--banner-mobile-y:30%", "--banner-mobile-zoom:2.00", "--banner-mobile-height:300px"):
+            self.assertContains(response, expected)
+        # Decimal formatting must remain valid CSS even under comma-decimal locales.
+        from django.utils.translation import override
+        with override("de"):
+            self.assertContains(self.client.get("/news/"), "--banner-zoom:1.50")
+
+    def test_banner_crop_limits_reject_invalid_values(self):
+        from .admin_forms import PageContentAdminForm
+        for name, value in (("banner_position_x", -1), ("banner_position_y", 101), ("banner_zoom", "NaN"), ("banner_zoom", "3.1"), ("banner_height", 10000), ("banner_mobile_height", 1), ("banner_mobile_zoom", "0.5")):
+            with self.subTest(name=name, value=value):
+                form = PageContentAdminForm(data=self.banner_crop_data(**{name: value}))
+                self.assertFalse(form.is_valid())
+                self.assertIn(name, form.errors)
+
+    def test_banner_upload_and_clear_keep_crop_editor_usable(self):
+        response = self.client.post(reverse("admin:website_pagecontent_add"), {
+            **self.banner_crop_data(), "banner_image": self.image("new-banner.jpg"),
+        })
+        self.assertEqual(response.status_code, 302)
+        page = PageContent.objects.get(page="news")
+        self.assertTrue(page.banner_image)
+        url = reverse("admin:website_pagecontent_change", args=[page.pk])
+        response = self.client.post(url, self.banner_crop_data(**{"banner_image-clear": "on"}))
+        self.assertEqual(response.status_code, 302)
+        page.refresh_from_db()
+        self.assertFalse(page.banner_image)
+        response = self.client.get("/news/")
+        self.assertNotContains(response, 'class="page-hero-media"')
+
     def test_about_editor_filters_sections_and_publishes_to_correct_page(self):
         history = PageContent.objects.create(
             page=PageContent.ABOUT_HISTORY, hero_title="History",

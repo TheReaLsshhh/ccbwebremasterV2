@@ -1,5 +1,5 @@
-{% load static news_extras %}
-<header class="college-page-hero{% if page_content.banner_image %} college-page-hero-with-image{% endif %}">
+{% load static news_extras l10n %}
+<header class="college-page-hero{% if page_content.banner_image %} college-page-hero-with-image{% endif %}"{% if page_content.banner_image %} style="--banner-x:{{ page_content.banner_position_x|unlocalize }}%;--banner-y:{{ page_content.banner_position_y|unlocalize }}%;--banner-zoom:{{ page_content.banner_zoom|unlocalize }};--banner-height:{{ page_content.banner_height|unlocalize }}px;--banner-mobile-x:{{ page_content.banner_mobile_position_x|unlocalize }}%;--banner-mobile-y:{{ page_content.banner_mobile_position_y|unlocalize }}%;--banner-mobile-zoom:{{ page_content.banner_mobile_zoom|unlocalize }};--banner-mobile-height:{{ page_content.banner_mobile_height|unlocalize }}px;"{% endif %}>
 {% if page_content.banner_image %}
 <div class="page-hero-media" aria-hidden="true">
     {% responsive_image page_content.banner_image width=1920 widths="480,960,1600,1920,2400" sizes="100vw" css_class="page-hero-image" loading="eager" priority="high" %}

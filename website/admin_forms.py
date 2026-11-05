@@ -31,3 +31,26 @@ class HomeSlideUploadForm(forms.Form):
         widget=MultipleImageInput(attrs={"accept": "image/jpeg,image/png,image/webp"}),
     )
     published = forms.BooleanField(required=False, initial=True, label="Publish these images immediately")
+
+
+class PageContentAdminForm(forms.ModelForm):
+    class Meta:
+        from .models import PageContent
+        model = PageContent
+        fields = "__all__"
+
+    class Media:
+        css = {"all": ("admin/css/banner-image-crop.css",)}
+        js = ("admin/js/banner-image-crop.js",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "banner_image" in self.fields:
+            self.fields["banner_image"].widget.attrs["data-current-image"] = (
+                self.instance.banner_image.url if self.instance.banner_image else ""
+            )
+        for prefix, minimum, maximum in (("banner", 240, 640), ("banner_mobile", 200, 480)):
+            for suffix, low, high, step in (("position_x", 0, 100, 1), ("position_y", 0, 100, 1), ("zoom", 1, 3, .01), ("height", minimum, maximum, 1)):
+                name = f"{prefix}_{suffix}"
+                if name in self.fields:
+                    self.fields[name].widget.attrs.update({"min": low, "max": high, "step": step, "class": "banner-crop-value"})

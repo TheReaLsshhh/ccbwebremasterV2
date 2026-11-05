@@ -56,6 +56,14 @@ After creating a superuser (see below), manage:
 | **Faculty and staff** | Faculty page (leadership vs directory) |
 | **Contact inquiries** | Messages from the contact form (read-only; mark resolved) |
 
+### Crop page banners
+
+Open **Page contents** (or **About Pages & Page Headings** on the dashboard), then choose the page. Upload a banner or adjust its existing image in **Desktop banner crop** and **Mobile banner crop**. Drag the preview or use horizontal position, vertical position, zoom, and banner height controls. Click **Save** to publish the framing. **Reset crop** restores that viewport's centered framing and default height.
+
+The original image is retained. Desktop previews represent a 1440px-wide screen; mobile previews represent 390px. The image fills the banner at other widths, and long headings may increase its height. Home slideshow images use their separate editor.
+
+Deployment requires `python manage.py migrate` for migration `0017_page_banner_crop`, followed by `python manage.py collectstatic --noinput` for the editor assets.
+
 ### Admin on Render
 
 1. Open your web service → **Shell**.

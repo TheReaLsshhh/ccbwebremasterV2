@@ -5,7 +5,7 @@ import uuid
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
@@ -231,6 +231,14 @@ class PageContent(TimeStampedModel):
     cta_text = models.CharField(max_length=80, blank=True)
     cta_url = models.CharField(max_length=255, blank=True)
     banner_image = models.ImageField(upload_to="pages/", blank=True, null=True)
+    banner_position_x = models.PositiveSmallIntegerField("Desktop horizontal position", default=50, validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="0 = left edge; 100 = right edge.")
+    banner_position_y = models.PositiveSmallIntegerField("Desktop vertical position", default=50, validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="0 = top edge; 100 = bottom edge.")
+    banner_zoom = models.DecimalField("Desktop zoom", max_digits=3, decimal_places=2, default=1, validators=[MinValueValidator(1), MaxValueValidator(3)], help_text="1 = fill the banner; up to 3 = tighter crop.")
+    banner_height = models.PositiveSmallIntegerField("Desktop banner height", default=400, validators=[MinValueValidator(240), MaxValueValidator(640)], help_text="Height in pixels (240-640). Long headings can expand the banner.")
+    banner_mobile_position_x = models.PositiveSmallIntegerField("Mobile horizontal position", default=50, validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="0 = left edge; 100 = right edge.")
+    banner_mobile_position_y = models.PositiveSmallIntegerField("Mobile vertical position", default=50, validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="0 = top edge; 100 = bottom edge.")
+    banner_mobile_zoom = models.DecimalField("Mobile zoom", max_digits=3, decimal_places=2, default=1, validators=[MinValueValidator(1), MaxValueValidator(3)], help_text="1 = fill the banner; up to 3 = tighter crop.")
+    banner_mobile_height = models.PositiveSmallIntegerField("Mobile banner height", default=280, validators=[MinValueValidator(200), MaxValueValidator(480)], help_text="Height in pixels (200-480). Long headings can expand the banner.")
     published = models.BooleanField(default=True)
 
     class Meta:

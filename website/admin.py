@@ -17,7 +17,7 @@ from django.utils.html import format_html
 from django.utils import timezone
 from PIL import Image
 
-from .admin_forms import HomeSlideUploadForm
+from .admin_forms import HomeSlideUploadForm, PageContentAdminForm
 
 from .models import (
     AdmissionStep,
@@ -172,6 +172,19 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(PageContent)
 class PageContentAdmin(PublishedContentAdmin):
+    form = PageContentAdminForm
+    banner_crop_fieldsets = (
+        ("Desktop banner crop", {
+            "classes": ("banner-crop-desktop",),
+            "fields": ("banner_position_x", "banner_position_y", "banner_zoom", "banner_height"),
+            "description": "Drag the preview or use the controls to frame the image. Preview represents a 1440px-wide screen. Save the page to apply. The original image is preserved.",
+        }),
+        ("Mobile banner crop", {
+            "classes": ("banner-crop-mobile",),
+            "fields": ("banner_mobile_position_x", "banner_mobile_position_y", "banner_mobile_zoom", "banner_mobile_height"),
+            "description": "Choose a separate crop for phones. Preview represents a 390px-wide screen. The crop adapts to other widths; text may increase the banner height.",
+        }),
+    )
     ordering = ("page", "sort_order", "pk")
     change_list_template = "admin/website/pagecontent/change_list.html"
     list_display = ("page", "body_title", "hero_title", "published", "sort_order", "updated_at")
@@ -190,7 +203,7 @@ class PageContentAdmin(PublishedContentAdmin):
             "Hero section",
             {
                 "fields": ("hero_title", "hero_text", "banner_image"),
-                "description": "Shown at the top of the public page. Upload a banner image for a background photo.",
+                "description": "Shown at the top of the public page. Upload a banner image, then adjust the desktop and mobile crop previews below.",
             },
         ),
         ("About sections / Contact introduction", {
@@ -212,6 +225,7 @@ class PageContentAdmin(PublishedContentAdmin):
                 self.fieldsets[0],
                 ("Page banner and introduction", {"fields": ("hero_title", "hero_text", "banner_image")}),
             ]
+            sections.extend(self.banner_crop_fieldsets)
             if obj.page in PageContent.ABOUT_PAGE_KEYS:
                 sections.append(("About section", {
                     "fields": ("body_title", "body_text"),
@@ -220,7 +234,9 @@ class PageContentAdmin(PublishedContentAdmin):
             elif obj.page == PageContent.CONTACT:
                 sections.append(("Contact introduction", {"fields": ("body_text",)}))
             return tuple(sections)
-        return super().get_fieldsets(request, obj)
+        sections = list(super().get_fieldsets(request, obj))
+        sections[2:2] = self.banner_crop_fieldsets
+        return tuple(sections)
 
     def view_on_site(self, obj):
         from .views import ABOUT_MENU_ITEMS

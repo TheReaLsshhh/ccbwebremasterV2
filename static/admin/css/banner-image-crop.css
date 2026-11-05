@@ -1,0 +1,15 @@
+﻿.banner-crop-preview { margin:16px; max-width:960px; }
+.banner-crop-stage { position:relative; overflow:hidden; width:100%; background:#173c2c; cursor:grab; touch-action:none; user-select:none; --preview-scale:1; }
+.banner-crop-stage[hidden] { display:none; }
+.banner-crop-stage.is-dragging { cursor:grabbing; }
+.banner-crop-image { display:block; width:100%; height:100%; position:absolute; inset:0; object-fit:cover; pointer-events:none; max-width:none; }
+.banner-crop-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(15,43,29,.82),rgba(15,43,29,.48) 55%,rgba(15,43,29,.16)); pointer-events:none; }
+.banner-crop-copy { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:calc(32px * var(--preview-scale)); color:#fff; pointer-events:none; overflow:hidden; }
+.banner-crop-copy span { color:#f0d7a2; font:600 calc(12px * var(--preview-scale))/1.5 Arial,sans-serif; text-transform:uppercase; }
+.banner-crop-copy strong { color:#fff; font:400 calc(48px * var(--preview-scale))/1.1 Georgia,serif; margin:calc(10px * var(--preview-scale)) 0; }
+.banner-crop-copy p { color:#e2e9e3; font:400 calc(16px * var(--preview-scale))/1.5 Arial,sans-serif; margin:0; max-width:680px; }
+.banner-crop-mobile .banner-crop-copy strong { font-size:calc(34px * var(--preview-scale)); }
+.banner-crop-status { color:var(--body-quiet-color); }
+.banner-crop-slider { width:min(300px,45%); vertical-align:middle; margin-left:16px; accent-color:#397553; }
+.banner-crop-value { width:80px; }
+@media(max-width:767px) { .banner-crop-slider { display:block; margin:10px 0 0; width:100%; max-width:320px; } }
